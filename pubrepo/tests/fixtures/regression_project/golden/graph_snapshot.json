@@ -1,0 +1,192 @@
+{
+  "clusters": [
+    {
+      "id": "prep_stage",
+      "kind": "manual",
+      "label": "Prep stage",
+      "node_ids": [
+        "01_data/01_input/source.csv",
+        "01_data/02_scripts/01_build.do",
+        "01_data/02_scripts/02_prepare.do",
+        "01_data/03_cleaned_data/panel_base.dta"
+      ],
+      "order": "1"
+    },
+    {
+      "id": "modeling_stage",
+      "kind": "manual",
+      "label": "Modeling stage",
+      "node_ids": [
+        "02_analysis/01_input/specs.dta",
+        "02_analysis/02_scripts/01_model.do",
+        "02_analysis/03_outputs/results.csv"
+      ],
+      "order": "2"
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "payload": {
+        "path": ".",
+        "script": "01_data/02_scripts/01_build.do"
+      }
+    },
+    {
+      "code": "excluded_reference",
+      "level": "info",
+      "payload": {
+        "command": "append",
+        "line": "2",
+        "path": "archive/01_input/legacy.csv",
+        "script": "01_data/02_scripts/02_prepare.do"
+      }
+    },
+    {
+      "code": "manual_clusters_applied",
+      "level": "info",
+      "payload": {
+        "assigned_nodes": "3",
+        "clusters": "2"
+      }
+    },
+    {
+      "code": "excluded_files",
+      "level": "info",
+      "payload": {
+        "count": "2"
+      }
+    },
+    {
+      "code": "project_scan",
+      "level": "info",
+      "payload": {
+        "do_files": "3",
+        "input_files": "2",
+        "output_artifacts": "0"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_base.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_ready.dta"
+      }
+    },
+    {
+      "code": "excluded_path_inventory",
+      "level": "info",
+      "payload": {
+        "count": "2"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "kind": "reference_input",
+      "operation": "import",
+      "source": "01_data/01_input/source.csv",
+      "target": "01_data/02_scripts/01_build.do"
+    },
+    {
+      "kind": "intermediate",
+      "operation": "use",
+      "source": "01_data/03_cleaned_data/panel_base.dta",
+      "target": "01_data/02_scripts/02_prepare.do"
+    },
+    {
+      "kind": "intermediate",
+      "operation": "use",
+      "source": "01_data/03_cleaned_data/panel_ready.dta",
+      "target": "02_analysis/02_scripts/01_model.do"
+    },
+    {
+      "kind": "reference_input",
+      "operation": "merge",
+      "source": "02_analysis/01_input/specs.dta",
+      "target": "02_analysis/02_scripts/01_model.do"
+    },
+    {
+      "kind": "intermediate",
+      "operation": "save",
+      "source": "01_data/02_scripts/01_build.do",
+      "target": "01_data/03_cleaned_data/panel_base.dta"
+    },
+    {
+      "kind": "intermediate",
+      "operation": "save",
+      "source": "01_data/02_scripts/02_prepare.do",
+      "target": "01_data/03_cleaned_data/panel_ready.dta"
+    },
+    {
+      "kind": "deliverable",
+      "operation": "export_delimited",
+      "source": "02_analysis/02_scripts/01_model.do",
+      "target": "02_analysis/03_outputs/results.csv"
+    }
+  ],
+  "excluded_paths": [
+    "archive/",
+    "viewer_output/"
+  ],
+  "nodes": [
+    {
+      "cluster_id": "prep_stage",
+      "id": "01_data/01_input/source.csv",
+      "role": "reference_input",
+      "type": "artifact"
+    },
+    {
+      "cluster_id": "prep_stage",
+      "id": "01_data/02_scripts/01_build.do",
+      "role": "script",
+      "type": "script"
+    },
+    {
+      "cluster_id": "prep_stage",
+      "id": "01_data/02_scripts/02_prepare.do",
+      "role": "script",
+      "type": "script"
+    },
+    {
+      "cluster_id": "prep_stage",
+      "id": "01_data/03_cleaned_data/panel_base.dta",
+      "role": "intermediate",
+      "type": "artifact"
+    },
+    {
+      "cluster_id": null,
+      "id": "01_data/03_cleaned_data/panel_ready.dta",
+      "role": "intermediate",
+      "type": "artifact"
+    },
+    {
+      "cluster_id": "modeling_stage",
+      "id": "02_analysis/01_input/specs.dta",
+      "role": "reference_input",
+      "type": "artifact"
+    },
+    {
+      "cluster_id": "modeling_stage",
+      "id": "02_analysis/02_scripts/01_model.do",
+      "role": "script",
+      "type": "script"
+    },
+    {
+      "cluster_id": "modeling_stage",
+      "id": "02_analysis/03_outputs/results.csv",
+      "role": "deliverable",
+      "type": "artifact"
+    }
+  ]
+}

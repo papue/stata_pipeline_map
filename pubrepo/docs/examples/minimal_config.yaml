@@ -1,0 +1,7 @@
+project_root: .
+
+display:
+  view: overview
+  theme: modern-light
+  show_terminal_outputs: true
+  show_temporary_outputs: false

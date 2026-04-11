@@ -1,0 +1,64 @@
+project_root: .
+
+display:
+  theme: modern-dark
+  view: deliverables
+  label_path_depth: 1
+  show_extensions: true
+  node_label_style: basename
+  show_terminal_outputs: true
+  show_temporary_outputs: false
+  placeholder_style: filled_dashed
+  edge_label_mode: hidden
+
+parser:
+  dynamic_paths:
+    mode: resolve_loops_with_placeholders
+    placeholder_token: "{unknown}"
+  version_families:
+    mode: detect_only
+    priority_suffixes: [qc, pp, final, draft]
+    tiebreaker: latest_modified
+
+classification:
+  deliverable_extensions: [.csv, .xlsx, .pdf, .png, .svg, .docx, .tex, .ster]
+  temporary_name_patterns: [_tmp, _temp, _scratch, temp_, tmp_]
+
+layout:
+  rankdir: LR
+  unclustered_artifacts_position: right
+  cluster_lanes:
+    - lane: main
+      cluster_ids: [data_prep, analysis]
+    - lane: reporting
+      cluster_ids: [deliverables]
+
+clusters:
+  - id: data_prep
+    label: Data prep
+    members:
+      - 01_data/02_scripts/01_build.do
+    lane: main
+    order: 1
+
+  - id: analysis
+    label: Analysis
+    members:
+      - 02_analysis/02_scripts/01_model.do
+    lane: main
+    order: 2
+
+  - id: deliverables
+    label: Deliverables
+    members:
+      - 03_tables/02_scripts/01_export.do
+    lane: reporting
+    order: 1
+    collapse: true
+
+# Example alternative view presets:
+# display:
+#   view: stage_overview
+# parser:
+#   version_families:
+#     mode: prefer_highest_numeric

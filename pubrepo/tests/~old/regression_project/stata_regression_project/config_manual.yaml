@@ -1,0 +1,11 @@
+project_root: .
+clusters:
+  - id: prep_stage
+    label: Prep stage
+    members:
+      - 01_data/02_scripts/01_build.do
+      - 01_data/02_scripts/02_prepare.do
+  - id: modeling_stage
+    label: Modeling stage
+    members:
+      - 02_analysis/02_scripts/01_model.do

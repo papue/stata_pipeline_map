@@ -1,0 +1,101 @@
+{
+  "diagnostics": [
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute path detected in global defined at 01_data/02_scripts/01_build.do:1",
+      "payload": {
+        "path": ".",
+        "script": "01_data/02_scripts/01_build.do"
+      }
+    },
+    {
+      "code": "excluded_reference",
+      "level": "info",
+      "message": "Excluded path omitted from graph at 01_data/02_scripts/02_prepare.do:2 (append): archive/01_input/legacy.csv",
+      "payload": {
+        "command": "append",
+        "line": "2",
+        "path": "archive/01_input/legacy.csv",
+        "script": "01_data/02_scripts/02_prepare.do"
+      }
+    },
+    {
+      "code": "manual_clusters_applied",
+      "level": "info",
+      "message": "Applied 2 manual cluster definitions.",
+      "payload": {
+        "assigned_nodes": "3",
+        "clusters": "2"
+      }
+    },
+    {
+      "code": "excluded_files",
+      "level": "info",
+      "message": "Excluded 2 files during discovery.",
+      "payload": {
+        "count": "2"
+      }
+    },
+    {
+      "code": "project_scan",
+      "level": "info",
+      "message": "Project discovery completed.",
+      "payload": {
+        "do_files": "3",
+        "input_files": "2",
+        "output_artifacts": "0"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_base.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_base.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_ready.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_ready.dta"
+      }
+    },
+    {
+      "code": "excluded_path_inventory",
+      "level": "info",
+      "message": "2 excluded paths recorded in this run.",
+      "payload": {
+        "count": "2"
+      }
+    }
+  ],
+  "excluded_paths": [
+    "archive/",
+    "viewer_output/"
+  ],
+  "project_root": "<PROJECT_ROOT>",
+  "summary": {
+    "by_code": {
+      "absolute_path_usage": 1,
+      "excluded_files": 1,
+      "excluded_path_inventory": 1,
+      "excluded_reference": 1,
+      "manual_clusters_applied": 1,
+      "missing_referenced_file": 2,
+      "project_scan": 1
+    },
+    "by_level": {
+      "info": 5,
+      "warning": 3
+    },
+    "diagnostics": 8,
+    "edges": 7,
+    "excluded_paths": 2,
+    "nodes": 8
+  }
+}

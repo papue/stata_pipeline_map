@@ -1,0 +1,10 @@
+global root "."
+global input "$root/01_data/01_input"
+global data_scripts "$root/01_data/02_scripts"
+global cleaned "$root/01_data/03_cleaned_data"
+global analysis_scripts "$root/02_analysis/02_scripts"
+global output "$root/02_analysis/03_outputs"
+
+use "$cleaned/households_raw.dta", clear
+merge 1:m hhid using "$cleaned/transactions_all.dta", nogen
+save "$cleaned/panel_base.dta", replace

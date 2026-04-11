@@ -1,0 +1,17 @@
+Project root: <PROJECT_ROOT>
+Nodes: 8 (scripts=3, artifacts=5)
+Edges: 7
+Clusters: 2
+Diagnostics: 8
+Config effects:
+- View: overview
+- Excluded paths: 2
+- Exclusion presets: generated_outputs,archival_folders,python_runtime
+- [warning] absolute_path_usage: Absolute path detected in global defined at 01_data/02_scripts/01_build.do:1
+- [info] excluded_reference: Excluded path omitted from graph at 01_data/02_scripts/02_prepare.do:2 (append): archive/01_input/legacy.csv
+- [info] manual_clusters_applied: Applied 2 manual cluster definitions.
+- [info] excluded_files: Excluded 2 files during discovery.
+- [info] project_scan: Project discovery completed.
+- [warning] missing_referenced_file: Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_base.dta
+- [warning] missing_referenced_file: Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_ready.dta
+- [info] excluded_path_inventory: 2 excluded paths recorded in this run.
