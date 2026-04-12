@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import subprocess
 from dataclasses import replace
@@ -128,11 +129,29 @@ def command_render_dot(args: argparse.Namespace) -> int:
 
 
 
+def _find_dot_executable() -> str | None:
+    dot_executable = shutil.which('dot')
+    if dot_executable:
+        return dot_executable
+    env_path = os.environ.get('GRAPHVIZ_DOT')
+    candidates = []
+    if env_path:
+        candidates.append(Path(env_path))
+    candidates.extend([
+        Path('C:/Program Files/Graphviz/bin/dot.exe'),
+        Path('C:/Program Files (x86)/Graphviz/bin/dot.exe'),
+    ])
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+    return None
+
+
 def command_render_image(args: argparse.Namespace) -> int:
     config = resolve_config(args)
     graph, dot = _render_dot_text(config, show_edge_labels=args.show_edge_labels)
 
-    dot_executable = shutil.which('dot')
+    dot_executable = _find_dot_executable()
     if not dot_executable:
         print('Graphviz was not found on PATH. Install Graphviz and make sure the "dot" command works in your terminal.', flush=True)
         print('You can still use render-dot to create a .dot file and render it later once Graphviz is installed.', flush=True)
@@ -246,9 +265,9 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     return args.func(args)
 
 

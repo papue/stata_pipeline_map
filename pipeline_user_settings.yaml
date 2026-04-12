@@ -1,0 +1,4 @@
+project_root: example/project
+output_dir: example/output
+config_path: example/configs/project_config.yaml
+default_format: pdf

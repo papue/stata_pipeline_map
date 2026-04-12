@@ -1,0 +1,71 @@
+project_root: example/project
+display:
+  show_edge_labels: false
+  mode: overview
+  theme: modern-light
+  show_terminal_outputs: true
+  show_temporary_outputs: false
+  placeholder_style: dashed
+  label_path_depth: 1
+  show_extensions: false
+  node_label_style: basename
+  view: overview
+  edge_label_mode: auto
+exclusions:
+  presets:
+  - generated_outputs
+  - archival_folders
+  - python_runtime
+  paths: []
+  file_names: []
+  exact_paths: []
+  prefixes: []
+  globs:
+  - '*.tmp'
+  - '*.bak'
+  exact_names: []
+  folder_names: []
+normalization:
+  path_prefix_aliases: {}
+  project_root_markers: []
+  strip_leading_dot: true
+parser:
+  edge_csv_path: viewer_output/parser_edges.csv
+  prefer_existing_edge_csv: false
+  write_edge_csv: true
+  suppress_internal_only_writes: true
+  dynamic_paths:
+    mode: resolve_simple
+    placeholder_token: '{dynamic}'
+  version_families:
+    mode: detect_only
+    priority_suffixes:
+    - qc
+    - pp
+    - final
+    - draft
+    tiebreaker: latest_modified
+classification:
+  deliverable_extensions:
+  - .csv
+  - .xlsx
+  - .pdf
+  - .png
+  - .svg
+  - .docx
+  - .tex
+  - .ster
+  temporary_name_patterns:
+  - _tmp
+  - _temp
+  - _scratch
+  - temp_
+  - tmp_
+clustering:
+  enabled: true
+  strategy: auto
+layout:
+  rankdir: LR
+  cluster_lanes: []
+  unclustered_artifacts_position: auto
+clusters: []

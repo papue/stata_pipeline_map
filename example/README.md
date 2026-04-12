@@ -92,3 +92,18 @@ If that fails but Graphviz is installed in the default folder, use this temporar
 ```powershell
 $env:Path += ";C:\Program Files\Graphviz\bin"
 ```
+
+
+## Friendlier wrapper scripts
+
+If you do not want to remember the CLI syntax, use these from the repository root:
+
+```text
+python setup_project.py
+python make_pipeline.py
+python inspect_pipeline.py
+python edit_exclusions.py
+python manage_clusters.py
+```
+
+These scripts ask questions, explain the valid values, and save your defaults so you do not need to answer everything each time.
