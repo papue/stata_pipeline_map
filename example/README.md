@@ -32,15 +32,15 @@ Keeping outputs here avoids cluttering the repo root.
 From the repository root:
 
 ```bash
-stata-pipeline-flow summary --project-root example/project
-stata-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
-stata-pipeline-flow validate --project-root example/project --output example/output/validation_report.json
+data-pipeline-flow summary --project-root example/project
+data-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
+data-pipeline-flow validate --project-root example/project --output example/output/validation_report.json
 ```
 
 If Graphviz is not installed yet, use this instead for the figure step:
 
 ```bash
-stata-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
+data-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
 ```
 
 ## What to expect from the example
@@ -63,7 +63,7 @@ Edit the config when you want to:
 Then rerun, for example:
 
 ```bash
-stata-pipeline-flow render-image \
+data-pipeline-flow render-image \
   --project-root example/project \
   --config example/configs/config_example.yaml \
   --format svg \
@@ -75,7 +75,7 @@ stata-pipeline-flow render-image \
 If you want a final image instead of only a `.dot` file, use:
 
 ```powershell
-stata-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
+data-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
 ```
 
 On Windows, this needs Graphviz and the `dot` command must work in PowerShell.

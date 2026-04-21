@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import PurePosixPath
 
-from stata_pipeline_flow.config.schema import DisplayConfig, LayoutConfig
-from stata_pipeline_flow.model.entities import Cluster, GraphModel, Node
+from data_pipeline_flow.config.schema import DisplayConfig, LayoutConfig
+from data_pipeline_flow.model.entities import Cluster, GraphModel, Node
 
 _BASE_NODE_STYLE = {
     'script': 'shape=box, style="rounded,filled", margin="0.10,0.06"',

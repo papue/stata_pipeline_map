@@ -22,8 +22,11 @@ def regression_project_root(tmp_path: Path) -> Path:
 
 
 def run_cli(*args: str) -> subprocess.CompletedProcess[str]:
+    cli = PROJECT_ROOT / '.venv' / 'Scripts' / 'data-pipeline-flow.exe'
+    if not cli.exists():
+        cli = PROJECT_ROOT / '.venv' / 'bin' / 'data-pipeline-flow'
     return subprocess.run(
-        [sys.executable, str(PROJECT_ROOT / 'run_phase1_cli.py'), *args],
+        [str(cli), *args],
         cwd=PROJECT_ROOT,
         text=True,
         capture_output=True,

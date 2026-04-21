@@ -1,7 +1,7 @@
 ---
 name: pipeline-clusters
 description: >
-  Configures clusters and meta-clusters in a stata-pipeline-flow project config.
+  Configures clusters and meta-clusters in a data-pipeline-flow project config.
   Use when the user wants to group scripts into logical sections, organize
   pipeline stages, nest clusters into parent groups, or change clustering strategy.
   Trigger phrases: cluster, group scripts, organize pipeline, meta-cluster, nest
@@ -27,15 +27,15 @@ changes (use pipeline-inspect), or manual edges (use pipeline-manual-edges).
 ## Routine
 
 **venv path** — All CLI calls require the full venv path. Do not rely on PATH
-activation (it doesn't persist across Bash calls). Use `.venv/Scripts/stata-pipeline-flow`
-on Windows or `.venv/bin/stata-pipeline-flow` on macOS/Linux.
+activation (it doesn't persist across Bash calls). Use `.venv/Scripts/data-pipeline-flow`
+on Windows or `.venv/bin/data-pipeline-flow` on macOS/Linux.
 
 **Step 1 — Orient**
 
 Read the project config and current `clusters:` list. Then see what nodes exist:
 
 ```bash
-.venv/Scripts/stata-pipeline-flow summary --project-root <project_root> --config <config_path>
+.venv/Scripts/data-pipeline-flow summary --project-root <project_root> --config <config_path>
 ```
 
 Use Glob on `**/*.do` (and `**/*.py`, `**/*.R`) if node names alone are not
@@ -81,7 +81,7 @@ clusters:
 **Step 4 — Validate**
 
 ```bash
-.venv/Scripts/stata-pipeline-flow render-image \
+.venv/Scripts/data-pipeline-flow render-image \
   --project-root <project_root> \
   --config <config_path> \
   --format png \

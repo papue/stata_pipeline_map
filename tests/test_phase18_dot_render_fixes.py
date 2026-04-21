@@ -9,10 +9,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from stata_pipeline_flow.config.schema import AppConfig, DisplayConfig
-from stata_pipeline_flow.model.entities import Edge, GraphModel, Node
-from stata_pipeline_flow.render.dot import render_dot
-from stata_pipeline_flow.rules.pipeline import PipelineBuilder
+from data_pipeline_flow.config.schema import AppConfig, DisplayConfig
+from data_pipeline_flow.model.entities import Edge, GraphModel, Node
+from data_pipeline_flow.render.dot import render_dot
+from data_pipeline_flow.rules.pipeline import PipelineBuilder
 
 
 # ---------------------------------------------------------------------------

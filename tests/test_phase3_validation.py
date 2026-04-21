@@ -1,9 +1,9 @@
 from pathlib import Path
 import json
 
-from stata_pipeline_flow.config.schema import AppConfig
-from stata_pipeline_flow.model.entities import Edge, GraphModel, Node
-from stata_pipeline_flow.validation.diagnostics import build_validation_report, run_basic_validation, write_validation_report
+from data_pipeline_flow.config.schema import AppConfig
+from data_pipeline_flow.model.entities import Edge, GraphModel, Node
+from data_pipeline_flow.validation.diagnostics import build_validation_report, run_basic_validation, write_validation_report
 
 
 def test_validation_flags_missing_inputs_and_multiple_writers(tmp_path: Path) -> None:
@@ -67,7 +67,7 @@ def test_validation_report_writes_json_summary(tmp_path: Path) -> None:
 def test_real_project_validation_report_contains_exclusion_inventory() -> None:
     project_root = Path(__file__).resolve().parents[1]
     config = AppConfig(project_root=str(project_root))
-    from stata_pipeline_flow.rules.pipeline import PipelineBuilder
+    from data_pipeline_flow.rules.pipeline import PipelineBuilder
 
     graph = PipelineBuilder(config).build(project_root)
     graph = run_basic_validation(graph)

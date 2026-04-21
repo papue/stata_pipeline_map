@@ -19,14 +19,14 @@ The main execution flow is:
 
 ### CLI
 
-- `src/stata_pipeline_flow/cli/main.py`
+- `src/data_pipeline_flow/cli/main.py`
 
 Owns argument parsing and command entrypoints.
 
 ### Config
 
-- `src/stata_pipeline_flow/config/schema.py`
-- `src/stata_pipeline_flow/config/export.py`
+- `src/data_pipeline_flow/config/schema.py`
+- `src/data_pipeline_flow/config/export.py`
 
 `schema.py` defines the config dataclasses and loader.
 
@@ -34,9 +34,9 @@ Owns argument parsing and command entrypoints.
 
 ### Discovery and parsing
 
-- `src/stata_pipeline_flow/parser/discovery.py`
-- `src/stata_pipeline_flow/parser/stata_extract.py`
-- `src/stata_pipeline_flow/parser/edge_csv.py`
+- `src/data_pipeline_flow/parser/discovery.py`
+- `src/data_pipeline_flow/parser/stata_extract.py`
+- `src/data_pipeline_flow/parser/edge_csv.py`
 
 `discovery.py` decides which files belong to the project scan.
 
@@ -44,8 +44,8 @@ Owns argument parsing and command entrypoints.
 
 ### Graph model and normalization
 
-- `src/stata_pipeline_flow/model/entities.py`
-- `src/stata_pipeline_flow/model/normalize.py`
+- `src/data_pipeline_flow/model/entities.py`
+- `src/data_pipeline_flow/model/normalize.py`
 
 The graph model is intentionally simple and serializable.
 
@@ -53,10 +53,10 @@ Project-relative normalized paths are the stable node ids used across clustering
 
 ### Rules layer
 
-- `src/stata_pipeline_flow/rules/pipeline.py`
-- `src/stata_pipeline_flow/rules/exclusions.py`
-- `src/stata_pipeline_flow/rules/clustering.py`
-- `src/stata_pipeline_flow/rules/cluster_overrides.py`
+- `src/data_pipeline_flow/rules/pipeline.py`
+- `src/data_pipeline_flow/rules/exclusions.py`
+- `src/data_pipeline_flow/rules/clustering.py`
+- `src/data_pipeline_flow/rules/cluster_overrides.py`
 
 `pipeline.py` is the orchestration layer.
 
@@ -66,8 +66,8 @@ Project-relative normalized paths are the stable node ids used across clustering
 
 ### Rendering and validation
 
-- `src/stata_pipeline_flow/render/dot.py`
-- `src/stata_pipeline_flow/validation/diagnostics.py`
+- `src/data_pipeline_flow/render/dot.py`
+- `src/data_pipeline_flow/validation/diagnostics.py`
 
 `render/dot.py` is intentionally lightweight. Keep rendering concerns separate from graph-building concerns.
 
@@ -199,4 +199,4 @@ If you add a new command later, update:
 
 The preferred lightweight runner in this public bundle is `run_cli.py`.
 
-The installable console script remains `stata-pipeline-flow`.
+The installable console script remains `data-pipeline-flow`.

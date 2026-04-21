@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from stata_pipeline_flow.config.schema import AppConfig, ManualClusterConfig, load_config
-from stata_pipeline_flow.render.dot import render_dot
-from stata_pipeline_flow.rules.pipeline import PipelineBuilder
+from data_pipeline_flow.config.schema import AppConfig, ManualClusterConfig, load_config
+from data_pipeline_flow.render.dot import render_dot
+from data_pipeline_flow.rules.pipeline import PipelineBuilder
 
 
 def test_manual_cluster_override_reassigns_selected_nodes_and_recomputes_artifacts(tmp_path: Path) -> None:

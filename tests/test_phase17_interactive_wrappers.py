@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from stata_pipeline_flow.cli.main import _find_dot_executable, main
-from stata_pipeline_flow.wizard import default_config_payload, update_exclusions_list, upsert_cluster
+from data_pipeline_flow.cli.main import _find_dot_executable, main
+from data_pipeline_flow.wizard import default_config_payload, update_exclusions_list, upsert_cluster
 
 
 def test_cli_main_accepts_explicit_argv(tmp_path):

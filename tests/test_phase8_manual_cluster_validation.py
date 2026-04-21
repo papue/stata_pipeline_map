@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from stata_pipeline_flow.config.schema import AppConfig, ManualClusterConfig
-from stata_pipeline_flow.rules.pipeline import PipelineBuilder
-from stata_pipeline_flow.validation.diagnostics import build_validation_report, run_basic_validation
+from data_pipeline_flow.config.schema import AppConfig, ManualClusterConfig
+from data_pipeline_flow.rules.pipeline import PipelineBuilder
+from data_pipeline_flow.validation.diagnostics import build_validation_report, run_basic_validation
 
 
 def _build_two_stage_project(project_root: Path) -> None:

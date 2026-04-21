@@ -1,7 +1,7 @@
 ---
 name: pipeline-inspect
 description: >
-  Renders, explores, and diagnoses a stata-pipeline-flow project. Use when
+  Renders, explores, and diagnoses a data-pipeline-flow project. Use when
   the user asks "what does my pipeline look like", wants to render or re-render
   a pipeline image, validate or diagnose the graph, understand nodes/edges/clusters,
   or add a new analysis script. Does NOT handle installation, cluster config, or
@@ -13,7 +13,7 @@ allowed-tools: Bash, Read, Glob, Grep, Write, Edit
 
 ## Goal
 
-Enable the user to see, understand, and extend a stata-pipeline-flow project.
+Enable the user to see, understand, and extend a data-pipeline-flow project.
 A good result is a rendered graph, a plain-language explanation of any
 diagnostics, and — if adding a new script — a confirmed node in the graph after
 re-render.
@@ -27,8 +27,8 @@ pipeline-clusters), or manual edges (use pipeline-manual-edges).
 ## Routine
 
 **venv path** — All CLI calls require the full venv path. Do not rely on PATH
-activation (it doesn't persist across Bash calls). Use `.venv/Scripts/stata-pipeline-flow`
-on Windows or `.venv/bin/stata-pipeline-flow` on macOS/Linux.
+activation (it doesn't persist across Bash calls). Use `.venv/Scripts/data-pipeline-flow`
+on Windows or `.venv/bin/data-pipeline-flow` on macOS/Linux.
 
 **Step 1 — Orient**
 
@@ -44,7 +44,7 @@ ls '<project-root>/user_configs/project_config.yaml' 2>/dev/null
 **Step 2 — Run summary and read edge CSV**
 
 ```bash
-.venv/Scripts/stata-pipeline-flow summary \
+.venv/Scripts/data-pipeline-flow summary \
   --project-root <project-root> \
   --config <config-path>        # omit only if no config file exists
 ```
@@ -57,7 +57,7 @@ Default location: `<project-root>/viewer_output/parser_edges.csv`
 **Step 3 — Render the image**
 
 ```bash
-.venv/Scripts/stata-pipeline-flow render-image \
+.venv/Scripts/data-pipeline-flow render-image \
   --project-root <project-root> \
   --config <config-path> \
   --format png \
@@ -71,7 +71,7 @@ config YAML, not as a CLI flag.
 **Step 4 — Validate and explain diagnostics**
 
 ```bash
-.venv/Scripts/stata-pipeline-flow validate \
+.venv/Scripts/data-pipeline-flow validate \
   --project-root <project-root> \
   --config <config-path>
 ```

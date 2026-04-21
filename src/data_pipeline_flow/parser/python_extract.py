@@ -3,10 +3,10 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from stata_pipeline_flow.config.schema import ExclusionConfig, NormalizationConfig, ParserConfig
-from stata_pipeline_flow.model.normalize import normalize_token, to_project_relative
-from stata_pipeline_flow.rules.exclusions import is_excluded
-from stata_pipeline_flow.parser.stata_extract import (
+from data_pipeline_flow.config.schema import ExclusionConfig, NormalizationConfig, ParserConfig
+from data_pipeline_flow.model.normalize import normalize_token, to_project_relative
+from data_pipeline_flow.rules.exclusions import is_excluded
+from data_pipeline_flow.parser.stata_extract import (
     Diagnostic,
     ParsedEvent,
     ScriptParseResult,

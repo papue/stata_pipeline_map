@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import PurePosixPath
 
-from stata_pipeline_flow.config.schema import AppConfig
-from stata_pipeline_flow.model.entities import Diagnostic, Edge, GraphModel, Node
+from data_pipeline_flow.config.schema import AppConfig
+from data_pipeline_flow.model.entities import Diagnostic, Edge, GraphModel, Node
 
 
 _SCRIPT_TYPES = {'script', 'script_placeholder'}

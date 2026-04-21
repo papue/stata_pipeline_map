@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
-import stata_pipeline_flow.cli.main as cli_main
+import data_pipeline_flow.cli.main as cli_main
 
 
 def _write(path: Path, text: str) -> None:

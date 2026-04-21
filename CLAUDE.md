@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`stata-pipeline-flow` is a Python tool that analyzes Stata research projects by scanning `.do` files to extract data lineage, building a dependency graph, and rendering pipeline visualizations (PNG/SVG/PDF via Graphviz) with built-in validation diagnostics.
+`data-pipeline-flow` is a Python tool that analyzes Stata research projects by scanning `.do` files to extract data lineage, building a dependency graph, and rendering pipeline visualizations (PNG/SVG/PDF via Graphviz) with built-in validation diagnostics.
 
 ## Setup and Installation
 
@@ -28,10 +28,10 @@ Render the bundled example project (use the CLI entry point, not `python -m`):
 
 ```bash
 # Windows
-.venv\Scripts\stata-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline.png
+.venv\Scripts\data-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline.png
 
 # macOS/Linux
-.venv/bin/stata-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline.png
+.venv/bin/data-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline.png
 ```
 
 Output: `example/output/pipeline.png`
@@ -49,13 +49,13 @@ python -m pytest tests/test_smoke.py -q
 python -m pytest tests/test_smoke.py::test_name -q
 
 # CLI commands
-stata-pipeline-flow summary --project-root example/project
-stata-pipeline-flow render-image --project-root example/project --format png --output out.png
-stata-pipeline-flow validate --project-root example/project --output report.json
-stata-pipeline-flow render-dot --project-root example/project --output pipeline.dot
-stata-pipeline-flow extract-edges --project-root example/project --output edges.csv
-stata-pipeline-flow export-clusters --project-root example/project --output clusters.yaml
-stata-pipeline-flow snapshot-json --project-root example/project --output graph.json
+data-pipeline-flow summary --project-root example/project
+data-pipeline-flow render-image --project-root example/project --format png --output out.png
+data-pipeline-flow validate --project-root example/project --output report.json
+data-pipeline-flow render-dot --project-root example/project --output pipeline.dot
+data-pipeline-flow extract-edges --project-root example/project --output edges.csv
+data-pipeline-flow export-clusters --project-root example/project --output clusters.yaml
+data-pipeline-flow snapshot-json --project-root example/project --output graph.json
 ```
 
 ## Architecture

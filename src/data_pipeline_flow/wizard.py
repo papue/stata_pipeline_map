@@ -386,7 +386,7 @@ def setup_interactive(repo_root: Path | None = None) -> int:
 
 
 def _import_cli_main():
-    from stata_pipeline_flow.cli.main import main as cli_main
+    from data_pipeline_flow.cli.main import main as cli_main
     return cli_main
 
 

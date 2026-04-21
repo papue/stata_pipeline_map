@@ -2,18 +2,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from stata_pipeline_flow.config.schema import AppConfig
-from stata_pipeline_flow.model.entities import Diagnostic, GraphModel
-from stata_pipeline_flow.parser.discovery import discover_project_files
-from stata_pipeline_flow.parser.edge_csv import load_edge_csv
-from stata_pipeline_flow.parser.multi_extract import build_graph_from_scripts
-from stata_pipeline_flow.parser.stata_extract import write_edge_csv
-from stata_pipeline_flow.rules.clustering import infer_clusters
-from stata_pipeline_flow.rules.cluster_overrides import apply_manual_clusters
-from stata_pipeline_flow.rules.manual_edges import apply_manual_edges
-from stata_pipeline_flow.rules.layout import apply_layout_config
-from stata_pipeline_flow.rules.exclusions import resolve_exclusion_config
-from stata_pipeline_flow.rules.version_families import apply_version_family_resolution
+from data_pipeline_flow.config.schema import AppConfig
+from data_pipeline_flow.model.entities import Diagnostic, GraphModel
+from data_pipeline_flow.parser.discovery import discover_project_files
+from data_pipeline_flow.parser.edge_csv import load_edge_csv
+from data_pipeline_flow.parser.multi_extract import build_graph_from_scripts
+from data_pipeline_flow.parser.stata_extract import write_edge_csv
+from data_pipeline_flow.rules.clustering import infer_clusters
+from data_pipeline_flow.rules.cluster_overrides import apply_manual_clusters
+from data_pipeline_flow.rules.manual_edges import apply_manual_edges
+from data_pipeline_flow.rules.layout import apply_layout_config
+from data_pipeline_flow.rules.exclusions import resolve_exclusion_config
+from data_pipeline_flow.rules.version_families import apply_version_family_resolution
 
 
 

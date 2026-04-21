@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from stata_pipeline_flow.config.schema import load_config
-from stata_pipeline_flow.rules.pipeline import PipelineBuilder
-from stata_pipeline_flow.validation.diagnostics import run_basic_validation
+from data_pipeline_flow.config.schema import load_config
+from data_pipeline_flow.rules.pipeline import PipelineBuilder
+from data_pipeline_flow.validation.diagnostics import run_basic_validation
 
 from conftest import GOLDEN_ROOT, normalize_project_root_text, read_json, read_text, run_cli
 

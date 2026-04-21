@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from stata_pipeline_flow.config.schema import AppConfig, ExclusionConfig
-from stata_pipeline_flow.model.normalize import to_project_relative
-from stata_pipeline_flow.parser.discovery import discover_project_files
-from stata_pipeline_flow.rules.exclusions import resolve_exclusion_config
-from stata_pipeline_flow.rules.pipeline import PipelineBuilder
+from data_pipeline_flow.config.schema import AppConfig, ExclusionConfig
+from data_pipeline_flow.model.normalize import to_project_relative
+from data_pipeline_flow.parser.discovery import discover_project_files
+from data_pipeline_flow.rules.exclusions import resolve_exclusion_config
+from data_pipeline_flow.rules.pipeline import PipelineBuilder
 
 
 def test_to_project_relative_strips_foreign_absolute_root_by_project_name(tmp_path: Path) -> None:

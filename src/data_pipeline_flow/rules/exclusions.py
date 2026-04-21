@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import PurePosixPath
 
-from stata_pipeline_flow.config.schema import ExclusionConfig
+from data_pipeline_flow.config.schema import ExclusionConfig
 
 
 PRESET_LIBRARY: dict[str, ExclusionConfig] = {

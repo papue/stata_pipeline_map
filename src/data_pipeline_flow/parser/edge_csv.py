@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-from stata_pipeline_flow.model.entities import Edge, GraphModel, Node
+from data_pipeline_flow.model.entities import Edge, GraphModel, Node
 
 SCRIPT_SUFFIX = '.do'
 

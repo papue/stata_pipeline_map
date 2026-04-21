@@ -15,9 +15,9 @@ from __future__ import annotations
 import pytest
 from pathlib import Path
 
-from stata_pipeline_flow.parser import multi_extract
-from stata_pipeline_flow.parser.python_extract import parse_python_file
-from stata_pipeline_flow.config.schema import (
+from data_pipeline_flow.parser import multi_extract
+from data_pipeline_flow.parser.python_extract import parse_python_file
+from data_pipeline_flow.config.schema import (
     ClassificationConfig,
     DisplayConfig,
     ExclusionConfig,
@@ -125,7 +125,7 @@ def test_all_python_labels_in_allowlist():
     Audit: every label the Python parser can emit must be in _PYTHON_READ_CMDS
     or _PYTHON_WRITE_CMDS. This test catches future drift.
     """
-    from stata_pipeline_flow.parser.python_extract import (
+    from data_pipeline_flow.parser.python_extract import (
         _FIXED_READ_PATTERNS,
         _FIXED_WRITE_PATTERNS,
         _DEFAULT_PD_READ,
@@ -161,7 +161,7 @@ def test_all_r_labels_in_allowlist():
     Audit: every label the R parser can emit must be in _R_READ_CMDS
     or _R_WRITE_CMDS. This test catches future drift.
     """
-    from stata_pipeline_flow.parser.r_extract import (
+    from data_pipeline_flow.parser.r_extract import (
         _READS_FIRST_ARG,
         _WRITES_DATA_THEN_PATH,
         _WRITES_KEYWORD,

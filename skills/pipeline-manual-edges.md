@@ -1,7 +1,7 @@
 ---
 name: pipeline-manual-edges
 description: >
-  Adds a manual edge to a stata-pipeline-flow config when the parser misses a
+  Adds a manual edge to a data-pipeline-flow config when the parser misses a
   connection — macro-resolved paths, cross-language hand-offs (Stata/R/Python),
   or external inputs never on disk. Use when a graph link is missing, the
   pipeline flow is broken, or you need to inject an edge the parser cannot find.
@@ -28,8 +28,8 @@ itself (requires source code changes).
 ## Routine
 
 **venv path** — All CLI calls require the full venv path. Do not rely on PATH
-activation (it doesn't persist across Bash calls). Use `.venv/Scripts/stata-pipeline-flow`
-on Windows or `.venv/bin/stata-pipeline-flow` on macOS/Linux.
+activation (it doesn't persist across Bash calls). Use `.venv/Scripts/data-pipeline-flow`
+on Windows or `.venv/bin/data-pipeline-flow` on macOS/Linux.
 
 Run all CLI steps sequentially in the main agent — do not delegate to subagents.
 
@@ -42,7 +42,7 @@ exists to avoid duplicates.
 **Step 2 — List candidate node IDs**
 
 ```bash
-.venv/Scripts/stata-pipeline-flow extract-edges \
+.venv/Scripts/data-pipeline-flow extract-edges \
   --project-root <path> \
   --config <path> \
   --output <project-root>/viewer_output/_edges_check.csv
@@ -79,7 +79,7 @@ Always include `note:` — without it, entries become unauditable after project 
 **Step 5 — Verify**
 
 ```bash
-.venv/Scripts/stata-pipeline-flow summary \
+.venv/Scripts/data-pipeline-flow summary \
   --project-root <path> \
   --config <path>
 ```
@@ -94,7 +94,7 @@ parser output — fix it by copying the ID verbatim from the edge CSV.
 **Step 6 — Optionally re-render**
 
 ```bash
-.venv/Scripts/stata-pipeline-flow render-image --project-root <path> --config <path> --format png --output <out>
+.venv/Scripts/data-pipeline-flow render-image --project-root <path> --config <path> --format png --output <out>
 ```
 
 

@@ -10,14 +10,14 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Callable
 
-from stata_pipeline_flow.config.schema import (
+from data_pipeline_flow.config.schema import (
     ClassificationConfig,
     ExclusionConfig,
     NormalizationConfig,
     ParserConfig,
 )
-from stata_pipeline_flow.model.entities import Diagnostic, Edge, GraphModel, Node
-from stata_pipeline_flow.parser.stata_extract import (
+from data_pipeline_flow.model.entities import Diagnostic, Edge, GraphModel, Node
+from data_pipeline_flow.parser.stata_extract import (
     ScriptParseResult,
     READ_COMMANDS as STATA_READ_COMMANDS,
     WRITE_COMMANDS as STATA_WRITE_COMMANDS,
@@ -25,9 +25,9 @@ from stata_pipeline_flow.parser.stata_extract import (
     _is_temporary,
     _add_version_family_diagnostics,
 )
-from stata_pipeline_flow.parser.python_extract import parse_python_file
-from stata_pipeline_flow.parser.r_extract import parse_r_file
-from stata_pipeline_flow.rules.exclusions import is_excluded
+from data_pipeline_flow.parser.python_extract import parse_python_file
+from data_pipeline_flow.parser.r_extract import parse_r_file
+from data_pipeline_flow.rules.exclusions import is_excluded
 
 # ---------------------------------------------------------------------------
 # Parser registry

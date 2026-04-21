@@ -1,10 +1,10 @@
 from argparse import Namespace
 from pathlib import Path
 
-from stata_pipeline_flow.cli.main import command_export_clusters
-from stata_pipeline_flow.config.export import build_cluster_export_document
-from stata_pipeline_flow.config.schema import AppConfig, ManualClusterConfig
-from stata_pipeline_flow.rules.pipeline import PipelineBuilder
+from data_pipeline_flow.cli.main import command_export_clusters
+from data_pipeline_flow.config.export import build_cluster_export_document
+from data_pipeline_flow.config.schema import AppConfig, ManualClusterConfig
+from data_pipeline_flow.rules.pipeline import PipelineBuilder
 
 
 

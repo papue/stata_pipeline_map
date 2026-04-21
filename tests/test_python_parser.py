@@ -7,8 +7,8 @@ import textwrap
 
 import pytest
 
-from stata_pipeline_flow.config.schema import ExclusionConfig, NormalizationConfig, ParserConfig
-from stata_pipeline_flow.parser.python_extract import parse_python_file
+from data_pipeline_flow.config.schema import ExclusionConfig, NormalizationConfig, ParserConfig
+from data_pipeline_flow.parser.python_extract import parse_python_file
 
 
 def _parse(code: str, *, project_root: Path | None = None) -> object:

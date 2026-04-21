@@ -3,9 +3,9 @@ from __future__ import annotations
 import difflib
 from collections import defaultdict
 
-from stata_pipeline_flow.config.schema import ManualClusterConfig
-from stata_pipeline_flow.model.entities import Cluster, Diagnostic, GraphModel
-from stata_pipeline_flow.rules.clustering import assign_artifact_clusters
+from data_pipeline_flow.config.schema import ManualClusterConfig
+from data_pipeline_flow.model.entities import Cluster, Diagnostic, GraphModel
+from data_pipeline_flow.rules.clustering import assign_artifact_clusters
 
 
 def apply_manual_clusters(graph: GraphModel, clusters: list[ManualClusterConfig]) -> GraphModel:

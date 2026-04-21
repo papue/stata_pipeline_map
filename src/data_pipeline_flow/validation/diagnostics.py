@@ -6,7 +6,7 @@ from pathlib import Path
 import json
 import os
 
-from stata_pipeline_flow.model.entities import Diagnostic, GraphModel
+from data_pipeline_flow.model.entities import Diagnostic, GraphModel
 
 SCRIPT_SUFFIXES = ('.do', '.py', '.r', '.R')
 KNOWN_ARTIFACT_ROLES = {'reference_input', 'deliverable', 'temporary', 'intermediate', 'generated_artifact', 'artifact', 'placeholder_artifact'}

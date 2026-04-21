@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from stata_pipeline_flow.wizard import normalize_config_destination, portable_path, resolve_user_path
+from data_pipeline_flow.wizard import normalize_config_destination, portable_path, resolve_user_path
 
 
 def test_normalize_config_destination_appends_filename_for_directory(tmp_path: Path):

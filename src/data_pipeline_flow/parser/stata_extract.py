@@ -7,10 +7,10 @@ import csv
 import itertools
 import re
 
-from stata_pipeline_flow.config.schema import ClassificationConfig, ExclusionConfig, NormalizationConfig, ParserConfig
-from stata_pipeline_flow.model.entities import Diagnostic, Edge, GraphModel, Node
-from stata_pipeline_flow.model.normalize import normalize_token, to_project_relative
-from stata_pipeline_flow.rules.exclusions import is_excluded
+from data_pipeline_flow.config.schema import ClassificationConfig, ExclusionConfig, NormalizationConfig, ParserConfig
+from data_pipeline_flow.model.entities import Diagnostic, Edge, GraphModel, Node
+from data_pipeline_flow.model.normalize import normalize_token, to_project_relative
+from data_pipeline_flow.rules.exclusions import is_excluded
 
 GLOBAL_RE = re.compile(r'^\s*global\s+(\w+)\s+(.+?)\s*$', re.I)
 LOCAL_RE = re.compile(r'^\s*local\s+(\w+)\s+(.+?)\s*$', re.I)

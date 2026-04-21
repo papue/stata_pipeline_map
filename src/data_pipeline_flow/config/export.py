@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from stata_pipeline_flow.model.entities import Cluster, GraphModel
+from data_pipeline_flow.model.entities import Cluster, GraphModel
 
 SCRIPT_NODE_TYPE = 'script'
 

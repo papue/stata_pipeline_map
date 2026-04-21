@@ -8,13 +8,13 @@ import sys
 from dataclasses import replace
 from pathlib import Path
 
-from stata_pipeline_flow.config.export import write_cluster_export
-from stata_pipeline_flow.config.schema import AppConfig, load_config, sanitize_config
-from stata_pipeline_flow.parser.stata_extract import write_edge_csv
-from stata_pipeline_flow.render.dot import render_dot
-from stata_pipeline_flow.render.json_snapshot import write_snapshot_json
-from stata_pipeline_flow.rules.pipeline import PipelineBuilder
-from stata_pipeline_flow.validation.diagnostics import run_basic_validation, write_validation_report
+from data_pipeline_flow.config.export import write_cluster_export
+from data_pipeline_flow.config.schema import AppConfig, load_config, sanitize_config
+from data_pipeline_flow.parser.stata_extract import write_edge_csv
+from data_pipeline_flow.render.dot import render_dot
+from data_pipeline_flow.render.json_snapshot import write_snapshot_json
+from data_pipeline_flow.rules.pipeline import PipelineBuilder
+from data_pipeline_flow.validation.diagnostics import run_basic_validation, write_validation_report
 
 
 def _diagnostic_count(graph, code: str) -> int:
@@ -264,7 +264,7 @@ def command_validate(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog='stata-pipeline-flow')
+    parser = argparse.ArgumentParser(prog='data-pipeline-flow')
     subparsers = parser.add_subparsers(dest='command', required=True)
 
     common = argparse.ArgumentParser(add_help=False)

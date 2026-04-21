@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from stata_pipeline_flow.config.schema import AppConfig
-from stata_pipeline_flow.render.dot import render_dot
-from stata_pipeline_flow.rules.pipeline import PipelineBuilder
+from data_pipeline_flow.config.schema import AppConfig
+from data_pipeline_flow.render.dot import render_dot
+from data_pipeline_flow.rules.pipeline import PipelineBuilder
 
 
 def test_linear_chain_in_same_folder_forms_single_cluster_and_renders_subgraph(tmp_path: Path) -> None:

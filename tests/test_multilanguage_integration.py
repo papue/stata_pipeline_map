@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from stata_pipeline_flow.config.schema import AppConfig
-from stata_pipeline_flow.rules.pipeline import PipelineBuilder
+from data_pipeline_flow.config.schema import AppConfig
+from data_pipeline_flow.rules.pipeline import PipelineBuilder
 
 
 _FIXTURE_DIR = Path(__file__).parent / "fixtures"

@@ -1,7 +1,7 @@
 ---
 name: pipeline-setup
 description: >
-  Installs stata-pipeline-flow for the first time: creates a Python venv,
+  Installs data-pipeline-flow for the first time: creates a Python venv,
   installs the package, verifies Graphviz, identifies the project root, and
   runs a smoke-test render-image. Use for: install, set up, first time, new
   project, getting started. Do NOT trigger for re-renders or ongoing pipeline tasks.
@@ -12,7 +12,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 ## Goal
 
-Get `stata-pipeline-flow` installed and producing its first pipeline image on
+Get `data-pipeline-flow` installed and producing its first pipeline image on
 a machine that does not yet have the tool configured. A successful run ends
 with a non-empty PNG on disk and a minimal config file in place.
 
@@ -61,7 +61,7 @@ A wrong root produces an empty graph with no error.
 
 Windows:
 ```bash
-.venv/Scripts/stata-pipeline-flow render-image \
+.venv/Scripts/data-pipeline-flow render-image \
   --project-root <project-root> \
   --format png \
   --output <project-root>/viewer_output/pipeline.png
@@ -69,7 +69,7 @@ Windows:
 
 macOS/Linux:
 ```bash
-.venv/bin/stata-pipeline-flow render-image \
+.venv/bin/data-pipeline-flow render-image \
   --project-root <project-root> \
   --format png \
   --output <project-root>/viewer_output/pipeline.png
@@ -103,8 +103,8 @@ State: venv location, Graphviz version, project root used, PNG path, config path
 
 ## Gotchas
 
-- **Wrong entry point** — Never use `python -m stata_pipeline_flow`. The entry
-  point is always `stata-pipeline-flow` (the installed script in `.venv/Scripts/`
+- **Wrong entry point** — Never use `python -m data_pipeline_flow`. The entry
+  point is always `data-pipeline-flow` (the installed script in `.venv/Scripts/`
   or `.venv/bin/`).
 
 - **Graphviz PATH on Windows** — Installers do not always add `dot` to PATH.

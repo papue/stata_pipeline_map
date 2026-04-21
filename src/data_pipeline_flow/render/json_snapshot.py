@@ -4,8 +4,8 @@ from dataclasses import asdict
 from pathlib import Path
 import json
 
-from stata_pipeline_flow.config.schema import DisplayConfig, LayoutConfig
-from stata_pipeline_flow.model.entities import Cluster, Edge, GraphModel, Node
+from data_pipeline_flow.config.schema import DisplayConfig, LayoutConfig
+from data_pipeline_flow.model.entities import Cluster, Edge, GraphModel, Node
 
 
 def _node_payload(node: Node) -> dict[str, object]:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from stata_pipeline_flow.config.schema import LayoutConfig
-from stata_pipeline_flow.model.entities import Diagnostic, GraphModel
+from data_pipeline_flow.config.schema import LayoutConfig
+from data_pipeline_flow.model.entities import Diagnostic, GraphModel
 
 _ALLOWED_RANKDIR = {'LR', 'TB'}
 _ALLOWED_UNCLUSTERED_ARTIFACTS_POSITION = {'auto', 'left', 'right', 'separate_lane'}

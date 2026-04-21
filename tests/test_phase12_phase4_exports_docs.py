@@ -3,9 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 
 from conftest import read_json, run_cli
-from stata_pipeline_flow.config.schema import load_config
-from stata_pipeline_flow.render.dot import render_dot
-from stata_pipeline_flow.rules.pipeline import PipelineBuilder
+from data_pipeline_flow.config.schema import load_config
+from data_pipeline_flow.render.dot import render_dot
+from data_pipeline_flow.rules.pipeline import PipelineBuilder
 
 
 def _write(path: Path, text: str) -> None:

@@ -6,7 +6,7 @@ import posixpath
 import re
 import sys
 
-from stata_pipeline_flow.config.schema import NormalizationConfig
+from data_pipeline_flow.config.schema import NormalizationConfig
 
 _WINDOWS = sys.platform == 'win32'
 

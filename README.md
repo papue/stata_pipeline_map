@@ -1,6 +1,6 @@
-# stata-pipeline-flow
+# data-pipeline-flow
 
-`stata-pipeline-flow` helps you understand a research project's data pipeline.
+`data-pipeline-flow` helps you understand a research project's data pipeline.
 
 It scans your `.do`, `.py`, and `.R` files and builds a pipeline map:
 - which scripts exist
@@ -117,7 +117,7 @@ py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
-stata-pipeline-flow summary --project-root example/project
+data-pipeline-flow summary --project-root example/project
 ```
 
 If PowerShell blocks activation, run this once in the current terminal and then activate again:
@@ -134,7 +134,7 @@ python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
-stata-pipeline-flow summary --project-root example/project
+data-pipeline-flow summary --project-root example/project
 ```
 
 If the `summary` command works, the installation is fine.
@@ -146,7 +146,7 @@ If the `summary` command works, the installation is fine.
 ### 1. Get a quick text overview
 
 ```bash
-stata-pipeline-flow summary --project-root example/project
+data-pipeline-flow summary --project-root example/project
 ```
 
 Use `summary` when you want a quick terminal overview.
@@ -160,7 +160,7 @@ It tells you:
 ### 2. Create a graph file
 
 ```bash
-stata-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
+data-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
 ```
 
 Use `render-dot` when you want the intermediate Graphviz `.dot` file.
@@ -173,7 +173,7 @@ A `.dot` file is a graph description. It is useful when:
 ### 3. Create a final image directly
 
 ```bash
-stata-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
+data-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
 ```
 
 Use `render-image` when you want the final figure directly from the CLI.
@@ -186,7 +186,7 @@ Supported formats:
 If you also want to keep the `.dot` file:
 
 ```bash
-stata-pipeline-flow render-image \
+data-pipeline-flow render-image \
   --project-root example/project \
   --format svg \
   --output example/output/pipeline_overview.svg \
@@ -196,7 +196,7 @@ stata-pipeline-flow render-image \
 ### 4. Write a validation report
 
 ```bash
-stata-pipeline-flow validate --project-root example/project --output example/output/validation_report.json
+data-pipeline-flow validate --project-root example/project --output example/output/validation_report.json
 ```
 
 Use `validate` when you want a structured machine-readable diagnostics report.
@@ -263,7 +263,7 @@ example/configs/config_example.yaml
 Run commands with that config like this:
 
 ```bash
-stata-pipeline-flow render-image \
+data-pipeline-flow render-image \
   --project-root example/project \
   --config example/configs/config_example.yaml \
   --format svg \
@@ -352,7 +352,7 @@ The tool can create image files such as PNG, SVG, and PDF through the `render-im
 Example:
 
 ```powershell
-stata-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
+data-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
 ```
 
 This command needs **Graphviz** to be installed, because the actual image rendering uses Graphviz's `dot` program behind the scenes.
@@ -394,7 +394,7 @@ dot -V
 Then retry:
 
 ```powershell
-stata-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
+data-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
 ```
 
 ### Windows: permanent fix
@@ -416,7 +416,7 @@ Then:
 You can still create the DOT file and render it manually with the full Graphviz path:
 
 ```powershell
-stata-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
+data-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
 & "C:\Program Files\Graphviz\bin\dot.exe" -Tpng "example\output\pipeline_overview.dot" -o "example\output\pipeline_overview.png"
 ```
 
@@ -425,7 +425,7 @@ stata-pipeline-flow render-dot --project-root example/project --output example/o
 You can always generate the `.dot` file first:
 
 ```powershell
-stata-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
+data-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
 ```
 
 A `.dot` file is the graph description. It is useful for checking the graph structure even before you render a final image.
@@ -486,8 +486,8 @@ Typical loop:
 
 ```bash
 python -m pytest -q
-stata-pipeline-flow summary --project-root example/project
-stata-pipeline-flow render-image --project-root example/project --format svg --output example/output/dev_check.svg
+data-pipeline-flow summary --project-root example/project
+data-pipeline-flow render-image --project-root example/project --format svg --output example/output/dev_check.svg
 ```
 
 If you want more detail after the README, continue with:

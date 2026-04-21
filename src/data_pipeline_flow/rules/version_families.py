@@ -4,8 +4,8 @@ from collections import defaultdict
 from pathlib import Path
 import re
 
-from stata_pipeline_flow.config.schema import VersionFamiliesConfig
-from stata_pipeline_flow.model.entities import Diagnostic, Edge, GraphModel
+from data_pipeline_flow.config.schema import VersionFamiliesConfig
+from data_pipeline_flow.model.entities import Diagnostic, Edge, GraphModel
 
 _VERSION_TOKEN_RE = re.compile(r'(?i)(?:_v\d+|_(?:qc|pp|final|draft))(?=\.[^.]+$)')
 _NUMERIC_VERSION_RE = re.compile(r'(?i)_v(\d+)(?=\.[^.]+$)')

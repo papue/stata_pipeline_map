@@ -10,14 +10,14 @@ from pathlib import Path
 
 import pytest
 
-from stata_pipeline_flow.config.schema import (
+from data_pipeline_flow.config.schema import (
     AppConfig,
     ManualClusterConfig,
     ManualEdgeConfig,
     _load_manual_edges,
     load_config,
 )
-from stata_pipeline_flow.rules.pipeline import PipelineBuilder
+from data_pipeline_flow.rules.pipeline import PipelineBuilder
 
 
 # ---------------------------------------------------------------------------
