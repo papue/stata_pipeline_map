@@ -2,13 +2,14 @@ Project root: <PROJECT_ROOT>
 Nodes: 8 (scripts=3, artifacts=5)
 Edges: 7
 Clusters: 2
-Diagnostics: 8
+Diagnostics: 9
 Config effects:
 - View: overview
 - Excluded paths: 2
 - Exclusion presets: generated_outputs,archival_folders,python_runtime
 - [warning] absolute_path_usage: Absolute path detected in global defined at 01_data/02_scripts/01_build.do:1
 - [info] excluded_reference: Excluded path omitted from graph at 01_data/02_scripts/02_prepare.do:2 (append): archive/01_input/legacy.csv
+- [info] unconsumed_output: Produced artifact is not consumed downstream: 02_analysis/03_outputs/model_output.dta
 - [info] manual_clusters_applied: Applied 2 manual cluster definitions.
 - [info] excluded_files: Excluded 2 files during discovery.
 - [info] project_scan: Project discovery completed.

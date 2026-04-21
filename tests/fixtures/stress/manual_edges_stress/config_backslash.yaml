@@ -1,0 +1,9 @@
+manual_edges:
+  - source: "writer.do"
+    target: "reader.do"
+    label: "backslash test"
+    on_missing: warn
+  - source: "data\\output.dta"
+    target: "reader.do"
+    label: "backslash in path"
+    on_missing: warn

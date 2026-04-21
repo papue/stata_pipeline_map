@@ -17,7 +17,7 @@ def _family_key(path: str) -> str | None:
     normalized_name = _VERSION_TOKEN_RE.sub('', file_path.name)
     if normalized_name == file_path.name:
         return None
-    return str(Path(file_path.parent) / normalized_name)
+    return (str(Path(file_path.parent) / normalized_name)).replace('\\', '/')
 
 
 def _choose_latest_modified(members: list[str], project_root: Path) -> str | None:

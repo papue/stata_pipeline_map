@@ -1,0 +1,2 @@
+manual_edges:
+  - "writer.do -> reader.do"

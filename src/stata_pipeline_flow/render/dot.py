@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections import defaultdict
 from pathlib import PurePosixPath
 
 from stata_pipeline_flow.config.schema import DisplayConfig, LayoutConfig
@@ -10,6 +9,7 @@ _BASE_NODE_STYLE = {
     'script': 'shape=box, style="rounded,filled", margin="0.10,0.06"',
     'artifact': 'shape=ellipse',
     'artifact_placeholder': 'shape=ellipse, style="dashed"',
+    'script_placeholder': 'shape=box, style="rounded,dashed,filled", margin="0.10,0.06"',
 }
 
 _THEME_BUNDLES = {
@@ -18,7 +18,11 @@ _THEME_BUNDLES = {
         'node': 'fontsize=10',
         'edge': 'fontsize=9',
         'cluster_style': 'rounded',
-        'script_fill': 'fillcolor="#EEF3FF"',
+        'cluster_bgcolor': 'transparent',
+        'cluster_color': '#4A5568',
+        'script_fill':  'fillcolor="#EEF3FF"',  # stata (default)
+        'python_fill':  'fillcolor="#EEFAF0"',  # light green
+        'r_fill':       'fillcolor="#FFF0EE"',  # light salmon
         'deliverable_fill': 'fillcolor="#FFF3D6"',
     },
     'modern-dark': {
@@ -26,7 +30,11 @@ _THEME_BUNDLES = {
         'node': 'fontsize=10, fontcolor="#F5F5F5", color="#BFC7D5"',
         'edge': 'fontsize=9, fontcolor="#E5E7EB", color="#9CA3AF"',
         'cluster_style': 'rounded',
-        'script_fill': 'fillcolor="#2F3B52"',
+        'cluster_bgcolor': 'transparent',
+        'cluster_color': '#BFC7D5',
+        'script_fill':  'fillcolor="#2F3B52"',  # stata (default)
+        'python_fill':  'fillcolor="#1E3A2F"',  # dark green
+        'r_fill':       'fillcolor="#3A2020"',  # dark salmon
         'deliverable_fill': 'fillcolor="#5A4728"',
     },
     'warm-neutral': {
@@ -34,7 +42,11 @@ _THEME_BUNDLES = {
         'node': 'fontsize=10',
         'edge': 'fontsize=9',
         'cluster_style': 'rounded',
-        'script_fill': 'fillcolor="#F5EBDD"',
+        'cluster_bgcolor': 'transparent',
+        'cluster_color': '#7A6555',
+        'script_fill':  'fillcolor="#F5EBDD"',  # stata (default)
+        'python_fill':  'fillcolor="#E8F5E8"',  # warm green
+        'r_fill':       'fillcolor="#F5E8E8"',  # warm salmon
         'deliverable_fill': 'fillcolor="#F7DDBA"',
     },
 }
@@ -49,6 +61,10 @@ def _label_source(node: Node) -> str:
 
 
 def _format_label(node: Node, display: DisplayConfig) -> str:
+    # Bug 3: technical view always shows the raw node ID.
+    if _view_mode(display) == 'technical':
+        return node.node_id
+
     value = _label_source(node)
     path = PurePosixPath(value)
 
@@ -74,8 +90,10 @@ def _format_label(node: Node, display: DisplayConfig) -> str:
 
 def _node_attr_string(node: Node, display: DisplayConfig, theme: dict[str, str]) -> str:
     attrs: list[str] = [_BASE_NODE_STYLE.get(node.node_type, 'shape=ellipse')]
-    if node.node_type == 'script':
-        attrs.append(theme['script_fill'])
+    if node.node_type in {'script', 'script_placeholder'}:
+        lang = node.metadata.get('language', 'stata')
+        fill_key = f'{lang}_fill' if f'{lang}_fill' in theme else 'script_fill'
+        attrs.append(theme[fill_key])
     if node.role == 'deliverable' and node.node_type == 'artifact':
         attrs.append('style="filled"')
         attrs.append(theme['deliverable_fill'])
@@ -85,14 +103,13 @@ def _node_attr_string(node: Node, display: DisplayConfig, theme: dict[str, str])
             attrs.append('penwidth=2')
         else:
             attrs.append('style="dashed"')
-    if node.node_type == 'artifact_placeholder':
+    if node.node_type in {'artifact_placeholder', 'script_placeholder'}:
         if display.placeholder_style == 'filled_dashed':
             attrs.append('style="dashed,filled"')
             attrs.append(theme['deliverable_fill'])
         elif display.placeholder_style == 'bold':
             attrs.append('penwidth=2')
-        else:
-            attrs.append('style="dashed"')
+        # default dashed style is already set in _BASE_NODE_STYLE for both placeholder types
     attrs.append(f'label="{_format_label(node, display)}"')
     return ', '.join(attrs)
 
@@ -108,18 +125,83 @@ def _cluster_summary_attr_string(cluster: Cluster, theme: dict[str, str]) -> str
     ])
 
 
+_XML_MAP = {'&': '&amp;', '<': '&lt;', '>': '&gt;'}
+
+
+def _xml_escape(text: str) -> str:
+    return ''.join(
+        _XML_MAP[c] if c in _XML_MAP else (c if ord(c) < 128 else f'&#{ord(c)};')
+        for c in text
+    )
+
+
+def _render_cluster_block(
+    cluster: Cluster,
+    graph: GraphModel,
+    visible_nodes: set[str],
+    display: DisplayConfig,
+    theme: dict[str, str],
+    clustered_node_ids: set[str],
+    rendered_aliases: dict[str, str],
+    indent_level: int,
+) -> list[str]:
+    """Render one cluster as a subgraph block, recursively rendering child clusters if meta."""
+    indent = '  ' * indent_level
+    cid = cluster.cluster_id
+    raw_label = cluster.label or cid
+    xml_label = _xml_escape(raw_label)
+
+    lines: list[str] = []
+    lines.append(f'{indent}subgraph "cluster_{cid}" {{')
+    lines.append(f'{indent}  label=<<font point-size="11"><b>{xml_label}</b></font>>;')
+    lines.append(f'{indent}  style="{theme["cluster_style"]}";')
+    lines.append(f'{indent}  color="{theme["cluster_color"]}";')
+    lines.append(f'{indent}  penwidth=2.0;')
+
+    if cluster.member_cluster_ids:
+        # Meta-cluster: recursively render child clusters inside this subgraph
+        for child_id in cluster.member_cluster_ids:
+            if child_id in graph.clusters:
+                child_cluster = graph.clusters[child_id]
+                lines.extend(_render_cluster_block(
+                    child_cluster, graph, visible_nodes, display, theme,
+                    clustered_node_ids, rendered_aliases,
+                    indent_level + 1,
+                ))
+    else:
+        # Leaf cluster: render individual nodes
+        member_ids = [
+            node_id for node_id in cluster.node_ids
+            if node_id in graph.nodes and node_id in visible_nodes
+        ]
+        clustered_node_ids.update(member_ids)
+        for node_id in sorted(member_ids):
+            node = graph.nodes[node_id]
+            lines.append(f'{indent}  "{node.node_id}" [{_node_attr_string(node, display, theme)}];')
+            rendered_aliases[node_id] = node.node_id
+
+    lines.append(f'{indent}}}')
+    return lines
+
+
 def _resolve_theme(name: str) -> dict[str, str]:
     return _THEME_BUNDLES.get(name, _THEME_BUNDLES['modern-light'])
 
 
-def _should_show_node(node: Node, display: DisplayConfig) -> bool:
+def _should_show_node(node: Node, display: DisplayConfig, terminal_node_ids: set[str] | None = None) -> bool:
     view = _view_mode(display)
+    is_script_type = node.node_type in {'script', 'script_placeholder'}
     if view == 'deliverables':
-        return node.node_type == 'script' or node.role in {'deliverable', 'placeholder_artifact', 'reference_input'}
+        return is_script_type or node.role in {'deliverable', 'placeholder_artifact', 'reference_input', 'placeholder_script'}
     if view == 'scripts_only':
-        return node.node_type == 'script'
+        return is_script_type
     if view == 'stage_overview':
-        return node.node_type == 'script' and not node.cluster_id
+        return is_script_type and not node.cluster_id
+    # Bug 1 fix: hide terminal output nodes when show_terminal_outputs is False.
+    # A "terminal output" is an artifact node with no outgoing edges.
+    if not display.show_terminal_outputs and terminal_node_ids is not None:
+        if node.node_id in terminal_node_ids:
+            return False
     return True
 
 
@@ -135,16 +217,26 @@ def render_dot(
     rankdir = graph.metadata.get('rankdir', layout.rankdir or 'LR')
     view = _view_mode(display)
     stage_overview = view == 'stage_overview'
+    technical_view = view == 'technical'
 
     lines = [
         'digraph pipeline {',
         f'  rankdir={rankdir};',
-        f'  graph [{theme["graph"]}];',
+        f'  graph [{theme["graph"]}, newrank=true];',
         f'  node [{theme["node"]}];',
         f'  edge [{theme["edge"]}];',
     ]
 
-    visible_nodes = {node.node_id for node in graph.sorted_nodes() if _should_show_node(node, display)}
+    # Bug 1: compute terminal output node IDs (artifacts with no outgoing edges).
+    nodes_with_outgoing: set[str] = {edge.source for edge in graph.edges}
+    terminal_node_ids: set[str] = {
+        node.node_id
+        for node in graph.nodes.values()
+        if node.node_type in {'artifact', 'artifact_placeholder'}
+        and node.node_id not in nodes_with_outgoing
+    }
+
+    visible_nodes = {node.node_id for node in graph.sorted_nodes() if _should_show_node(node, display, terminal_node_ids)}
     clustered_node_ids: set[str] = set()
     collapsed_cluster_ids = {
         cluster.cluster_id
@@ -152,53 +244,55 @@ def render_dot(
         if cluster.metadata.get('collapse') == 'true' or stage_overview
     }
     rendered_aliases: dict[str, str] = {}
-    lane_groups: dict[str, list[str]] = defaultdict(list)
+
+    # Build set of clusters that are children of a meta-cluster — they will
+    # be rendered nested inside their parent, not at the top level.
+    child_cluster_ids: set[str] = set()
+    for _c in graph.clusters.values():
+        for _cid in _c.member_cluster_ids:
+            child_cluster_ids.add(_cid)
 
     for cluster in graph.sorted_clusters():
-        member_ids = [node_id for node_id in cluster.node_ids if node_id in graph.nodes]
-        if not member_ids:
+        # Child clusters are rendered recursively inside their parent — skip here.
+        if cluster.cluster_id in child_cluster_ids:
             continue
+
+        member_ids = [node_id for node_id in cluster.node_ids if node_id in graph.nodes]
+        # For meta-clusters, check whether any descendant leaf nodes exist.
+        is_meta = bool(cluster.member_cluster_ids)
 
         if stage_overview:
-            member_ids = [node_id for node_id in member_ids if graph.nodes[node_id].node_type == 'script']
+            # stage_overview only applies to leaf clusters (collapse to summary node).
+            if not is_meta:
+                member_ids = [node_id for node_id in member_ids if graph.nodes[node_id].node_type in {'script', 'script_placeholder'}]
+                if not member_ids:
+                    continue
+                summary_id = f'cluster::{cluster.cluster_id}'
+                lines.append(f'  "{summary_id}" [{_cluster_summary_attr_string(cluster, theme)}];')
+                for node_id in member_ids:
+                    rendered_aliases[node_id] = summary_id
+                clustered_node_ids.update(member_ids)
+            continue
+
+        if not is_meta:
+            # Leaf cluster: filter to visible nodes.
+            member_ids = [node_id for node_id in member_ids if node_id in visible_nodes]
             if not member_ids:
                 continue
-            summary_id = f'cluster::{cluster.cluster_id}'
-            lines.append(f'  "{summary_id}" [{_cluster_summary_attr_string(cluster, theme)}];')
-            for node_id in member_ids:
-                rendered_aliases[node_id] = summary_id
-            clustered_node_ids.update(member_ids)
-            lane = cluster.metadata.get('lane')
-            if lane:
-                lane_groups[lane].append(summary_id)
-            continue
+            if cluster.cluster_id in collapsed_cluster_ids:
+                summary_id = f'cluster::{cluster.cluster_id}'
+                lines.append(f'  "{summary_id}" [{_cluster_summary_attr_string(cluster, theme)}];')
+                for node_id in member_ids:
+                    rendered_aliases[node_id] = summary_id
+                clustered_node_ids.update(member_ids)
+                continue
 
-        member_ids = [node_id for node_id in member_ids if node_id in visible_nodes]
-        if not member_ids:
-            continue
-        lane = cluster.metadata.get('lane')
-        if cluster.cluster_id in collapsed_cluster_ids:
-            summary_id = f'cluster::{cluster.cluster_id}'
-            lines.append(f'  "{summary_id}" [{_cluster_summary_attr_string(cluster, theme)}];')
-            for node_id in member_ids:
-                rendered_aliases[node_id] = summary_id
-            clustered_node_ids.update(member_ids)
-            if lane:
-                lane_groups[lane].append(summary_id)
-            continue
-
-        clustered_node_ids.update(member_ids)
-        lines.append(f'  subgraph "{cluster.cluster_id}" {{')
-        label = cluster.label or cluster.cluster_id
-        lines.append(f'    label="{label}";')
-        lines.append(f'    style="{theme["cluster_style"]}";')
-        for node_id in sorted(member_ids):
-            node = graph.nodes[node_id]
-            lines.append(f'    "{node.node_id}" [{_node_attr_string(node, display, theme)}];')
-            rendered_aliases[node_id] = node.node_id
-        lines.append('  }')
-        if lane:
-            lane_groups[lane].extend(sorted(member_ids))
+        # Non-collapsed cluster (leaf or meta): render as subgraph block.
+        lines.extend(_render_cluster_block(
+            cluster, graph, visible_nodes, display, theme,
+            clustered_node_ids, rendered_aliases,
+            indent_level=1,
+        ))
 
     unclustered_artifacts: list[str] = []
     for node in graph.sorted_nodes():
@@ -206,24 +300,8 @@ def render_dot(
             continue
         lines.append(f'  "{node.node_id}" [{_node_attr_string(node, display, theme)}];')
         rendered_aliases[node.node_id] = node.node_id
-        if node.node_type != 'script':
+        if node.node_type not in {'script', 'script_placeholder'}:
             unclustered_artifacts.append(node.node_id)
-
-    for lane, node_ids in sorted(lane_groups.items()):
-        unique_node_ids = []
-        seen: set[str] = set()
-        for node_id in node_ids:
-            if node_id in seen:
-                continue
-            seen.add(node_id)
-            unique_node_ids.append(node_id)
-        if len(unique_node_ids) < 2:
-            continue
-        lines.append(f'  subgraph "lane::{lane}" {{')
-        lines.append('    rank="same";')
-        for node_id in unique_node_ids:
-            lines.append(f'    "{node_id}";')
-        lines.append('  }')
 
     artifact_position = graph.metadata.get('unclustered_artifacts_position', layout.unclustered_artifacts_position or 'auto')
     if unclustered_artifacts and artifact_position in {'left', 'right', 'separate_lane'}:
@@ -238,11 +316,14 @@ def render_dot(
             lines.append(f'    "{node_id}";')
         lines.append('  }')
 
-    effective_edge_labels = show_edge_labels
+    # Bug 3: technical view forces all edge labels on.
+    effective_edge_labels = show_edge_labels or technical_view
     if display.edge_label_mode in {'show', 'operation'}:
         effective_edge_labels = True
-    elif display.edge_label_mode == 'hidden':
+    elif display.edge_label_mode == 'hidden' and not technical_view:
         effective_edge_labels = False
+    # Bug 2: operation mode uses edge.operation instead of edge.visible_label.
+    operation_labels_only = display.edge_label_mode == 'operation' and not technical_view
 
     bridge_edges: set[tuple[str, str]] = set()
     aliased_node_ids = set(rendered_aliases)
@@ -261,7 +342,7 @@ def render_dot(
                     bridge_edges.add((source_id, target_id))
 
     for node in graph.sorted_nodes():
-        if node.node_type == 'script':
+        if node.node_type in {'script', 'script_placeholder'}:
             continue
         incoming_aliases: set[str] = set()
         outgoing_aliases: set[str] = set()
@@ -288,16 +369,26 @@ def render_dot(
             continue
         source_id = rendered_aliases[edge.source]
         target_id = rendered_aliases[edge.target]
-        if source_id == target_id:
-            continue
-        edge_label = edge.visible_label if effective_edge_labels and edge.visible_label else ''
+        # Bug 4: self-loop edges (source == target after alias resolution) are now emitted.
+        is_self_loop = source_id == target_id
+        # Bug 2: operation mode shows only the operation type, not the full visible_label.
+        if effective_edge_labels:
+            if operation_labels_only:
+                edge_label = edge.operation or ''
+            else:
+                edge_label = edge.visible_label or ''
+        else:
+            edge_label = ''
+        # For self-loops, use the raw node_id pair as dedupe key (don't suppress duplicates across aliases).
         dedupe_key = (source_id, target_id, edge_label)
         if dedupe_key in emitted_edges:
             continue
         emitted_edges.add(dedupe_key)
         attrs = []
         if edge_label:
-            attrs.append(f'label="{edge_label}"')
+            attrs.append(f'label="{_xml_escape(edge_label)}"')
+        if is_self_loop:
+            attrs.append('comment="self-loop"')
         attr_block = f' [{", ".join(attrs)}]' if attrs else ''
         lines.append(f'  "{source_id}" -> "{target_id}"{attr_block};')
 

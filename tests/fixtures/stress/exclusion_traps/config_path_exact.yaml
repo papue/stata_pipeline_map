@@ -1,0 +1,3 @@
+exclusions:
+  paths:
+    - "01_data/raw"

@@ -154,7 +154,7 @@ def test_validate_cli_matches_golden_report(regression_project_root: Path) -> No
     )
 
     assert result.returncode == 0, result.stderr
-    assert 'Diagnostics: 8' in result.stdout
+    assert 'Diagnostics: 9' in result.stdout
     report = read_json(output_path)
     report['project_root'] = '<PROJECT_ROOT>'
     assert report == read_json(GOLDEN_ROOT / 'validation_report.json')

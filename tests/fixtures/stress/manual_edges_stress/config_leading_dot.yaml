@@ -1,0 +1,5 @@
+manual_edges:
+  - source: "./writer.do"
+    target: "./reader.do"
+    label: "leading dot"
+    on_missing: warn

@@ -1,0 +1,3 @@
+parser:
+  version_families:
+    mode: prefer_highest_numeric

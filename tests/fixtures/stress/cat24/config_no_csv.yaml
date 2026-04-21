@@ -1,0 +1,18 @@
+project_root: .
+display:
+  show_temporary_outputs: true
+classification:
+  deliverable_extensions:
+    - .xlsx
+    - .pdf
+    - .png
+    - .svg
+    - .docx
+    - .tex
+    - .ster
+  temporary_name_patterns:
+    - _tmp
+    - _temp
+    - _scratch
+    - temp_
+    - tmp_

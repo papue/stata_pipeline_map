@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import difflib
 from collections import defaultdict
 
 from stata_pipeline_flow.config.schema import ManualClusterConfig
@@ -44,8 +45,6 @@ def apply_manual_clusters(graph: GraphModel, clusters: list[ManualClusterConfig]
             cluster.metadata['order'] = str(cluster_config.order)
         elif 'order' not in cluster.metadata:
             cluster.metadata['order'] = str(order)
-        if cluster_config.lane:
-            cluster.metadata['lane'] = cluster_config.lane
         if cluster_config.collapse:
             cluster.metadata['collapse'] = 'true'
         elif 'collapse' not in cluster.metadata:
@@ -54,11 +53,13 @@ def apply_manual_clusters(graph: GraphModel, clusters: list[ManualClusterConfig]
         for member in cluster_config.members:
             node = graph.nodes.get(member)
             if node is None:
+                close = difflib.get_close_matches(member, list(graph.nodes.keys()), n=1, cutoff=0.6)
+                hint = f' (did you mean: {close[0]}?)' if close else ''
                 graph.add_diagnostic(
                     Diagnostic(
                         level='warning',
                         code='cluster_member_not_found',
-                        message=f'Manual cluster member was not found in the graph: {member}',
+                        message=f'Manual cluster member was not found in the graph: {member}{hint}',
                         payload={'cluster_id': cluster_id, 'member': member},
                     )
                 )
@@ -70,6 +71,29 @@ def apply_manual_clusters(graph: GraphModel, clusters: list[ManualClusterConfig]
     _prune_empty_clusters(graph)
     assign_artifact_clusters(graph, protected_node_ids=configured_nodes)
     _prune_empty_clusters(graph)
+
+    # Second pass: apply meta-clusters (clusters whose members are other cluster IDs)
+    for cluster_config in clusters:
+        if not cluster_config.member_cluster_ids:
+            continue
+        cluster_id = cluster_config.cluster_id.strip()
+        if not cluster_id:
+            continue
+        cluster = graph.clusters.get(cluster_id)
+        if cluster is None:
+            cluster = Cluster(cluster_id=cluster_id)
+            graph.add_cluster(cluster)
+        if cluster_config.label is not None:
+            cluster.label = cluster_config.label
+        elif cluster.label is None:
+            cluster.label = cluster_id
+        cluster.metadata['kind'] = 'manual'
+        cluster.metadata['meta_cluster'] = 'true'
+        if cluster_config.order is not None:
+            cluster.metadata['order'] = str(cluster_config.order)
+        elif 'order' not in cluster.metadata:
+            cluster.metadata['order'] = str(len(graph.clusters))
+        cluster.member_cluster_ids = list(cluster_config.member_cluster_ids)
 
     graph.add_diagnostic(
         Diagnostic(
@@ -89,12 +113,35 @@ def _validate_manual_clusters(graph: GraphModel, clusters: list[ManualClusterCon
     cluster_id_entries: dict[str, list[int]] = defaultdict(list)
     member_to_cluster_ids: dict[str, list[str]] = defaultdict(list)
 
+    # Collect all defined cluster IDs for cross-reference validation
+    all_defined_cluster_ids: set[str] = {c.cluster_id.strip() for c in clusters if c.cluster_id.strip()}
+
     for index, cluster_config in enumerate(clusters, start=1):
         cluster_id = cluster_config.cluster_id.strip()
         if cluster_id:
             cluster_id_entries[cluster_id].append(index)
 
-        if not cluster_config.members:
+        has_members = bool(cluster_config.members)
+        has_member_cluster_ids = bool(cluster_config.member_cluster_ids)
+
+        # Mutual exclusivity: members and member_cluster_ids cannot both be set
+        if has_members and has_member_cluster_ids:
+            graph.add_diagnostic(
+                Diagnostic(
+                    level='warning',
+                    code='invalid_meta_cluster',
+                    message=(
+                        f'Manual cluster "{cluster_id or f"entry #{index}"}" has both "members" and '
+                        '"member_cluster_ids" set. These are mutually exclusive; "member_cluster_ids" will be used.'
+                    ),
+                    payload={
+                        'cluster_id': cluster_id,
+                        'entry_index': str(index),
+                    },
+                )
+            )
+
+        if not has_members and not has_member_cluster_ids:
             graph.add_diagnostic(
                 Diagnostic(
                     level='warning',
@@ -109,6 +156,30 @@ def _validate_manual_clusters(graph: GraphModel, clusters: list[ManualClusterCon
 
         for member in cluster_config.members:
             member_to_cluster_ids[member].append(cluster_id)
+
+        # Validate meta-cluster references
+        for ref_id in cluster_config.member_cluster_ids:
+            if ref_id == cluster_id:
+                graph.add_diagnostic(
+                    Diagnostic(
+                        level='warning',
+                        code='meta_cluster_self_reference',
+                        message=f'Meta-cluster "{cluster_id}" references itself in member_cluster_ids.',
+                        payload={'cluster_id': cluster_id, 'ref_id': ref_id},
+                    )
+                )
+            elif ref_id not in all_defined_cluster_ids:
+                graph.add_diagnostic(
+                    Diagnostic(
+                        level='warning',
+                        code='meta_cluster_unknown_ref',
+                        message=(
+                            f'Meta-cluster "{cluster_id}" references cluster "{ref_id}" '
+                            'which is not defined in the manual cluster config.'
+                        ),
+                        payload={'cluster_id': cluster_id, 'ref_id': ref_id},
+                    )
+                )
 
     for cluster_id, entry_indexes in sorted(cluster_id_entries.items()):
         if len(entry_indexes) < 2:
@@ -150,6 +221,52 @@ def _validate_manual_clusters(graph: GraphModel, clusters: list[ManualClusterCon
             )
         )
 
+    # Detect cycles in meta-cluster member_cluster_ids references
+    adjacency: dict[str, list[str]] = {
+        c.cluster_id.strip(): list(c.member_cluster_ids)
+        for c in clusters
+        if c.cluster_id.strip() and c.member_cluster_ids
+    }
+    reported_cycles: set[frozenset[str]] = set()
+    for start in adjacency:
+        path: list[str] = []
+        visited_stack: set[str] = set()
+
+        def _dfs(node: str) -> None:
+            if node in visited_stack:
+                # Found a cycle; extract the cycle portion
+                cycle_start = path.index(node)
+                cycle = path[cycle_start:]
+                cycle_key = frozenset(cycle)
+                if cycle_key not in reported_cycles:
+                    reported_cycles.add(cycle_key)
+                    cycle_path = ' -> '.join(cycle + [node])
+                    graph.add_diagnostic(
+                        Diagnostic(
+                            level='warning',
+                            code='meta_cluster_cycle',
+                            message=(
+                                f'Cycle detected in meta-cluster member_cluster_ids: {cycle_path}. '
+                                'Affected clusters may be empty.'
+                            ),
+                            payload={
+                                'cycle': cycle_path,
+                                'cluster_ids': '|'.join(sorted(cycle)),
+                            },
+                        )
+                    )
+                return
+            if node not in adjacency:
+                return
+            visited_stack.add(node)
+            path.append(node)
+            for neighbour in adjacency[node]:
+                _dfs(neighbour)
+            path.pop()
+            visited_stack.discard(node)
+
+        _dfs(start)
+
 
 def _assign_node_to_cluster(graph: GraphModel, node_id: str, cluster_id: str) -> None:
     node = graph.nodes[node_id]
@@ -179,7 +296,7 @@ def _prune_empty_clusters(graph: GraphModel) -> None:
     empty_cluster_ids = [
         cluster_id
         for cluster_id, cluster in graph.clusters.items()
-        if not cluster.node_ids
+        if not cluster.node_ids and not cluster.member_cluster_ids
     ]
     for cluster_id in empty_cluster_ids:
         graph.clusters.pop(cluster_id, None)

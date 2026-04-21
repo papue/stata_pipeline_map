@@ -1,0 +1,5 @@
+manual_edges:
+  - source: "writer.do"
+    target: "nonexistent.do"
+    label: "bad on_missing"
+    on_missing: error

@@ -38,6 +38,7 @@ class Cluster:
     cluster_id: str
     label: str | None = None
     node_ids: list[str] = field(default_factory=list)
+    member_cluster_ids: list[str] = field(default_factory=list)  # for meta-clusters
     metadata: dict[str, str] = field(default_factory=dict)
 
 
@@ -73,11 +74,9 @@ class GraphModel:
             except ValueError:
                 return fallback
 
-        def cluster_sort_key(cluster: Cluster) -> tuple[int, str, int, str]:
-            lane_sort = _safe_int(cluster.metadata.get('lane_sort'), 1_000_000)
-            lane_value = cluster.metadata.get('lane', '~')
+        def cluster_sort_key(cluster: Cluster) -> tuple[int, str]:
             order = _safe_int(cluster.metadata.get('order'), 1_000_000)
-            return lane_sort, lane_value, order, cluster.cluster_id
+            return order, cluster.cluster_id
 
         return sorted(self.clusters.values(), key=cluster_sort_key)
 

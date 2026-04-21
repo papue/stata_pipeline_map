@@ -4,8 +4,11 @@ from dataclasses import dataclass
 from pathlib import Path
 import posixpath
 import re
+import sys
 
 from stata_pipeline_flow.config.schema import NormalizationConfig
+
+_WINDOWS = sys.platform == 'win32'
 
 WINDOWS_ABS_RE = re.compile(r'^[A-Za-z]:[\\/]')
 
@@ -95,6 +98,12 @@ def _infer_existing_project_suffix(project_root: Path, raw: str) -> str | None:
     return None
 
 
+def _case_fold(path: str) -> str:
+    """On Windows, lower-case the path so that different casings of the same
+    file collapse to a single node ID (e.g. Data/Cohort.DTA == data/cohort.dta)."""
+    return path.lower() if _WINDOWS else path
+
+
 def to_project_relative(project_root: Path, candidate: str | Path, config: NormalizationConfig | None = None) -> tuple[str, bool]:
     config = config or NormalizationConfig()
     raw = normalize_token(str(candidate))
@@ -106,28 +115,28 @@ def to_project_relative(project_root: Path, candidate: str | Path, config: Norma
         if raw == source_norm or raw.startswith(f'{source_norm}/'):
             suffix = raw[len(source_norm):].lstrip('/')
             aliased = _join_relative(target_norm, suffix, strip_leading_dot=config.strip_leading_dot)
-            return aliased, was_absolute
+            return _case_fold(aliased), was_absolute
 
     project_root_norm = normalize_token(str(project_root.resolve())).rstrip('/')
     if raw == project_root_norm or raw.startswith(f'{project_root_norm}/'):
         suffix = raw[len(project_root_norm):].lstrip('/')
-        return _join_relative('.', suffix, strip_leading_dot=config.strip_leading_dot), was_absolute
+        return _case_fold(_join_relative('.', suffix, strip_leading_dot=config.strip_leading_dot)), was_absolute
 
     project_root_name = _project_root_name(project_root)
     if project_root_name and (raw == project_root_name or raw.startswith(f'{project_root_name}/')):
         suffix = raw[len(project_root_name):].lstrip('/')
-        return _join_relative('.', suffix, strip_leading_dot=config.strip_leading_dot), was_absolute
+        return _case_fold(_join_relative('.', suffix, strip_leading_dot=config.strip_leading_dot)), was_absolute
 
     if was_absolute:
         stripped = _strip_to_project_suffix(raw, _marker_candidates(project_root, config))
         if stripped is not None:
-            return _join_relative('.', stripped, strip_leading_dot=config.strip_leading_dot), was_absolute
+            return _case_fold(_join_relative('.', stripped, strip_leading_dot=config.strip_leading_dot)), was_absolute
 
         inferred = _infer_existing_project_suffix(project_root, raw)
         if inferred is not None:
-            return _join_relative('.', inferred, strip_leading_dot=config.strip_leading_dot), was_absolute
+            return _case_fold(_join_relative('.', inferred, strip_leading_dot=config.strip_leading_dot)), was_absolute
 
     normalized = raw
     if config.strip_leading_dot and normalized.startswith('./'):
         normalized = normalized[2:]
-    return normalized, was_absolute
+    return _case_fold(normalized), was_absolute

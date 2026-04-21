@@ -1,0 +1,1129 @@
+{
+  "diagnostics": [
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute path detected in 04_python_prep/02_scripts/py_build_features.py:18",
+      "payload": {
+        "path": "04_python_prep/03_output/py_feature_distributions.png",
+        "script": "04_python_prep/02_scripts/py_build_features.py"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 2 times in 04_python_prep/02_scripts/py_db_pipeline.py",
+      "payload": {
+        "count": "2",
+        "sample_paths": "04_python_prep/03_output/py_features.parquet | 04_python_prep/03_output/py_db_extract.parquet",
+        "script": "04_python_prep/02_scripts/py_db_pipeline.py",
+        "unique_paths": "2"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 4 times in 04_python_prep/02_scripts/py_excel_json.py",
+      "payload": {
+        "count": "4",
+        "sample_paths": "04_python_prep/01_input/py_admin_data.xlsx | 04_python_prep/03_output/py_admin_clean.xlsx | 04_python_prep/03_output/py_admin_records.json",
+        "script": "04_python_prep/02_scripts/py_excel_json.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 3 times in 04_python_prep/02_scripts/py_export_tables.py",
+      "payload": {
+        "count": "3",
+        "sample_paths": "04_python_prep/03_output/py_model_results.csv | C:/data/templates/py_table_template.xlsx | 04_python_prep/03_output/py_final_tables.xlsx",
+        "script": "04_python_prep/02_scripts/py_export_tables.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 6 times in 04_python_prep/02_scripts/py_format_zoo.py",
+      "payload": {
+        "count": "6",
+        "sample_paths": "04_python_prep/01_input/py_panel_clean.feather | 04_python_prep/03_output/py_panel_flagged.feather | 04_python_prep/01_input/py_survey.dta | 04_python_prep/03_output/py_survey_out.dta | 04_python_prep/01_input/py_timeseries.h5",
+        "script": "04_python_prep/02_scripts/py_format_zoo.py",
+        "unique_paths": "6"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 4 times in 04_python_prep/02_scripts/py_geo_analysis.py",
+      "payload": {
+        "count": "4",
+        "sample_paths": "04_python_prep/01_input/py_districts.shp | C:/data/gis/admin_boundaries.gpkg | 04_python_prep/03_output/py_districts_joined.shp | 04_python_prep/03_output/py_districts_joined.geojson",
+        "script": "04_python_prep/02_scripts/py_geo_analysis.py",
+        "unique_paths": "4"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 2 times in 04_python_prep/02_scripts/py_geo_map.py",
+      "payload": {
+        "count": "2",
+        "sample_paths": "04_python_prep/03_output/py_districts_joined.geojson | 04_python_prep/03_output/py_districts_map.html",
+        "script": "04_python_prep/02_scripts/py_geo_map.py",
+        "unique_paths": "2"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 2 times in 04_python_prep/02_scripts/py_helper_imports.py",
+      "payload": {
+        "count": "2",
+        "sample_paths": "04_python_prep/01_input/py_raw_panel.parquet | 04_python_prep/03_output/py_panel_indexed.parquet",
+        "script": "04_python_prep/02_scripts/py_helper_imports.py",
+        "unique_paths": "2"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 3 times in 04_python_prep/02_scripts/py_ingest_survey.py",
+      "payload": {
+        "count": "3",
+        "sample_paths": "C:/data/raw/py_survey_raw.csv | 04_python_prep/01_input/py_census_data.csv | 04_python_prep/03_output/py_survey_clean.parquet",
+        "script": "04_python_prep/02_scripts/py_ingest_survey.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "code": "excluded_reference",
+      "level": "info",
+      "message": "Excluded path omitted from graph at 04_python_prep/02_scripts/py_merge_panels.py:8 (read_stata): C:/projects/archive/py_legacy_panel.dta",
+      "payload": {
+        "command": "read_stata",
+        "line": "8",
+        "path": "C:/projects/archive/py_legacy_panel.dta",
+        "script": "04_python_prep/02_scripts/py_merge_panels.py"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 3 times in 04_python_prep/02_scripts/py_merge_panels.py",
+      "payload": {
+        "count": "3",
+        "sample_paths": "04_python_prep/01_input/py_panel_a.parquet | 04_python_prep/01_input/py_panel_b.parquet | 04_python_prep/03_output/py_panel_merged.parquet",
+        "script": "04_python_prep/02_scripts/py_merge_panels.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 7 times in 04_python_prep/02_scripts/py_model_persistence.py",
+      "payload": {
+        "count": "7",
+        "sample_paths": "04_python_prep/03_output/py_rf_model.pkl | 04_python_prep/03_output/py_rf_model.joblib | 04_python_prep/03_output/py_coefs.npy | 04_python_prep/03_output/py_coefs_plot.png",
+        "script": "04_python_prep/02_scripts/py_model_persistence.py",
+        "unique_paths": "4"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 2 times in 04_python_prep/02_scripts/py_path_patterns.py",
+      "payload": {
+        "count": "2",
+        "sample_paths": "04_python_prep/01_input/py_census_data.csv | 04_python_prep/03_output/py_array_store.zarr",
+        "script": "04_python_prep/02_scripts/py_path_patterns.py",
+        "unique_paths": "2"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 4 times in 04_python_prep/02_scripts/py_run_models.py",
+      "payload": {
+        "count": "4",
+        "sample_paths": "04_python_prep/03_output/py_features.parquet | 04_python_prep/03_output/py_model_results.csv | 04_python_prep/03_output/py_model_summary.json",
+        "script": "04_python_prep/02_scripts/py_run_models.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 4 times in 04_python_prep/02_scripts/py_scrape_output.py",
+      "payload": {
+        "count": "4",
+        "sample_paths": "04_python_prep/01_input/py_scraped_page.html | 04_python_prep/03_output/py_scraped_table.parquet | 04_python_prep/03_output/py_scraped_summary.html",
+        "script": "04_python_prep/02_scripts/py_scrape_output.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 3 times in 05_r_analysis/02_scripts/r_clean_survey.R",
+      "payload": {
+        "count": "3",
+        "sample_paths": "C:/data/raw/r_survey_micro.csv | 05_r_analysis/01_input/r_household_weights.xlsx | 05_r_analysis/03_output/r_survey_cleaned.rds",
+        "script": "05_r_analysis/02_scripts/r_clean_survey.R",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 3 times in 05_r_analysis/02_scripts/r_db_pipeline.R",
+      "payload": {
+        "count": "3",
+        "sample_paths": "05_r_analysis/01_input/r_model_results.csv | 05_r_analysis/01_input/r_region_lookup.csv | 05_r_analysis/03_output/r_top10_estimates.csv",
+        "script": "05_r_analysis/02_scripts/r_db_pipeline.R",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 2 times in 05_r_analysis/02_scripts/r_descriptives.R",
+      "payload": {
+        "count": "2",
+        "sample_paths": "05_r_analysis/03_output/r_descriptive_plots.pdf | 05_r_analysis/03_output/r_descriptives_table.csv",
+        "script": "05_r_analysis/02_scripts/r_descriptives.R",
+        "unique_paths": "2"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 3 times in 05_r_analysis/02_scripts/r_export_results.R",
+      "payload": {
+        "count": "3",
+        "sample_paths": "C:/projects/cache/r_auxiliary_estimates.rds | 05_r_analysis/03_output/r_final_results.xlsx | 05_r_analysis/03_output/r_results_summary.json",
+        "script": "05_r_analysis/02_scripts/r_export_results.R",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 12 times in 05_r_analysis/02_scripts/r_format_zoo.R",
+      "payload": {
+        "count": "12",
+        "sample_paths": "05_r_analysis/01_input/r_panel_data.feather | 05_r_analysis/03_output/r_panel_clean.feather | 05_r_analysis/01_input/r_panel_data.fst | 05_r_analysis/03_output/r_panel_clean.fst | 05_r_analysis/01_input/r_legacy_stata.dta",
+        "script": "05_r_analysis/02_scripts/r_format_zoo.R",
+        "unique_paths": "11"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 5 times in 05_r_analysis/02_scripts/r_geo_analysis.R",
+      "payload": {
+        "count": "5",
+        "sample_paths": "05_r_analysis/01_input/r_study_regions.shp | 05_r_analysis/01_input/r_poi.geojson | 05_r_analysis/03_output/r_regions_joined.gpkg | 05_r_analysis/03_output/r_regions_joined.shp | 05_r_analysis/03_output/r_region_map.png",
+        "script": "05_r_analysis/02_scripts/r_geo_analysis.R",
+        "unique_paths": "5"
+      }
+    },
+    {
+      "code": "excluded_reference",
+      "level": "info",
+      "message": "Excluded path omitted from graph at 05_r_analysis/02_scripts/r_merge_cohorts.R:9 (read_dta): C:/archive/r_legacy_cohort.dta",
+      "payload": {
+        "command": "read_dta",
+        "line": "9",
+        "path": "C:/archive/r_legacy_cohort.dta",
+        "script": "05_r_analysis/02_scripts/r_merge_cohorts.R"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 3 times in 05_r_analysis/02_scripts/r_merge_cohorts.R",
+      "payload": {
+        "count": "3",
+        "sample_paths": "05_r_analysis/01_input/r_cohort_2020.csv | 05_r_analysis/01_input/r_cohort_2021.csv | 05_r_analysis/03_output/r_cohorts_merged.csv",
+        "script": "05_r_analysis/02_scripts/r_merge_cohorts.R",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 6 times in 05_r_analysis/02_scripts/r_model_persistence.R",
+      "payload": {
+        "count": "6",
+        "sample_paths": "05_r_analysis/03_output/r_panel_clean.csv | 05_r_analysis/03_output/r_models.RData | 05_r_analysis/03_output/r_panel_final.rds | 05_r_analysis/03_output/r_outcome_boxplot.png",
+        "script": "05_r_analysis/02_scripts/r_model_persistence.R",
+        "unique_paths": "4"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 5 times in 05_r_analysis/02_scripts/r_regressions.R",
+      "payload": {
+        "count": "5",
+        "sample_paths": "05_r_analysis/03_output/r_cohorts_merged.csv | C:/data/r_model_priors.rds | 05_r_analysis/03_output/r_regression_model.rds | 05_r_analysis/03_output/r_regression_coefs.csv | 05_r_analysis/03_output/r_coef_plot.png",
+        "script": "05_r_analysis/02_scripts/r_regressions.R",
+        "unique_paths": "5"
+      }
+    },
+    {
+      "code": "absolute_path_usage",
+      "level": "warning",
+      "message": "Absolute paths detected 3 times in 05_r_analysis/02_scripts/r_scrape_output.R",
+      "payload": {
+        "count": "3",
+        "sample_paths": "05_r_analysis/01_input/r_scraped_page.html | 05_r_analysis/03_output/r_interactive_chart.html | 05_r_analysis/03_output/r_scrape_report.html",
+        "script": "05_r_analysis/02_scripts/r_scrape_output.R",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "code": "erased_artifact",
+      "level": "info",
+      "message": "Artifact erased inside script: 01_data/03_cleaned_data/sample_working_tmp.dta",
+      "payload": {
+        "path": "01_data/03_cleaned_data/sample_working_tmp.dta",
+        "script": "02_analysis/02_scripts/01_construct_sample.do"
+      }
+    },
+    {
+      "code": "excluded_files",
+      "level": "info",
+      "message": "Excluded 1 files during discovery.",
+      "payload": {
+        "count": "1"
+      }
+    },
+    {
+      "code": "project_scan",
+      "level": "info",
+      "message": "Project discovery completed.",
+      "payload": {
+        "input_files": "28",
+        "output_artifacts": "3",
+        "python_files": "14",
+        "r_files": "11",
+        "stata_files": "25"
+      }
+    },
+    {
+      "code": "multiple_writers",
+      "level": "warning",
+      "message": "Multiple scripts appear to write the same target: 01_data/03_cleaned_data/panel_base.dta",
+      "payload": {
+        "count": "2",
+        "target": "01_data/03_cleaned_data/panel_base.dta"
+      }
+    },
+    {
+      "code": "multiple_writers",
+      "level": "warning",
+      "message": "Multiple scripts appear to write the same target: 01_data/03_cleaned_data/panel_enriched.dta",
+      "payload": {
+        "count": "2",
+        "target": "01_data/03_cleaned_data/panel_enriched.dta"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_admin_data.xlsx",
+      "payload": {
+        "path": "04_python_prep/01_input/py_admin_data.xlsx"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_census_data.csv",
+      "payload": {
+        "path": "04_python_prep/01_input/py_census_data.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_districts.shp",
+      "payload": {
+        "path": "04_python_prep/01_input/py_districts.shp"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_panel_a.parquet",
+      "payload": {
+        "path": "04_python_prep/01_input/py_panel_a.parquet"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_panel_b.parquet",
+      "payload": {
+        "path": "04_python_prep/01_input/py_panel_b.parquet"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_panel_clean.feather",
+      "payload": {
+        "path": "04_python_prep/01_input/py_panel_clean.feather"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_raw_panel.parquet",
+      "payload": {
+        "path": "04_python_prep/01_input/py_raw_panel.parquet"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_scraped_page.html",
+      "payload": {
+        "path": "04_python_prep/01_input/py_scraped_page.html"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_survey.dta",
+      "payload": {
+        "path": "04_python_prep/01_input/py_survey.dta"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_timeseries.h5",
+      "payload": {
+        "path": "04_python_prep/01_input/py_timeseries.h5"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_admin_clean.xlsx",
+      "payload": {
+        "path": "04_python_prep/03_output/py_admin_clean.xlsx"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_array_store.zarr",
+      "payload": {
+        "path": "04_python_prep/03_output/py_array_store.zarr"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_coefs_plot.png",
+      "payload": {
+        "path": "04_python_prep/03_output/py_coefs_plot.png"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_districts_joined.geojson",
+      "payload": {
+        "path": "04_python_prep/03_output/py_districts_joined.geojson"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_feature_distributions.png",
+      "payload": {
+        "path": "04_python_prep/03_output/py_feature_distributions.png"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_features.parquet",
+      "payload": {
+        "path": "04_python_prep/03_output/py_features.parquet"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_final_tables.xlsx",
+      "payload": {
+        "path": "04_python_prep/03_output/py_final_tables.xlsx"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_model_results.csv",
+      "payload": {
+        "path": "04_python_prep/03_output/py_model_results.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_panel_merged.parquet",
+      "payload": {
+        "path": "04_python_prep/03_output/py_panel_merged.parquet"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_cohort_2020.csv",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_cohort_2020.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_cohort_2021.csv",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_cohort_2021.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_household_weights.xlsx",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_household_weights.xlsx"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_legacy_stata.dta",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_legacy_stata.dta"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_model_results.csv",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_model_results.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_panel_data.feather",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_panel_data.feather"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_panel_data.fst",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_panel_data.fst"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_poi.geojson",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_poi.geojson"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_region_lookup.csv",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_region_lookup.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_scraped_page.html",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_scraped_page.html"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_study_regions.shp",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_study_regions.shp"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_coef_plot.png",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_coef_plot.png"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_cohorts_merged.csv",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_cohorts_merged.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_descriptive_plots.pdf",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_descriptive_plots.pdf"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_descriptives_table.csv",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_descriptives_table.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_final_results.xlsx",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_final_results.xlsx"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_outcome_boxplot.png",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_outcome_boxplot.png"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_panel_clean.csv",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_panel_clean.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_region_map.png",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_region_map.png"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_regression_coefs.csv",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_regression_coefs.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_stata_export.xlsx",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_stata_export.xlsx"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_top10_estimates.csv",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_top10_estimates.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: C:/data/gis/admin_boundaries.gpkg",
+      "payload": {
+        "path": "C:/data/gis/admin_boundaries.gpkg"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: C:/data/r_model_priors.rds",
+      "payload": {
+        "path": "C:/data/r_model_priors.rds"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: C:/data/raw/py_survey_raw.csv",
+      "payload": {
+        "path": "C:/data/raw/py_survey_raw.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: C:/data/raw/r_spss_survey.sav",
+      "payload": {
+        "path": "C:/data/raw/r_spss_survey.sav"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: C:/data/raw/r_survey_micro.csv",
+      "payload": {
+        "path": "C:/data/raw/r_survey_micro.csv"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: C:/data/templates/py_table_template.xlsx",
+      "payload": {
+        "path": "C:/data/templates/py_table_template.xlsx"
+      }
+    },
+    {
+      "code": "orphan_artifact",
+      "level": "warning",
+      "message": "Orphan artifact node detected: C:/projects/cache/r_auxiliary_estimates.rds",
+      "payload": {
+        "path": "C:/projects/cache/r_auxiliary_estimates.rds"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: ../02_scripts/r_helpers.R",
+      "payload": {
+        "node_type": "script",
+        "path": "../02_scripts/r_helpers.R"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/demographics_prepared.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/demographics_prepared.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/households_raw.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/households_raw.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_base.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_base.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_enriched.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_enriched.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_with_demographics.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_with_demographics.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_with_policies.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_with_policies.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_with_products.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_with_products.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/policy_flags_prepared.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/policy_flags_prepared.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/products_prepared.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/products_prepared.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/transactions_2023_raw.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/transactions_2023_raw.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/transactions_2024_raw.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/transactions_2024_raw.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/transactions_all.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/transactions_all.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 02_analysis/03_outputs/analysis_sample.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "02_analysis/03_outputs/analysis_sample.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 03_robustness/03_outputs/robust_sample.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "03_robustness/03_outputs/robust_sample.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_admin_data.xlsx",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_admin_data.xlsx"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_districts.shp",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_districts.shp"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_panel_clean.feather",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_panel_clean.feather"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_raw_panel.parquet",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_raw_panel.parquet"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_scraped_page.html",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_scraped_page.html"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_survey.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_survey.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_timeseries.h5",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_timeseries.h5"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/03_output/py_array_store.zarr",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/03_output/py_array_store.zarr"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/03_output/py_districts_joined.geojson",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/03_output/py_districts_joined.geojson"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_legacy_stata.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_legacy_stata.dta"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_model_results.csv",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_model_results.csv"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_panel_data.feather",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_panel_data.feather"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_panel_data.fst",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_panel_data.fst"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_poi.geojson",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_poi.geojson"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_region_lookup.csv",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_region_lookup.csv"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_scraped_page.html",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_scraped_page.html"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_study_regions.shp",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_study_regions.shp"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/03_output/r_panel_clean.csv",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/03_output/r_panel_clean.csv"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: C:/data/gis/admin_boundaries.gpkg",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/gis/admin_boundaries.gpkg"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: C:/data/r_model_priors.rds",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/r_model_priors.rds"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: C:/data/raw/py_survey_raw.csv",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/raw/py_survey_raw.csv"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: C:/data/raw/r_spss_survey.sav",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/raw/r_spss_survey.sav"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: C:/data/raw/r_survey_micro.csv",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/raw/r_survey_micro.csv"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: C:/data/templates/py_table_template.xlsx",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/templates/py_table_template.xlsx"
+      }
+    },
+    {
+      "code": "missing_referenced_file",
+      "level": "warning",
+      "message": "Referenced path does not exist in project tree: C:/projects/cache/r_auxiliary_estimates.rds",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/projects/cache/r_auxiliary_estimates.rds"
+      }
+    },
+    {
+      "code": "cycle_detected",
+      "level": "warning",
+      "message": "Cycle detected in graph.",
+      "payload": {
+        "cycle": "05_r_analysis/02_scripts/r_descriptives.R -> 05_r_analysis/02_scripts/r_merge_cohorts.R -> 05_r_analysis/03_output/r_cohorts_merged.csv -> 05_r_analysis/02_scripts/r_descriptives.R"
+      }
+    },
+    {
+      "code": "cycle_detected",
+      "level": "warning",
+      "message": "Cycle detected in graph.",
+      "payload": {
+        "cycle": "05_r_analysis/02_scripts/r_format_zoo.R -> 05_r_analysis/03_output/r_panel_clean.csv -> 05_r_analysis/02_scripts/r_format_zoo.R"
+      }
+    },
+    {
+      "code": "excluded_path_inventory",
+      "level": "info",
+      "message": "1 excluded paths recorded in this run.",
+      "payload": {
+        "count": "1"
+      }
+    }
+  ],
+  "excluded_paths": [
+    "viewer_output/"
+  ],
+  "project_root": "D:\\Sciebo New\\stata_pipeline\\example\\project",
+  "summary": {
+    "by_code": {
+      "absolute_path_usage": 24,
+      "cycle_detected": 2,
+      "erased_artifact": 1,
+      "excluded_files": 1,
+      "excluded_path_inventory": 1,
+      "excluded_reference": 2,
+      "missing_referenced_file": 40,
+      "multiple_writers": 2,
+      "orphan_artifact": 48,
+      "project_scan": 1
+    },
+    "by_level": {
+      "info": 6,
+      "warning": 116
+    },
+    "diagnostics": 122,
+    "edges": 137,
+    "excluded_paths": 1,
+    "nodes": 128
+  }
+}

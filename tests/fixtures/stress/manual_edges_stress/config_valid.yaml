@@ -1,0 +1,5 @@
+manual_edges:
+  - source: "writer.do"
+    target: "reader.do"
+    label: "explicit handoff"
+    on_missing: warn

@@ -157,7 +157,6 @@ def default_config_payload(project_root: str = 'example/project') -> dict[str, A
         },
         'layout': {
             'rankdir': 'LR',
-            'cluster_lanes': [],
             'unclustered_artifacts_position': 'auto',
         },
         'clusters': [],
@@ -182,7 +181,6 @@ def load_or_create_config(config_path: Path, project_root: str = 'example/projec
         config['exclusions'].setdefault(key, [])
     config.setdefault('clusters', [])
     config.setdefault('layout', {})
-    config['layout'].setdefault('cluster_lanes', [])
     return config
 
 
@@ -286,15 +284,13 @@ def update_exclusions_list(config: dict[str, Any], key: str, value: str, remove:
 
 
 
-def upsert_cluster(config: dict[str, Any], cluster_id: str, label: str | None, members: list[str], lane: str | None = None, order: int | None = None, collapse: bool = False) -> None:
+def upsert_cluster(config: dict[str, Any], cluster_id: str, label: str | None, members: list[str], order: int | None = None, collapse: bool = False) -> None:
     clusters = config.setdefault('clusters', [])
     payload = {
         'id': cluster_id,
         'label': label or cluster_id,
         'members': [ensure_relative(member) for member in members if ensure_relative(member)],
     }
-    if lane:
-        payload['lane'] = lane
     if order is not None:
         payload['order'] = int(order)
     if collapse:
@@ -552,7 +548,6 @@ def manage_clusters_interactive(repo_root: Path | None = None) -> int:
             existing_id = prompt_text('Enter the existing cluster id to edit')
         cluster_id = prompt_text('Cluster id (short machine-friendly name)', default=existing_id or None)
         label = prompt_text('Cluster label (human-friendly name)', default=cluster_id)
-        lane = prompt_text('Optional lane name; press Enter to leave empty', default='', allow_empty=True)
         order_raw = prompt_text('Optional order number; press Enter to leave empty', default='', allow_empty=True)
         order = int(order_raw) if order_raw else None
         collapse = prompt_yes_no('Collapse this cluster into a summary box?', default=False)
@@ -567,7 +562,7 @@ def manage_clusters_interactive(repo_root: Path | None = None) -> int:
             cleaned = ensure_relative(member)
             if cleaned not in members:
                 members.append(cleaned)
-        upsert_cluster(config, cluster_id, label=label, members=members, lane=lane or None, order=order, collapse=collapse)
+        upsert_cluster(config, cluster_id, label=label, members=members, order=order, collapse=collapse)
     save_config(config_path, config)
     print(f'Saved updated clusters to {config_path}')
     return 0

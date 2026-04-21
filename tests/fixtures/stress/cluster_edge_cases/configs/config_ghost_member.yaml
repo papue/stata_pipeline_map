@@ -1,0 +1,7 @@
+clustering:
+  strategy: manual
+clusters:
+  - cluster_id: ghost_cluster
+    label: "Ghost"
+    members:
+      - "scripts/nonexistent.do"

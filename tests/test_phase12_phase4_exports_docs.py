@@ -93,3 +93,25 @@ def test_docs_and_examples_exist_for_phase4() -> None:
     assert Path('docs/migration.md').exists()
     assert Path('docs/examples/minimal_config.yaml').exists()
     assert Path('docs/examples/advanced_config.yaml').exists()
+
+
+def test_extract_edges_output_resolves_relative_to_cwd_not_project_root(tmp_path: Path) -> None:
+    project_root = tmp_path / 'myproject'
+    _write(project_root / 'main.do', 'save "results.dta", replace\n')
+    output_path = tmp_path / 'edges.csv'
+
+    # Pass --output as an absolute path to ensure it lands where specified, not under project_root
+    completed = run_cli(
+        'extract-edges',
+        '--project-root', str(project_root),
+        '--output', str(output_path),
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert output_path.exists(), (
+        f'edges.csv was not written to {output_path}. '
+        f'stdout: {completed.stdout!r}'
+    )
+    # Must NOT have written inside the project root
+    wrong_path = project_root / 'edges.csv'
+    assert not wrong_path.exists(), 'edges.csv was incorrectly written inside project_root'

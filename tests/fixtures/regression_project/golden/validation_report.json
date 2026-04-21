@@ -21,6 +21,14 @@
       }
     },
     {
+      "code": "unconsumed_output",
+      "level": "info",
+      "message": "Produced artifact is not consumed downstream: 02_analysis/03_outputs/model_output.dta",
+      "payload": {
+        "path": "02_analysis/03_outputs/model_output.dta"
+      }
+    },
+    {
       "code": "manual_clusters_applied",
       "level": "info",
       "message": "Applied 2 manual cluster definitions.",
@@ -42,7 +50,9 @@
       "level": "info",
       "message": "Project discovery completed.",
       "payload": {
-        "do_files": "3",
+        "stata_files": "3",
+        "python_files": "0",
+        "r_files": "0",
         "input_files": "2",
         "output_artifacts": "0"
       }
@@ -87,13 +97,14 @@
       "excluded_reference": 1,
       "manual_clusters_applied": 1,
       "missing_referenced_file": 2,
-      "project_scan": 1
+      "project_scan": 1,
+      "unconsumed_output": 1
     },
     "by_level": {
-      "info": 5,
+      "info": 6,
       "warning": 3
     },
-    "diagnostics": 8,
+    "diagnostics": 9,
     "edges": 7,
     "excluded_paths": 2,
     "nodes": 8

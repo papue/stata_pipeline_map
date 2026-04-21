@@ -26,13 +26,12 @@ def test_update_exclusions_list_add_and_remove():
 def test_upsert_cluster_replaces_existing_cluster():
     config = default_config_payload()
     upsert_cluster(config, 'analysis', 'Analysis', ['a.do'])
-    upsert_cluster(config, 'analysis', 'Analysis new', ['b.do', 'folder/sub.do'], lane='main', order=2)
+    upsert_cluster(config, 'analysis', 'Analysis new', ['b.do', 'folder/sub.do'], order=2)
     assert len(config['clusters']) == 1
     cluster = config['clusters'][0]
     assert cluster['id'] == 'analysis'
     assert cluster['label'] == 'Analysis new'
     assert cluster['members'] == ['b.do', 'folder/sub.do']
-    assert cluster['lane'] == 'main'
     assert cluster['order'] == 2
 
 

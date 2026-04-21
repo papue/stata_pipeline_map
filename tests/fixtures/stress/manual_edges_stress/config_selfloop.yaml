@@ -1,0 +1,5 @@
+manual_edges:
+  - source: "writer.do"
+    target: "writer.do"
+    label: "self-loop"
+    on_missing: warn

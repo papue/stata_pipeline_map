@@ -1,0 +1,5 @@
+manual_edges:
+  - source: "01_data/clean.do"
+    target: "nonexistent/output.dta"
+    label: "placeholder ref"
+    on_missing: placeholder

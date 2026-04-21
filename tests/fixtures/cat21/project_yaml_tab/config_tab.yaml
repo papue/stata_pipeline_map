@@ -1,0 +1,4 @@
+display:
+	show_edge_labels: true
+clustering:
+  enabled: true

@@ -43,6 +43,8 @@ classification: {}
 clustering: {}
 layout: {}
 clusters: []
+manual_edges: []
+languages: {}
 ```
 
 ## `display`
@@ -227,19 +229,6 @@ Allowed values:
 
 Invalid fallback: `LR`
 
-### `cluster_lanes`
-
-List of lane definitions:
-
-```yaml
-layout:
-  cluster_lanes:
-    - lane: main
-      cluster_ids: [data_prep, analysis]
-```
-
-If a lane references a missing cluster, the run continues and a warning diagnostic is emitted.
-
 ### `unclustered_artifacts_position`
 
 Allowed values:
@@ -257,12 +246,12 @@ Each entry accepts:
 
 - `id` or `cluster_id`
 - optional `label`
-- `members`
-- optional `lane`
+- `members` — list of project-relative file paths (leaf cluster)
+- `member_cluster_ids` — list of other cluster IDs (meta-cluster; mutually exclusive with `members`)
 - optional `order`
 - optional `collapse`
 
-Example:
+**Leaf cluster** — groups individual files:
 
 ```yaml
 clusters:
@@ -270,9 +259,121 @@ clusters:
     label: Analysis
     members:
       - 02_analysis/02_scripts/01_model.do
-    lane: main
     order: 2
     collapse: false
+```
+
+**Meta-cluster** — groups other clusters into a parent box (renders as nested subgraph in Graphviz):
+
+```yaml
+clusters:
+  - cluster_id: data_prep
+    label: "Data Preparation"
+    members:
+      - 01_data/02_scripts/01_import.do
+
+  - cluster_id: full_pipeline
+    label: "Full Pipeline"
+    member_cluster_ids: [data_prep, analysis]
+```
+
+A meta-cluster cannot have both `members` and `member_cluster_ids`. Up to two levels of nesting are supported (a meta-cluster containing regular clusters).
+
+## `clustering`
+
+Controls automatic cluster inference from folder/name patterns.
+
+### `clustering.enabled`
+
+Default: `true`
+
+### `clustering.strategy`
+
+Allowed values:
+
+- `auto` (default) — infer clusters automatically from folder structure and naming patterns
+- `manual` — disable auto clustering entirely; only clusters explicitly defined under `clusters:` are used
+
+Invalid fallback: `auto`
+
+## `languages`
+
+Controls which script languages the parser scans. All languages are enabled by default.
+
+### `languages.stata`
+
+Default: `true`
+
+### `languages.python`
+
+Default: `true`
+
+### `languages.r`
+
+Default: `true`
+
+### `languages.stata_extensions`, `python_extensions`, `r_extensions`
+
+Lists of file extensions recognized for each language.
+
+Defaults: `[".do"]`, `[".py"]`, `[".r"]`
+
+Example — disable R scanning:
+
+```yaml
+languages:
+  r: false
+```
+
+## `manual_edges`
+
+Use `manual_edges` when the parser misses a connection — for example, when a file path is resolved from a macro at runtime and cannot be extracted statically. Each entry declares an explicit directed edge that is injected into the graph after all parsing and clustering rules have run.
+
+### Fields
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `source` | string | *(required)* | Project-relative path of the source node (script or artifact). |
+| `target` | string | *(required)* | Project-relative path of the target node (script or artifact). |
+| `label` | string | `null` | Visible label rendered on the edge. Omit for no label. |
+| `note` | string | `null` | Human-readable comment stored in config only; never acted upon by the tool. |
+| `on_missing` | `warn` \| `placeholder` | `warn` | What to do when a referenced node is not found in the graph. `warn` skips the edge and emits a warning diagnostic. `placeholder` injects a placeholder node and still adds the edge. |
+
+### Staleness warning
+
+Manual edge entries reference paths by their exact project-relative location. Entries go stale when a file is moved, renamed, or replaced by a different output — for example, if Script A used to produce Artifact B but now produces Artifact C, the old `A → B` entry will remain in your config silently.
+
+The two modes behave very differently when an entry goes stale:
+
+- **`on_missing: warn`** (default) — the edge is skipped and a `manual_edge_node_not_found` warning diagnostic is emitted. The graph remains valid and the warning is a clear signal to review the entry.
+- **`on_missing: placeholder`** — a phantom node is injected with no warning. The graph will show a dangling node that has no real file behind it, silently misrepresenting the pipeline.
+
+**Recommendation:** Use `on_missing: warn` for any file that should exist in your project tree. Reserve `on_missing: placeholder` only for nodes that are permanently undiscoverable by the parser — for example, an external database or a file delivered by another team that will never appear on disk.
+
+Always add a `note:` field explaining why the parser does not pick up the connection. This makes it much easier to audit entries after a project restructuring and decide whether each one is still valid.
+
+Review `manual_edges` entries after any project restructuring to keep them accurate.
+
+### Examples
+
+Bridge a parser gap caused by a macro-resolved path:
+
+```yaml
+manual_edges:
+  - source: scripts/01_build.do
+    target: data/output.csv
+    label: "builds"
+    note: "Parser misses this — path is macro-resolved"
+```
+
+Inject a placeholder to keep the graph connected when a file does not yet exist:
+
+```yaml
+manual_edges:
+  - source: data/output.csv
+    target: scripts/02_analysis.do
+    on_missing: placeholder
+    note: "output.csv not yet in graph; inject placeholder to keep graph connected"
 ```
 
 ## Example configs

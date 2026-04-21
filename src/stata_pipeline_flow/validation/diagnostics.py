@@ -4,10 +4,11 @@ from collections import Counter, defaultdict
 from dataclasses import asdict
 from pathlib import Path
 import json
+import os
 
 from stata_pipeline_flow.model.entities import Diagnostic, GraphModel
 
-SCRIPT_SUFFIX = '.do'
+SCRIPT_SUFFIXES = ('.do', '.py', '.r', '.R')
 KNOWN_ARTIFACT_ROLES = {'reference_input', 'deliverable', 'temporary', 'intermediate', 'generated_artifact', 'artifact', 'placeholder_artifact'}
 TERMINAL_OUTPUT_SUFFIXES = {'.png', '.pdf', '.svg', '.csv', '.xlsx', '.ster', '.dot', '.viz'}
 
@@ -153,9 +154,12 @@ def _bundle_absolute_path_usage(graph: GraphModel) -> None:
 def run_basic_validation(graph: GraphModel) -> GraphModel:
     _bundle_absolute_path_usage(graph)
 
-    artifact_write_edges = [edge for edge in graph.edges if edge.source.endswith(SCRIPT_SUFFIX) and not edge.target.endswith(SCRIPT_SUFFIX)]
-    artifact_read_edges = [edge for edge in graph.edges if not edge.source.endswith(SCRIPT_SUFFIX) and edge.target.endswith(SCRIPT_SUFFIX)]
+    artifact_write_edges = [edge for edge in graph.edges if edge.source.endswith(SCRIPT_SUFFIXES) and not edge.target.endswith(SCRIPT_SUFFIXES)]
+    artifact_read_edges = [edge for edge in graph.edges if not edge.source.endswith(SCRIPT_SUFFIXES) and edge.target.endswith(SCRIPT_SUFFIXES)]
     writers = Counter(edge.target for edge in artifact_write_edges)
+    writers_by_target: dict[str, list[str]] = defaultdict(list)
+    for edge in artifact_write_edges:
+        writers_by_target[edge.target].append(edge.source)
     readers = Counter(edge.source for edge in artifact_read_edges)
     produced = {edge.target for edge in artifact_write_edges}
     consumed = {edge.source for edge in artifact_read_edges}
@@ -163,13 +167,15 @@ def run_basic_validation(graph: GraphModel) -> GraphModel:
 
     for target, count in sorted(writers.items()):
         if count > 1:
+            writing_scripts = sorted(set(writers_by_target[target]))
+            scripts_str = ' | '.join(writing_scripts)
             _append_unique(
                 graph,
                 Diagnostic(
                     level='warning',
                     code='multiple_writers',
-                    message=f'Multiple scripts appear to write the same target: {target}',
-                    payload={'target': target, 'count': str(count)},
+                    message=f'Multiple scripts write the same target ({target}): {scripts_str}',
+                    payload={'target': target, 'count': str(count), 'scripts': scripts_str},
                 ),
                 seen,
             )
@@ -194,7 +200,7 @@ def run_basic_validation(graph: GraphModel) -> GraphModel:
             _append_unique(
                 graph,
                 Diagnostic(
-                    level='warning',
+                    level='info',
                     code='orphan_artifact',
                     message=f'Orphan artifact node detected: {node_id}',
                     payload={'path': node_id},
@@ -245,6 +251,8 @@ def run_basic_validation(graph: GraphModel) -> GraphModel:
     for node_id, node in sorted(graph.nodes.items()):
         if node.path is None:
             continue
+        if os.path.isabs(node.path):
+            continue
         expected_path = root / node.path
         if node.node_type in {'artifact', 'artifact_placeholder'} and indegree[node_id] > 0 and outdegree[node_id] == 0:
             continue
@@ -262,13 +270,14 @@ def run_basic_validation(graph: GraphModel) -> GraphModel:
 
     cycles = _find_cycles(graph)
     for cycle in cycles:
+        cycle_path = ' -> '.join(cycle + [cycle[0]])
         _append_unique(
             graph,
             Diagnostic(
                 level='warning',
                 code='cycle_detected',
-                message='Cycle detected in graph.',
-                payload={'cycle': ' -> '.join(cycle + [cycle[0]])},
+                message=f'Cycle detected: {cycle_path}',
+                payload={'cycle': cycle_path},
             ),
             seen,
         )

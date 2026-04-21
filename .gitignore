@@ -16,3 +16,17 @@ _usability_retest/
 # OS/editor
 .vscode/
 .idea/
+
+# planning/session notes (not for public repo)
+*_plan.md
+*_results.md
+chatgpt_plan.md
+claude-plan.md
+ui_game_plan*.md
+cat9_test*.py
+
+# generated example outputs (contain local paths)
+example/output/
+
+# Claude Code working files
+.claude/

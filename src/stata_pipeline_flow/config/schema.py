@@ -81,15 +81,8 @@ class ClusteringConfig:
 
 
 @dataclass(slots=True)
-class ClusterLaneConfig:
-    lane: str
-    cluster_ids: list[str] = field(default_factory=list)
-
-
-@dataclass(slots=True)
 class LayoutConfig:
     rankdir: str = 'LR'
-    cluster_lanes: list[ClusterLaneConfig] = field(default_factory=list)
     unclustered_artifacts_position: str = 'auto'
 
 
@@ -98,9 +91,28 @@ class ManualClusterConfig:
     cluster_id: str
     label: str | None = None
     members: list[str] = field(default_factory=list)
-    lane: str | None = None
+    member_cluster_ids: list[str] = field(default_factory=list)  # for meta-clusters
     order: int | None = None
     collapse: bool = False
+
+
+@dataclass(slots=True)
+class ManualEdgeConfig:
+    source: str           # project-relative path (may be blank — rule validates)
+    target: str           # project-relative path (may be blank — rule validates)
+    label: str | None = None     # visible_label on the rendered edge
+    note: str | None = None      # human comment; stored but never acted upon
+    on_missing: str = 'warn'     # 'warn' | 'placeholder' — coerced in loader
+
+
+@dataclass(slots=True)
+class LanguagesConfig:
+    stata: bool = True
+    python: bool = True
+    r: bool = True
+    stata_extensions: list[str] = field(default_factory=lambda: ['.do'])
+    python_extensions: list[str] = field(default_factory=lambda: ['.py'])
+    r_extensions: list[str] = field(default_factory=lambda: ['.r'])
 
 
 @dataclass(slots=True)
@@ -114,33 +126,14 @@ class AppConfig:
     clustering: ClusteringConfig = field(default_factory=ClusteringConfig)
     layout: LayoutConfig = field(default_factory=LayoutConfig)
     clusters: list[ManualClusterConfig] = field(default_factory=list)
+    languages: LanguagesConfig = field(default_factory=LanguagesConfig)
+    manual_edges: list[ManualEdgeConfig] = field(default_factory=list)
 
 
 def _merge_dataclass_config(cls: type, raw: dict[str, Any]) -> Any:
     allowed = {name for name in cls.__dataclass_fields__}
     filtered = {k: v for k, v in raw.items() if k in allowed}
     return cls(**filtered)
-
-
-def _load_cluster_lanes(raw_lanes: Any) -> list[ClusterLaneConfig]:
-    if raw_lanes in (None, ''):
-        return []
-    if not isinstance(raw_lanes, list):
-        raise ValueError('Config field "layout.cluster_lanes" must be a list of lane definitions.')
-
-    lanes: list[ClusterLaneConfig] = []
-    for index, raw_lane in enumerate(raw_lanes, start=1):
-        if not isinstance(raw_lane, dict):
-            raise ValueError(f'Lane entry #{index} must be a mapping.')
-        lane_value = str(raw_lane.get('lane') or raw_lane.get('id') or '').strip()
-        if not lane_value:
-            raise ValueError(f'Lane entry #{index} is missing "lane" or "id".')
-        raw_cluster_ids = raw_lane.get('cluster_ids') or raw_lane.get('clusters') or []
-        if not isinstance(raw_cluster_ids, list):
-            raise ValueError(f'Lane "{lane_value}" cluster ids must be a list.')
-        cluster_ids = [str(cluster_id).strip() for cluster_id in raw_cluster_ids if str(cluster_id).strip()]
-        lanes.append(ClusterLaneConfig(lane=lane_value, cluster_ids=cluster_ids))
-    return lanes
 
 
 def _load_manual_clusters(raw_clusters: Any) -> list[ManualClusterConfig]:
@@ -171,8 +164,17 @@ def _load_manual_clusters(raw_clusters: Any) -> list[ManualClusterConfig]:
             if cleaned:
                 cleaned_members.append(cleaned)
 
-        lane_raw = raw_cluster.get('lane')
-        lane = None if lane_raw in (None, '') else str(lane_raw).strip()
+        raw_member_cluster_ids = raw_cluster.get('member_cluster_ids', [])
+        if raw_member_cluster_ids is None:
+            raw_member_cluster_ids = []
+        if not isinstance(raw_member_cluster_ids, list):
+            raise ValueError(f'Cluster "{cluster_id}" member_cluster_ids must be a list of cluster IDs.')
+        cleaned_member_cluster_ids: list[str] = []
+        for mcid in raw_member_cluster_ids:
+            cleaned_mcid = str(mcid).strip()
+            if cleaned_mcid:
+                cleaned_member_cluster_ids.append(cleaned_mcid)
+
         order_raw = raw_cluster.get('order')
         order = None if order_raw in (None, '') else int(order_raw)
         collapse = bool(raw_cluster.get('collapse', False))
@@ -182,7 +184,7 @@ def _load_manual_clusters(raw_clusters: Any) -> list[ManualClusterConfig]:
                 cluster_id=cluster_id,
                 label=label_value,
                 members=cleaned_members,
-                lane=lane,
+                member_cluster_ids=cleaned_member_cluster_ids,
                 order=order,
                 collapse=collapse,
             )
@@ -190,6 +192,35 @@ def _load_manual_clusters(raw_clusters: Any) -> list[ManualClusterConfig]:
     return clusters
 
 
+def _load_manual_edges(raw_edges: Any) -> list[ManualEdgeConfig]:
+    if raw_edges in (None, ''):
+        return []
+    if not isinstance(raw_edges, list):
+        raise ValueError('Config field "manual_edges" must be a list of edge definitions.')
+
+    edges: list[ManualEdgeConfig] = []
+    for index, raw_edge in enumerate(raw_edges, start=1):
+        if not isinstance(raw_edge, dict):
+            raise ValueError(f'Manual edge entry #{index} must be a mapping.')
+        source = str(raw_edge.get('source') or '').strip()
+        target = str(raw_edge.get('target') or '').strip()
+
+        label_raw = raw_edge.get('label')
+        label = None if label_raw in (None, '') else str(label_raw)
+        note_raw = raw_edge.get('note')
+        note = None if note_raw in (None, '') else str(note_raw)
+
+        on_missing_raw = str(raw_edge.get('on_missing', 'warn')).strip()
+        on_missing = on_missing_raw if on_missing_raw in {'warn', 'placeholder'} else 'warn'
+
+        edges.append(ManualEdgeConfig(
+            source=source,
+            target=target,
+            label=label,
+            note=note,
+            on_missing=on_missing,
+        ))
+    return edges
 
 
 _ALLOWED_DISPLAY_THEMES = {'modern-light', 'modern-dark', 'warm-neutral'}
@@ -234,6 +265,10 @@ def sanitize_config(config: AppConfig) -> AppConfig:
     if not isinstance(config.parser.dynamic_paths.placeholder_token, str) or not config.parser.dynamic_paths.placeholder_token:
         config.parser.dynamic_paths.placeholder_token = '{dynamic}'
 
+    config.languages.stata = _coerce_bool(config.languages.stata, True)
+    config.languages.python = _coerce_bool(config.languages.python, True)
+    config.languages.r = _coerce_bool(config.languages.r, True)
+
     return config
 
 def load_config(path: Path) -> AppConfig:
@@ -242,7 +277,12 @@ def load_config(path: Path) -> AppConfig:
     if suffix in {'.yaml', '.yml'}:
         if yaml is None:
             raise RuntimeError('YAML config requested but PyYAML is not installed.')
-        raw = yaml.safe_load(text) or {}
+        try:
+            raw = yaml.safe_load(text) or {}
+        except yaml.YAMLError as exc:
+            raise ValueError(
+                f'Failed to parse YAML config file: {path}\n{exc}'
+            ) from exc
     else:
         raw = json.loads(text)
 
@@ -262,9 +302,11 @@ def load_config(path: Path) -> AppConfig:
 
     raw_layout = dict(raw.get('layout', {}))
     layout = _merge_dataclass_config(LayoutConfig, raw_layout)
-    layout.cluster_lanes = _load_cluster_lanes(raw_layout.get('cluster_lanes', []))
+
+    languages = _merge_dataclass_config(LanguagesConfig, raw.get('languages', {}))
 
     manual_clusters = _load_manual_clusters(raw.get('clusters', []))
+    manual_edges = _load_manual_edges(raw.get('manual_edges', []))
     return sanitize_config(AppConfig(
         project_root=raw.get('project_root', '.'),
         display=display,
@@ -275,4 +317,6 @@ def load_config(path: Path) -> AppConfig:
         clustering=clustering,
         layout=layout,
         clusters=manual_clusters,
+        languages=languages,
+        manual_edges=manual_edges,
     ))

@@ -1,0 +1,9 @@
+source,target,command,kind
+data/extra.dta,02_supported_commands.do,append,reference_input
+data/input.dta,02_supported_commands.do,use,reference_input
+data/other.dta,02_supported_commands.do,merge,reference_input
+data/raw.csv,02_supported_commands.do,import,reference_input
+01_unsupported_outputs.do,reports/analysis_report.docx,save,deliverable
+02_supported_commands.do,figs/fig1.pdf,graph_export,deliverable
+02_supported_commands.do,output/result.csv,export_delimited,deliverable
+02_supported_commands.do,output/result.xlsx,export_excel,deliverable

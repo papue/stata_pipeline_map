@@ -67,9 +67,87 @@ classification:
   - tmp_
 clustering:
   enabled: true
-  strategy: auto
+  strategy: manual
 layout:
   rankdir: LR
-  cluster_lanes: []
   unclustered_artifacts_position: auto
-clusters: []
+clusters:
+  - cluster_id: tx_import
+    label: "Transactions: Import & Build"
+    members:
+      - 01_data/01_input/transactions_2023.csv
+      - 01_data/01_input/transactions_2024.csv
+      - 01_data/02_scripts/02_import_transactions_2023.do
+      - 01_data/02_scripts/03_import_transactions_2024.do
+      - 01_data/02_scripts/04_append_transactions.do
+
+  - cluster_id: hh_import
+    label: "Households: Import"
+    members:
+      - 01_data/01_input/households.csv
+      - 01_data/02_scripts/01_import_households.do
+
+  - cluster_id: products_prep
+    label: "Products: Preparation"
+    members:
+      - 01_data/01_input/products.csv
+      - 01_data/02_scripts/05_prepare_products.do
+
+  - cluster_id: demo_prep
+    label: "Demographics: Preparation"
+    members:
+      - 01_data/01_input/demographics.csv
+      - 01_data/02_scripts/06_prepare_demographics.do
+
+  - cluster_id: policy_prep
+    label: "Policy Flags: Preparation"
+    members:
+      - 01_data/01_input/policy_flags.dta
+      - 01_data/02_scripts/07_prepare_policy_flags.do
+
+  - cluster_id: core_build
+    label: "Core Build: HH × Transactions"
+    members:
+      - 01_data/01_input/region_lookup.dta
+      - 01_data/02_scripts/05_merge_households_transactions.do
+      - 01_data/02_scripts/06_enrich_region.do
+
+  - cluster_id: master_integration
+    label: "Master Dataset Integration"
+    members:
+      - 01_data/02_scripts/08_merge_households_transactions.do
+      - 01_data/02_scripts/09_merge_products.do
+      - 01_data/02_scripts/10_merge_demographics.do
+      - 01_data/02_scripts/11_merge_policy_flags.do
+      - 01_data/02_scripts/12_enrich_region.do
+
+  - cluster_id: analysis
+    label: "Analysis"
+    members:
+      - 02_analysis/02_scripts/01_construct_sample.do
+      - 02_analysis/02_scripts/02_descriptive_tables.do
+      - 02_analysis/02_scripts/03_regression_models.do
+      - 02_analysis/02_scripts/04_figures.do
+
+  - cluster_id: robustness
+    label: "Robustness Checks"
+    members:
+      - 03_robustness/02_scripts/01_alt_sample.do
+      - 03_robustness/02_scripts/02_robustness_models.do
+      - 03_robustness/02_scripts/03_placebo_checks.do
+
+  # --- Meta-clusters ---
+
+  - cluster_id: meta_ingestion
+    label: "Raw Data Ingestion"
+    member_cluster_ids: [tx_import, hh_import, products_prep, demo_prep, policy_prep]
+
+  - cluster_id: meta_construction
+    label: "Dataset Construction"
+    member_cluster_ids: [core_build, master_integration]
+
+  - cluster_id: meta_estimation
+    label: "Estimation & Validation"
+    member_cluster_ids: [analysis, robustness]
+
+

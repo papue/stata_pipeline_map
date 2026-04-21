@@ -4,6 +4,7 @@ import argparse
 import os
 import shutil
 import subprocess
+import sys
 from dataclasses import replace
 from pathlib import Path
 
@@ -59,11 +60,31 @@ def _print_config_effects(graph, config: AppConfig) -> None:
             print(f'  * {diagnostic.message}')
 
 
+_CONFIG_SEARCH_NAMES = [
+    'pipeline_user_settings.yaml',
+    'user_configs/project_config.yaml',
+]
+
+
+def _autodiscover_config(project_root: Path) -> Path | None:
+    for name in _CONFIG_SEARCH_NAMES:
+        candidate = project_root / name
+        if candidate.exists():
+            return candidate
+    return None
+
+
 def resolve_config(args: argparse.Namespace) -> AppConfig:
     if args.config:
         config = load_config(Path(args.config))
     else:
-        config = AppConfig(project_root=str(Path(args.project_root or '.').resolve()))
+        project_root = Path(args.project_root or '.').resolve()
+        auto_path = _autodiscover_config(project_root)
+        if auto_path is not None:
+            print(f'[config] Using auto-discovered config: {auto_path}', file=sys.stderr)
+            config = load_config(auto_path)
+        else:
+            config = AppConfig(project_root=str(project_root))
     if getattr(args, 'project_root', None):
         config.project_root = str(Path(args.project_root).resolve())
     if getattr(args, 'edge_csv', None):
@@ -77,7 +98,18 @@ def build_graph(config: AppConfig):
     return graph
 
 
+def _validate_project_root(project_root: str) -> None:
+    """Exit with a clear error if project_root is missing or not a directory."""
+    if os.path.isfile(project_root):
+        print(f'Error: --project-root must be a directory, got a file: {project_root}', file=sys.stderr)
+        sys.exit(1)
+    if not os.path.isdir(project_root):
+        print(f'Error: --project-root directory does not exist: {project_root}', file=sys.stderr)
+        sys.exit(1)
+
+
 def command_summary(args: argparse.Namespace) -> int:
+    _validate_project_root(getattr(args, 'project_root', '.') or '.')
     config = resolve_config(args)
     graph = build_graph(config)
     script_nodes = sum(1 for node in graph.nodes.values() if node.node_type == 'script')
@@ -106,17 +138,21 @@ def _render_dot_text(config: AppConfig, show_edge_labels: bool = False):
     return graph, dot
 
 def command_extract_edges(args: argparse.Namespace) -> int:
+    _validate_project_root(getattr(args, 'project_root', '.') or '.')
     config = resolve_config(args)
     if getattr(args, 'output', None):
-        config.parser.edge_csv_path = args.output
+        output_path = Path(os.path.abspath(args.output))
+    else:
+        output_path = Path(os.path.abspath(config.parser.edge_csv_path))
     graph = build_graph(config)
-    output_path = Path(config.project_root) / config.parser.edge_csv_path
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     write_edge_csv(graph, output_path)
     print(f'Wrote edge CSV to {output_path}')
     return 0
 
 
 def command_render_dot(args: argparse.Namespace) -> int:
+    _validate_project_root(getattr(args, 'project_root', '.') or '.')
     config = resolve_config(args)
     graph, dot = _render_dot_text(config, show_edge_labels=args.show_edge_labels)
     output_path = Path(args.output)
@@ -148,6 +184,7 @@ def _find_dot_executable() -> str | None:
 
 
 def command_render_image(args: argparse.Namespace) -> int:
+    _validate_project_root(getattr(args, 'project_root', '.') or '.')
     config = resolve_config(args)
     graph, dot = _render_dot_text(config, show_edge_labels=args.show_edge_labels)
 
@@ -190,10 +227,12 @@ def build_graph_for_cluster_export(config: AppConfig, mode: str):
 
 
 def command_export_clusters(args: argparse.Namespace) -> int:
+    _validate_project_root(getattr(args, 'project_root', '.') or '.')
     config = resolve_config(args)
     graph = build_graph_for_cluster_export(config, args.mode)
     output_path = Path(args.output)
-    write_cluster_export(graph, output_path)
+    strategy = config.clustering.strategy if args.mode == 'resolved' else 'auto'
+    write_cluster_export(graph, output_path, strategy=strategy)
     print(f'Wrote cluster starter config to {output_path}')
     print(f'Export mode: {args.mode}')
     print(f'Exported clusters: {sum(1 for cluster in graph.sorted_clusters() if any(graph.nodes[node_id].node_type == "script" for node_id in cluster.node_ids if node_id in graph.nodes))}')
@@ -202,6 +241,7 @@ def command_export_clusters(args: argparse.Namespace) -> int:
 
 
 def command_snapshot_json(args: argparse.Namespace) -> int:
+    _validate_project_root(getattr(args, 'project_root', '.') or '.')
     config = resolve_config(args)
     graph = build_graph(config)
     output_path = Path(args.output)
@@ -210,6 +250,7 @@ def command_snapshot_json(args: argparse.Namespace) -> int:
     return 0
 
 def command_validate(args: argparse.Namespace) -> int:
+    _validate_project_root(getattr(args, 'project_root', '.') or '.')
     config = resolve_config(args)
     graph = build_graph(config)
     output_path = Path(args.output)
@@ -229,7 +270,7 @@ def build_parser() -> argparse.ArgumentParser:
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument('--project-root', default='.')
     common.add_argument('--config')
-    common.add_argument('--edge-csv', default='viewer_output/parser_edges.csv')
+    common.add_argument('--edge-csv', default=None)
 
     summary = subparsers.add_parser('summary', help='Print a graph summary.', parents=[common])
     summary.set_defaults(func=command_summary)

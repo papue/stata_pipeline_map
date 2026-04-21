@@ -82,8 +82,14 @@ def is_excluded(path: str, config: ExclusionConfig) -> bool:
         return True
     if PurePosixPath(norm).name in set(config.exact_names):
         return True
-    parts = set(PurePosixPath(norm).parts)
-    if any(folder in parts for folder in config.folder_names):
+    all_parts = PurePosixPath(norm).parts
+    # folder_names should only match directory components, not the filename itself.
+    # If the original path ends with '/' it is a directory path, so all parts are
+    # directory components. Otherwise, only the leading parts (excluding the last,
+    # which is the filename) are directory components.
+    is_dir_path = path.endswith('/')
+    dir_parts = set(all_parts) if is_dir_path else set(all_parts[:-1])
+    if any(folder in dir_parts for folder in config.folder_names):
         return True
     if any(PurePosixPath(norm).match(glob) for glob in config.globs):
         return True

@@ -1,0 +1,295 @@
+{
+  "project_root": "D:\\Sciebo New\\stata_pipeline\\tests\\fixtures\\stress\\path_normalization",
+  "metadata": {
+    "rankdir": "LR",
+    "unclustered_artifacts_position": "auto"
+  },
+  "config": {
+    "display": {
+      "show_edge_labels": false,
+      "mode": "overview",
+      "theme": "modern-light",
+      "show_terminal_outputs": true,
+      "show_temporary_outputs": false,
+      "placeholder_style": "dashed",
+      "label_path_depth": 0,
+      "show_extensions": true,
+      "node_label_style": "basename",
+      "view": "overview",
+      "edge_label_mode": "auto"
+    },
+    "layout": {
+      "rankdir": "LR",
+      "unclustered_artifacts_position": "auto"
+    }
+  },
+  "nodes": [
+    {
+      "node_id": "01_writer.do",
+      "label": "01_writer.do",
+      "node_type": "script",
+      "path": "01_writer.do",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "02_forward_slash.do",
+      "label": "02_forward_slash.do",
+      "node_type": "script",
+      "path": "02_forward_slash.do",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "03_backslash.do",
+      "label": "03_backslash.do",
+      "node_type": "script",
+      "path": "03_backslash.do",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "04_double_slash.do",
+      "label": "04_double_slash.do",
+      "node_type": "script",
+      "path": "04_double_slash.do",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "05_leading_dot.do",
+      "label": "05_leading_dot.do",
+      "node_type": "script",
+      "path": "05_leading_dot.do",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "06_whitespace.do",
+      "label": "06_whitespace.do",
+      "node_type": "script",
+      "path": "06_whitespace.do",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "07_case_variant.do",
+      "label": "07_case_variant.do",
+      "node_type": "script",
+      "path": "07_case_variant.do",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "08_python_reader.py",
+      "label": "08_python_reader.py",
+      "node_type": "script",
+      "path": "08_python_reader.py",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "09_r_reader.R",
+      "label": "09_r_reader.R",
+      "node_type": "script",
+      "path": "09_r_reader.R",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "Data/Cohort.DTA",
+      "label": "Cohort.DTA",
+      "node_type": "artifact",
+      "path": "Data/Cohort.DTA",
+      "role": "reference_input",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "data/cohort.dta",
+      "label": "cohort.dta",
+      "node_type": "artifact",
+      "path": "data/cohort.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    }
+  ],
+  "edges": [
+    {
+      "source": "data/cohort.dta",
+      "target": "02_forward_slash.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "data/cohort.dta",
+      "target": "03_backslash.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "data/cohort.dta",
+      "target": "04_double_slash.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "data/cohort.dta",
+      "target": "05_leading_dot.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "data/cohort.dta",
+      "target": "06_whitespace.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "Data/Cohort.DTA",
+      "target": "07_case_variant.do",
+      "operation": "use",
+      "kind": "reference_input",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "data/cohort.dta",
+      "target": "08_python_reader.py",
+      "operation": "read_stata",
+      "kind": "intermediate",
+      "visible_label": "read_stata",
+      "metadata": {}
+    },
+    {
+      "source": "data/cohort.dta",
+      "target": "09_r_reader.R",
+      "operation": "read_dta",
+      "kind": "intermediate",
+      "visible_label": "read_dta",
+      "metadata": {}
+    },
+    {
+      "source": "01_writer.do",
+      "target": "data/cohort.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": "cluster_001",
+      "label": ".",
+      "node_ids": [
+        "01_writer.do",
+        "02_forward_slash.do",
+        "03_backslash.do",
+        "04_double_slash.do",
+        "05_leading_dot.do",
+        "06_whitespace.do",
+        "07_case_variant.do",
+        "08_python_reader.py",
+        "09_r_reader.R",
+        "Data/Cohort.DTA",
+        "data/cohort.dta"
+      ],
+      "metadata": {
+        "folder_count": "1",
+        "kind": "auto",
+        "order": "1001",
+        "script_count": "9"
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "level": "info",
+      "code": "excluded_files",
+      "message": "Excluded 1 files during discovery.",
+      "payload": {
+        "count": "1"
+      }
+    },
+    {
+      "level": "info",
+      "code": "project_scan",
+      "message": "Project discovery completed.",
+      "payload": {
+        "input_files": "1",
+        "output_artifacts": "0",
+        "python_files": "1",
+        "r_files": "1",
+        "stata_files": "7"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: Data/Cohort.DTA",
+      "payload": {
+        "node_type": "artifact",
+        "path": "Data/Cohort.DTA"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: data/cohort.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "data/cohort.dta"
+      }
+    },
+    {
+      "level": "info",
+      "code": "excluded_path_inventory",
+      "message": "1 excluded paths recorded in this run.",
+      "payload": {
+        "count": "1"
+      }
+    }
+  ],
+  "excluded_paths": [
+    "viewer_output/"
+  ]
+}

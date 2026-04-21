@@ -1,0 +1,3 @@
+parser:
+  version_families:
+    mode: detect_only

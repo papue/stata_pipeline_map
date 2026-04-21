@@ -6,9 +6,11 @@ from stata_pipeline_flow.config.schema import AppConfig
 from stata_pipeline_flow.model.entities import Diagnostic, GraphModel
 from stata_pipeline_flow.parser.discovery import discover_project_files
 from stata_pipeline_flow.parser.edge_csv import load_edge_csv
-from stata_pipeline_flow.parser.stata_extract import build_graph_from_do_files, write_edge_csv
+from stata_pipeline_flow.parser.multi_extract import build_graph_from_scripts
+from stata_pipeline_flow.parser.stata_extract import write_edge_csv
 from stata_pipeline_flow.rules.clustering import infer_clusters
 from stata_pipeline_flow.rules.cluster_overrides import apply_manual_clusters
+from stata_pipeline_flow.rules.manual_edges import apply_manual_edges
 from stata_pipeline_flow.rules.layout import apply_layout_config
 from stata_pipeline_flow.rules.exclusions import resolve_exclusion_config
 from stata_pipeline_flow.rules.version_families import apply_version_family_resolution
@@ -70,15 +72,15 @@ class PipelineBuilder:
 
     def build(self, project_root: Path) -> GraphModel:
         effective_exclusions = resolve_exclusion_config(self.config.exclusions)
-        scan = discover_project_files(project_root, effective_exclusions, self.config.normalization)
+        scan = discover_project_files(project_root, effective_exclusions, self.config.normalization, self.config.languages)
         edge_csv = project_root / self.config.parser.edge_csv_path
 
         if self.config.parser.prefer_existing_edge_csv and edge_csv.exists():
             graph = load_edge_csv(project_root, edge_csv)
         else:
-            graph = build_graph_from_do_files(
+            graph = build_graph_from_scripts(
                 project_root,
-                scan.do_files,
+                scan.script_files,
                 effective_exclusions,
                 self.config.parser,
                 self.config.normalization,
@@ -90,10 +92,12 @@ class PipelineBuilder:
 
         graph = apply_version_family_resolution(graph, project_root, self.config.parser.version_families)
 
-        if self.config.clustering.enabled:
+        if self.config.clustering.enabled and self.config.clustering.strategy != 'manual':
             graph = infer_clusters(graph)
         if self.config.clusters:
             graph = apply_manual_clusters(graph, self.config.clusters)
+        if self.config.manual_edges:
+            graph = apply_manual_edges(graph, self.config)
         graph = apply_layout_config(graph, self.config.layout)
 
         graph.excluded_paths.extend(scan.excluded_files)
@@ -115,7 +119,9 @@ class PipelineBuilder:
                 code='project_scan',
                 message='Project discovery completed.',
                 payload={
-                    'do_files': str(len(scan.do_files)),
+                    'stata_files': str(len(scan.do_files)),
+                    'python_files': str(len(scan.py_files)),
+                    'r_files': str(len(scan.r_files)),
                     'input_files': str(len(scan.input_files)),
                     'output_artifacts': str(len(scan.output_artifacts)),
                 },

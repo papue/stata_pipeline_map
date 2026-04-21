@@ -188,7 +188,24 @@ def parse_do_file(project_root: Path, do_file: Path, exclusions: ExclusionConfig
     rel_script, _ = to_project_relative(project_root, do_file, normalization)
     rel_script = normalize_token(rel_script)
 
-    for i, line in enumerate(do_file.read_text(encoding='utf-8').splitlines(), start=1):
+    try:
+        file_text = do_file.read_text(encoding='utf-8')
+    except UnicodeDecodeError:
+        global_warnings.append(
+            Diagnostic(
+                level='warning',
+                code='file_encoding_error',
+                message=f'Could not decode {rel_script} as UTF-8; file skipped.',
+                payload={'script': rel_script},
+            )
+        )
+        return ScriptParseResult(
+            events=[],
+            child_scripts=[],
+            global_warnings=global_warnings,
+            excluded_references=[],
+        )
+    for i, line in enumerate(file_text.splitlines(), start=1):
         stripped = line.strip()
         if stripped == '}' and loop_stack:
             loop_stack.pop()
@@ -463,6 +480,13 @@ def build_graph_from_do_files(
                 )
                 if role != 'deliverable' and consumers.get(p, set()) <= {script}:
                     suppressed_internal_only.add((script, p))
+                    if not consumers.get(p):
+                        graph.add_diagnostic(Diagnostic(
+                            level='info',
+                            code='unconsumed_output',
+                            message=f'Produced artifact is not consumed downstream: {p}',
+                            payload={'path': p},
+                        ))
 
     for script, reads in sorted(script_reads.items()):
         for p, command, resolution_status, pattern in sorted(reads):

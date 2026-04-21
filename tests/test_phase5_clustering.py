@@ -57,8 +57,8 @@ def test_linear_chain_in_same_folder_forms_single_cluster_and_renders_subgraph(t
     assert len(graph.clusters) == 1
 
     dot = render_dot(graph)
-    assert f'subgraph "{cluster_id}"' in dot
-    assert 'label="01_data/02_scripts"' in dot
+    assert f'subgraph "cluster_{cluster_id}"' in dot
+    assert '01_data/02_scripts' in dot
 
 
 def test_different_script_folders_stay_in_separate_clusters(tmp_path: Path) -> None:

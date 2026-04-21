@@ -1,0 +1,5 @@
+manual_edges:
+  - source: "writer.do"
+    target: "reader.do"
+    label: "<b>bold</b> & ampersand"
+    on_missing: warn

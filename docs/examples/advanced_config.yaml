@@ -27,33 +27,25 @@ classification:
 layout:
   rankdir: LR
   unclustered_artifacts_position: right
-  cluster_lanes:
-    - lane: main
-      cluster_ids: [data_prep, analysis]
-    - lane: reporting
-      cluster_ids: [deliverables]
 
 clusters:
   - id: data_prep
     label: Data prep
     members:
       - 01_data/02_scripts/01_build.do
-    lane: main
     order: 1
 
   - id: analysis
     label: Analysis
     members:
       - 02_analysis/02_scripts/01_model.do
-    lane: main
     order: 2
 
   - id: deliverables
     label: Deliverables
     members:
       - 03_tables/02_scripts/01_export.do
-    lane: reporting
-    order: 1
+    order: 3
     collapse: true
 
 # Example alternative view presets:

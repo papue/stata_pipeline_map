@@ -1,0 +1,19 @@
+clustering:
+  strategy: manual
+
+clusters:
+  - cluster_id: data_prep
+    label: "Data Preparation"
+    members:
+      - "01_input_data/import.do"
+      - "01_input_data/clean.do"
+  - cluster_id: analysis
+    label: "Analysis"
+    members:
+      - "02_analysis/regress.do"
+
+manual_edges:
+  - source: "01_input_data/clean.do"
+    target: "02_analysis/regress.do"
+    label: "handoff"
+    on_missing: warn

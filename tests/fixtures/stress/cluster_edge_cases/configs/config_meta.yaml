@@ -1,0 +1,16 @@
+clustering:
+  strategy: manual
+clusters:
+  - cluster_id: leaf_a
+    label: "Data Loading"
+    members:
+      - "scripts/a.do"
+  - cluster_id: leaf_b
+    label: "Analysis"
+    members:
+      - "scripts/b.do"
+  - cluster_id: meta_ab
+    label: "Full Pipeline"
+    member_cluster_ids:
+      - leaf_a
+      - leaf_b

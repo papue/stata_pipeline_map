@@ -1,13 +1,15 @@
 # stata-pipeline-flow
 
-`stata-pipeline-flow` helps you understand a Stata project.
+`stata-pipeline-flow` helps you understand a research project's data pipeline.
 
-It scans your `.do` files and builds a pipeline map:
+It scans your `.do`, `.py`, and `.R` files and builds a pipeline map:
 - which scripts exist
 - which files they read
 - which files they write
 - where scripts depend on each other
 - where the pipeline may be messy or suspicious
+
+Multi-language support (Stata, Python, R) is enabled by default and can be controlled via the `languages:` config section.
 
 This repo already includes a **runnable example project** so you can try the tool immediately.
 
@@ -325,7 +327,9 @@ This matters when many file variants belong to the same logical output.
 Controls automatic grouping of the pipeline.
 
 ### `clusters`
-Lets you manually override cluster membership.
+Lets you manually override cluster membership. Supports two types:
+- **leaf clusters** — group individual files via `members`
+- **meta-clusters** — group other clusters via `member_cluster_ids`, rendering as nested boxes in the graph
 
 ---
 
@@ -413,7 +417,7 @@ You can still create the DOT file and render it manually with the full Graphviz 
 
 ```powershell
 stata-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
-& "C:\Program Files\Graphviz\bin\dot.exe" -Tpng "D:\Sciebo New\stata_pipeline\pubrepo\example\output\pipeline_overview.dot" -o "D:\Sciebo New\stata_pipeline\pubrepo\example\output\pipeline_overview.png"
+& "C:\Program Files\Graphviz\bin\dot.exe" -Tpng "example\output\pipeline_overview.dot" -o "example\output\pipeline_overview.png"
 ```
 
 ### If you do not want image export yet

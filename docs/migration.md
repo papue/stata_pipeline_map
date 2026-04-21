@@ -16,6 +16,8 @@ Behavior changes worth noticing:
 ## New commands
 
 - `snapshot-json` writes a stable JSON graph snapshot for downstream tooling and regression checks
+- `extract-edges` exports a CSV of all parsed edges
+- `export-clusters` exports inferred or resolved cluster config as YAML; accepts `--mode auto|resolved`
 
 ## New config areas
 
@@ -48,11 +50,19 @@ Useful additions:
 Useful additions:
 
 - `layout.rankdir`
-- `layout.cluster_lanes`
 - `layout.unclustered_artifacts_position`
-- `clusters[].lane`
 - `clusters[].order`
 - `clusters[].collapse`
+- `clustering.strategy` — set to `manual` to disable auto clustering entirely
+
+### Multi-language support
+
+- `languages.stata`, `languages.python`, `languages.r` — enable or disable each language parser (all default to `true`)
+- Python (`.py`) and R (`.r`) files are now scanned alongside `.do` files by default
+
+### Manual edges
+
+- `manual_edges:` — top-level flat list; each entry has `source`, `target`, optional `label`, optional `note`, and `on_missing` (`warn`/`placeholder`)
 
 ## Invalid values
 

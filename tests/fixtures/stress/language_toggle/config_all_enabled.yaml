@@ -1,0 +1,4 @@
+languages:
+  stata: true
+  python: true
+  r: true

@@ -1,0 +1,5 @@
+manual_edges:
+  - source: "writer.do"
+    target: "data/output.dta"
+    label: "duplicate of parser edge"
+    on_missing: warn

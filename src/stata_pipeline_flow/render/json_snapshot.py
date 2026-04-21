@@ -50,7 +50,6 @@ def build_snapshot(graph: GraphModel, display: DisplayConfig | None = None, layo
             'display': asdict(display),
             'layout': {
                 'rankdir': layout.rankdir,
-                'cluster_lanes': [asdict(lane) for lane in layout.cluster_lanes],
                 'unclustered_artifacts_position': layout.unclustered_artifacts_position,
             },
         },

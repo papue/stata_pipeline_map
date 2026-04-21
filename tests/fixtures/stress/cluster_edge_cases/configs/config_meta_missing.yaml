@@ -1,0 +1,12 @@
+clustering:
+  strategy: manual
+clusters:
+  - cluster_id: leaf_a
+    label: "Data Loading"
+    members:
+      - "scripts/a.do"
+  - cluster_id: meta_broken
+    label: "Broken Meta"
+    member_cluster_ids:
+      - leaf_a
+      - leaf_missing

@@ -1,0 +1,194 @@
+{
+  "project_root": "D:\\Sciebo New\\stata_pipeline\\tests\\fixtures\\stress\\cat24\\project",
+  "metadata": {
+    "rankdir": "LR",
+    "unclustered_artifacts_position": "auto"
+  },
+  "config": {
+    "display": {
+      "show_edge_labels": false,
+      "mode": "overview",
+      "theme": "modern-light",
+      "show_terminal_outputs": true,
+      "show_temporary_outputs": true,
+      "placeholder_style": "dashed",
+      "label_path_depth": 0,
+      "show_extensions": true,
+      "node_label_style": "basename",
+      "view": "overview",
+      "edge_label_mode": "auto"
+    },
+    "layout": {
+      "rankdir": "LR",
+      "unclustered_artifacts_position": "auto"
+    }
+  },
+  "nodes": [
+    {
+      "node_id": "output/data_clean.dta",
+      "label": "data_clean.dta",
+      "node_type": "artifact",
+      "path": "output/data_clean.dta",
+      "role": "reference_input",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "output/data_temp.dta",
+      "label": "data_temp.dta",
+      "node_type": "artifact",
+      "path": "output/data_temp.dta",
+      "role": "temporary",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "output/data_tmp.dta",
+      "label": "data_tmp.dta",
+      "node_type": "artifact",
+      "path": "output/data_tmp.dta",
+      "role": "temporary",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "output/figure.png",
+      "label": "figure.png",
+      "node_type": "artifact",
+      "path": "output/figure.png",
+      "role": "deliverable",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "output/results.csv",
+      "label": "results.csv",
+      "node_type": "artifact",
+      "path": "output/results.csv",
+      "role": "deliverable",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "scripts/make_outputs.do",
+      "label": "make_outputs.do",
+      "node_type": "script",
+      "path": "scripts/make_outputs.do",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "stata"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "output/data_clean.dta",
+      "target": "scripts/make_outputs.do",
+      "operation": "use",
+      "kind": "reference_input",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "scripts/make_outputs.do",
+      "target": "output/data_temp.dta",
+      "operation": "save",
+      "kind": "temporary",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "scripts/make_outputs.do",
+      "target": "output/data_tmp.dta",
+      "operation": "save",
+      "kind": "temporary",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "scripts/make_outputs.do",
+      "target": "output/figure.png",
+      "operation": "graph_export",
+      "kind": "deliverable",
+      "visible_label": "graph_export",
+      "metadata": {}
+    },
+    {
+      "source": "scripts/make_outputs.do",
+      "target": "output/results.csv",
+      "operation": "export_delimited",
+      "kind": "deliverable",
+      "visible_label": "export_delimited",
+      "metadata": {}
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": "cluster_001",
+      "label": "scripts",
+      "node_ids": [
+        "output/data_clean.dta",
+        "output/data_temp.dta",
+        "output/data_tmp.dta",
+        "output/figure.png",
+        "output/results.csv",
+        "scripts/make_outputs.do"
+      ],
+      "metadata": {
+        "folder_count": "1",
+        "kind": "auto",
+        "order": "1001",
+        "script_count": "1"
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "level": "info",
+      "code": "temporary_outputs_rendered",
+      "message": "Rendered 2 temporary outputs because display.show_temporary_outputs=true",
+      "payload": {
+        "count": "2"
+      }
+    },
+    {
+      "level": "info",
+      "code": "project_scan",
+      "message": "Project discovery completed.",
+      "payload": {
+        "input_files": "0",
+        "output_artifacts": "0",
+        "python_files": "0",
+        "r_files": "0",
+        "stata_files": "1"
+      }
+    },
+    {
+      "level": "info",
+      "code": "unconsumed_output",
+      "message": "Produced artifact is not consumed downstream: output/data_temp.dta",
+      "payload": {
+        "path": "output/data_temp.dta"
+      }
+    },
+    {
+      "level": "info",
+      "code": "unconsumed_output",
+      "message": "Produced artifact is not consumed downstream: output/data_tmp.dta",
+      "payload": {
+        "path": "output/data_tmp.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: output/data_clean.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "output/data_clean.dta"
+      }
+    }
+  ],
+  "excluded_paths": []
+}

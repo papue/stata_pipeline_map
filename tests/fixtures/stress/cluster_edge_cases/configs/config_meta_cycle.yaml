@@ -1,0 +1,11 @@
+clustering:
+  strategy: manual
+clusters:
+  - cluster_id: meta_a
+    label: "A"
+    member_cluster_ids:
+      - meta_b
+  - cluster_id: meta_b
+    label: "B"
+    member_cluster_ids:
+      - meta_a

@@ -1,0 +1,21 @@
+digraph pipeline {
+  rankdir=LR;
+  graph [pad=0.2, nodesep=0.35, ranksep=0.6, splines=true, newrank=true];
+  node [fontsize=10];
+  edge [fontsize=9];
+  subgraph "cluster_cluster_001" {
+    label=<<font point-size="11"><b>.</b></font>>;
+    style="rounded";
+    color="#4A5568";
+    penwidth=2.0;
+    "data/input.csv" [shape=ellipse, label="input.csv"];
+    "data/output.dta" [shape=ellipse, label="output.dta"];
+    "helper.py" [shape=box, style="rounded,filled", margin="0.10,0.06", fillcolor="#EEFAF0", label="helper.py"];
+    "reader.do" [shape=box, style="rounded,filled", margin="0.10,0.06", fillcolor="#EEF3FF", label="reader.do"];
+    "writer.do" [shape=box, style="rounded,filled", margin="0.10,0.06", fillcolor="#EEF3FF", label="writer.do"];
+  }
+  "data/input.csv" -> "helper.py";
+  "data/output.dta" -> "reader.do";
+  "helper.py" -> "data/output.dta";
+  "writer.do" -> "data/output.dta";
+}

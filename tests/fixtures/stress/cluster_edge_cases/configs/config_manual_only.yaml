@@ -1,0 +1,8 @@
+clustering:
+  strategy: manual
+clusters:
+  - cluster_id: my_cluster
+    label: "My Scripts"
+    members:
+      - "scripts/a.do"
+      - "scripts/b.do"

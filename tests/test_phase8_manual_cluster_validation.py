@@ -110,3 +110,52 @@ def test_empty_manual_cluster_emits_diagnostic_and_is_visible_in_validation_repo
     assert 'empty_manual_cluster' in report['summary']['by_code']
     assert report['summary']['by_code']['empty_manual_cluster'] == 1
     assert 'empty_cluster' not in graph.clusters
+
+
+def test_meta_cluster_cycle_emits_diagnostic(tmp_path: Path) -> None:
+    project_root = tmp_path / 'stata_realistic_project'
+    _build_two_stage_project(project_root)
+
+    config = AppConfig(
+        project_root=str(project_root),
+        clusters=[
+            ManualClusterConfig(
+                cluster_id='meta_a',
+                member_cluster_ids=['meta_b'],
+            ),
+            ManualClusterConfig(
+                cluster_id='meta_b',
+                member_cluster_ids=['meta_a'],
+            ),
+        ],
+    )
+
+    graph = PipelineBuilder(config).build(project_root)
+
+    cycle_diags = [d for d in graph.diagnostics if d.code == 'meta_cluster_cycle']
+    assert len(cycle_diags) >= 1
+    assert cycle_diags[0].level == 'warning'
+    assert 'meta_a' in cycle_diags[0].payload['cycle'] or 'meta_b' in cycle_diags[0].payload['cycle']
+
+
+def test_cluster_member_not_found_suggests_close_match(tmp_path: Path) -> None:
+    project_root = tmp_path / 'stata_realistic_project'
+    _build_two_stage_project(project_root)
+
+    # Use a path that's close to an existing node but slightly misspelled
+    config = AppConfig(
+        project_root=str(project_root),
+        clusters=[
+            ManualClusterConfig(
+                cluster_id='my_cluster',
+                members=['01_data/02_scripts/01_bild.do'],  # typo: 'bild' not 'build'
+            )
+        ],
+    )
+
+    graph = PipelineBuilder(config).build(project_root)
+
+    not_found = [d for d in graph.diagnostics if d.code == 'cluster_member_not_found']
+    assert len(not_found) == 1
+    assert 'did you mean' in not_found[0].message
+    assert '01_data/02_scripts/01_build.do' in not_found[0].message

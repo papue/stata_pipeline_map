@@ -1,0 +1,201 @@
+manual_edges:
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_01"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_02"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_03"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_04"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_05"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_06"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_07"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_08"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_09"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_10"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_11"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_12"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_13"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_14"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_15"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_16"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_17"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_18"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_19"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_20"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_21"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_22"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_23"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_24"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_25"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_26"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_27"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_28"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_29"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_30"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_31"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_32"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_33"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_34"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_35"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_36"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_37"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_38"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_39"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_40"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_41"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_42"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_43"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_44"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_45"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_46"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_47"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_48"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_49"
+    on_missing: warn
+  - source: "writer.do"
+    target: "reader.do"
+    label: "edge_50"
+    on_missing: warn

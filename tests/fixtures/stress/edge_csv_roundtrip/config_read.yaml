@@ -1,0 +1,4 @@
+parser:
+  edge_csv_path: viewer_output/stress_edges.csv
+  prefer_existing_edge_csv: true
+  write_edge_csv: false

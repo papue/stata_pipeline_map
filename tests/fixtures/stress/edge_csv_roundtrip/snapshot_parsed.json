@@ -1,0 +1,3697 @@
+{
+  "project_root": "D:\\Sciebo New\\stata_pipeline\\example\\project",
+  "metadata": {
+    "rankdir": "LR",
+    "unclustered_artifacts_position": "auto"
+  },
+  "config": {
+    "display": {
+      "show_edge_labels": false,
+      "mode": "overview",
+      "theme": "modern-light",
+      "show_terminal_outputs": true,
+      "show_temporary_outputs": false,
+      "placeholder_style": "dashed",
+      "label_path_depth": 0,
+      "show_extensions": true,
+      "node_label_style": "basename",
+      "view": "overview",
+      "edge_label_mode": "auto"
+    },
+    "layout": {
+      "rankdir": "LR",
+      "unclustered_artifacts_position": "auto"
+    }
+  },
+  "nodes": [
+    {
+      "node_id": "../02_scripts/r_helpers.R",
+      "label": "r_helpers.R",
+      "node_type": "script",
+      "path": "../02_scripts/r_helpers.R",
+      "role": "script",
+      "cluster_id": "cluster_002",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "01_data/01_input/demographics.csv",
+      "label": "demographics.csv",
+      "node_type": "artifact",
+      "path": "01_data/01_input/demographics.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/01_input/households.csv",
+      "label": "households.csv",
+      "node_type": "artifact",
+      "path": "01_data/01_input/households.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/01_input/policy_flags.dta",
+      "label": "policy_flags.dta",
+      "node_type": "artifact",
+      "path": "01_data/01_input/policy_flags.dta",
+      "role": "reference_input",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/01_input/products.csv",
+      "label": "products.csv",
+      "node_type": "artifact",
+      "path": "01_data/01_input/products.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/01_input/region_lookup.dta",
+      "label": "region_lookup.dta",
+      "node_type": "artifact",
+      "path": "01_data/01_input/region_lookup.dta",
+      "role": "reference_input",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/01_input/scenarios.dta",
+      "label": "scenarios.dta",
+      "node_type": "artifact",
+      "path": "01_data/01_input/scenarios.dta",
+      "role": "reference_input",
+      "cluster_id": "cluster_004",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/01_input/transactions_2023.csv",
+      "label": "transactions_2023.csv",
+      "node_type": "artifact",
+      "path": "01_data/01_input/transactions_2023.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/01_input/transactions_2024.csv",
+      "label": "transactions_2024.csv",
+      "node_type": "artifact",
+      "path": "01_data/01_input/transactions_2024.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/02_scripts/00_build_all_data.do",
+      "label": "00_build_all_data.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/00_build_all_data.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/01_import_households.do",
+      "label": "01_import_households.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/01_import_households.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/02_import_transactions_2023.do",
+      "label": "02_import_transactions_2023.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/02_import_transactions_2023.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/03_import_transactions_2024.do",
+      "label": "03_import_transactions_2024.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/03_import_transactions_2024.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/04_append_transactions.do",
+      "label": "04_append_transactions.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/04_append_transactions.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/05_merge_households_transactions.do",
+      "label": "05_merge_households_transactions.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/05_merge_households_transactions.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/05_prepare_products.do",
+      "label": "05_prepare_products.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/05_prepare_products.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/06_enrich_region.do",
+      "label": "06_enrich_region.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/06_enrich_region.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/06_prepare_demographics.do",
+      "label": "06_prepare_demographics.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/06_prepare_demographics.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/07_prepare_policy_flags.do",
+      "label": "07_prepare_policy_flags.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/07_prepare_policy_flags.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/08_merge_households_transactions.do",
+      "label": "08_merge_households_transactions.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/08_merge_households_transactions.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/09_merge_products.do",
+      "label": "09_merge_products.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/09_merge_products.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/10_merge_demographics.do",
+      "label": "10_merge_demographics.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/10_merge_demographics.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/11_merge_policy_flags.do",
+      "label": "11_merge_policy_flags.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/11_merge_policy_flags.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/02_scripts/12_enrich_region.do",
+      "label": "12_enrich_region.do",
+      "node_type": "script",
+      "path": "01_data/02_scripts/12_enrich_region.do",
+      "role": "script",
+      "cluster_id": "cluster_003",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/demographics_prepared.dta",
+      "label": "demographics_prepared.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/demographics_prepared.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/households_raw.dta",
+      "label": "households_raw.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/households_raw.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/panel_base.dta",
+      "label": "panel_base.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/panel_base.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/panel_enriched.dta",
+      "label": "panel_enriched.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/panel_enriched.dta",
+      "role": "intermediate",
+      "cluster_id": null,
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/panel_with_demographics.dta",
+      "label": "panel_with_demographics.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/panel_with_demographics.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/panel_with_policies.dta",
+      "label": "panel_with_policies.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/panel_with_policies.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/panel_with_products.dta",
+      "label": "panel_with_products.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/panel_with_products.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/policy_flags_prepared.dta",
+      "label": "policy_flags_prepared.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/policy_flags_prepared.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/products_prepared.dta",
+      "label": "products_prepared.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/products_prepared.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/transactions_2023_raw.dta",
+      "label": "transactions_2023_raw.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/transactions_2023_raw.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/transactions_2024_raw.dta",
+      "label": "transactions_2024_raw.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/transactions_2024_raw.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "01_data/03_cleaned_data/transactions_all.dta",
+      "label": "transactions_all.dta",
+      "node_type": "artifact",
+      "path": "01_data/03_cleaned_data/transactions_all.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_003",
+      "metadata": {}
+    },
+    {
+      "node_id": "02_analysis/02_scripts/00_run_analysis.do",
+      "label": "00_run_analysis.do",
+      "node_type": "script",
+      "path": "02_analysis/02_scripts/00_run_analysis.do",
+      "role": "script",
+      "cluster_id": "cluster_004",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "02_analysis/02_scripts/01_construct_sample.do",
+      "label": "01_construct_sample.do",
+      "node_type": "script",
+      "path": "02_analysis/02_scripts/01_construct_sample.do",
+      "role": "script",
+      "cluster_id": "cluster_004",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "02_analysis/02_scripts/02_descriptive_tables.do",
+      "label": "02_descriptive_tables.do",
+      "node_type": "script",
+      "path": "02_analysis/02_scripts/02_descriptive_tables.do",
+      "role": "script",
+      "cluster_id": "cluster_004",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "02_analysis/02_scripts/03_regression_models.do",
+      "label": "03_regression_models.do",
+      "node_type": "script",
+      "path": "02_analysis/02_scripts/03_regression_models.do",
+      "role": "script",
+      "cluster_id": "cluster_004",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "02_analysis/02_scripts/04_figures.do",
+      "label": "04_figures.do",
+      "node_type": "script",
+      "path": "02_analysis/02_scripts/04_figures.do",
+      "role": "script",
+      "cluster_id": "cluster_004",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "02_analysis/03_outputs/analysis_sample.dta",
+      "label": "analysis_sample.dta",
+      "node_type": "artifact",
+      "path": "02_analysis/03_outputs/analysis_sample.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_004",
+      "metadata": {}
+    },
+    {
+      "node_id": "02_analysis/03_outputs/figure_binscatter.pdf",
+      "label": "figure_binscatter.pdf",
+      "node_type": "artifact",
+      "path": "02_analysis/03_outputs/figure_binscatter.pdf",
+      "role": "deliverable",
+      "cluster_id": "cluster_004",
+      "metadata": {}
+    },
+    {
+      "node_id": "02_analysis/03_outputs/figure_trends.png",
+      "label": "figure_trends.png",
+      "node_type": "artifact",
+      "path": "02_analysis/03_outputs/figure_trends.png",
+      "role": "deliverable",
+      "cluster_id": "cluster_004",
+      "metadata": {}
+    },
+    {
+      "node_id": "02_analysis/03_outputs/model_main.ster",
+      "label": "model_main.ster",
+      "node_type": "artifact",
+      "path": "02_analysis/03_outputs/model_main.ster",
+      "role": "deliverable",
+      "cluster_id": "cluster_004",
+      "metadata": {}
+    },
+    {
+      "node_id": "02_analysis/03_outputs/regression_coefficients.csv",
+      "label": "regression_coefficients.csv",
+      "node_type": "artifact",
+      "path": "02_analysis/03_outputs/regression_coefficients.csv",
+      "role": "deliverable",
+      "cluster_id": "cluster_004",
+      "metadata": {}
+    },
+    {
+      "node_id": "02_analysis/03_outputs/table_summary.xlsx",
+      "label": "table_summary.xlsx",
+      "node_type": "artifact",
+      "path": "02_analysis/03_outputs/table_summary.xlsx",
+      "role": "deliverable",
+      "cluster_id": "cluster_004",
+      "metadata": {}
+    },
+    {
+      "node_id": "03_robustness/02_scripts/00_run_robustness.do",
+      "label": "00_run_robustness.do",
+      "node_type": "script",
+      "path": "03_robustness/02_scripts/00_run_robustness.do",
+      "role": "script",
+      "cluster_id": "cluster_005",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "03_robustness/02_scripts/01_alt_sample.do",
+      "label": "01_alt_sample.do",
+      "node_type": "script",
+      "path": "03_robustness/02_scripts/01_alt_sample.do",
+      "role": "script",
+      "cluster_id": "cluster_005",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "03_robustness/02_scripts/02_robustness_models.do",
+      "label": "02_robustness_models.do",
+      "node_type": "script",
+      "path": "03_robustness/02_scripts/02_robustness_models.do",
+      "role": "script",
+      "cluster_id": "cluster_005",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "03_robustness/02_scripts/03_placebo_checks.do",
+      "label": "03_placebo_checks.do",
+      "node_type": "script",
+      "path": "03_robustness/02_scripts/03_placebo_checks.do",
+      "role": "script",
+      "cluster_id": "cluster_005",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "03_robustness/03_outputs/model_robust.ster",
+      "label": "model_robust.ster",
+      "node_type": "artifact",
+      "path": "03_robustness/03_outputs/model_robust.ster",
+      "role": "deliverable",
+      "cluster_id": "cluster_005",
+      "metadata": {}
+    },
+    {
+      "node_id": "03_robustness/03_outputs/placebo_summary.csv",
+      "label": "placebo_summary.csv",
+      "node_type": "artifact",
+      "path": "03_robustness/03_outputs/placebo_summary.csv",
+      "role": "deliverable",
+      "cluster_id": "cluster_005",
+      "metadata": {}
+    },
+    {
+      "node_id": "03_robustness/03_outputs/robust_sample.dta",
+      "label": "robust_sample.dta",
+      "node_type": "artifact",
+      "path": "03_robustness/03_outputs/robust_sample.dta",
+      "role": "intermediate",
+      "cluster_id": "cluster_005",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/01_input/py_admin_data.xlsx",
+      "label": "py_admin_data.xlsx",
+      "node_type": "artifact",
+      "path": "04_python_prep/01_input/py_admin_data.xlsx",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/01_input/py_census_data.csv",
+      "label": "py_census_data.csv",
+      "node_type": "artifact",
+      "path": "04_python_prep/01_input/py_census_data.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/01_input/py_districts.shp",
+      "label": "py_districts.shp",
+      "node_type": "artifact",
+      "path": "04_python_prep/01_input/py_districts.shp",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/01_input/py_panel_a.parquet",
+      "label": "py_panel_a.parquet",
+      "node_type": "artifact",
+      "path": "04_python_prep/01_input/py_panel_a.parquet",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/01_input/py_panel_b.parquet",
+      "label": "py_panel_b.parquet",
+      "node_type": "artifact",
+      "path": "04_python_prep/01_input/py_panel_b.parquet",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/01_input/py_panel_clean.feather",
+      "label": "py_panel_clean.feather",
+      "node_type": "artifact",
+      "path": "04_python_prep/01_input/py_panel_clean.feather",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/01_input/py_raw_panel.parquet",
+      "label": "py_raw_panel.parquet",
+      "node_type": "artifact",
+      "path": "04_python_prep/01_input/py_raw_panel.parquet",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/01_input/py_scraped_page.html",
+      "label": "py_scraped_page.html",
+      "node_type": "artifact",
+      "path": "04_python_prep/01_input/py_scraped_page.html",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/01_input/py_survey.dta",
+      "label": "py_survey.dta",
+      "node_type": "artifact",
+      "path": "04_python_prep/01_input/py_survey.dta",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/01_input/py_timeseries.h5",
+      "label": "py_timeseries.h5",
+      "node_type": "artifact",
+      "path": "04_python_prep/01_input/py_timeseries.h5",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_build_features.py",
+      "label": "py_build_features.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_build_features.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_db_pipeline.py",
+      "label": "py_db_pipeline.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_db_pipeline.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_excel_json.py",
+      "label": "py_excel_json.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_excel_json.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_export_tables.py",
+      "label": "py_export_tables.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_export_tables.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_format_zoo.py",
+      "label": "py_format_zoo.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_format_zoo.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_geo_analysis.py",
+      "label": "py_geo_analysis.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_geo_analysis.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_geo_map.py",
+      "label": "py_geo_map.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_geo_map.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_helper_imports.py",
+      "label": "py_helper_imports.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_helper_imports.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_ingest_survey.py",
+      "label": "py_ingest_survey.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_ingest_survey.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_merge_panels.py",
+      "label": "py_merge_panels.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_merge_panels.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_model_persistence.py",
+      "label": "py_model_persistence.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_model_persistence.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_path_patterns.py",
+      "label": "py_path_patterns.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_path_patterns.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_run_models.py",
+      "label": "py_run_models.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_run_models.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/02_scripts/py_scrape_output.py",
+      "label": "py_scrape_output.py",
+      "node_type": "script",
+      "path": "04_python_prep/02_scripts/py_scrape_output.py",
+      "role": "script",
+      "cluster_id": "cluster_006",
+      "metadata": {
+        "language": "python"
+      }
+    },
+    {
+      "node_id": "04_python_prep/03_output/py_admin_clean.xlsx",
+      "label": "py_admin_clean.xlsx",
+      "node_type": "artifact",
+      "path": "04_python_prep/03_output/py_admin_clean.xlsx",
+      "role": "deliverable",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/03_output/py_array_store.zarr",
+      "label": "py_array_store.zarr",
+      "node_type": "artifact",
+      "path": "04_python_prep/03_output/py_array_store.zarr",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/03_output/py_coefs_plot.png",
+      "label": "py_coefs_plot.png",
+      "node_type": "artifact",
+      "path": "04_python_prep/03_output/py_coefs_plot.png",
+      "role": "deliverable",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/03_output/py_districts_joined.geojson",
+      "label": "py_districts_joined.geojson",
+      "node_type": "artifact",
+      "path": "04_python_prep/03_output/py_districts_joined.geojson",
+      "role": "generated_artifact",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/03_output/py_feature_distributions.png",
+      "label": "py_feature_distributions.png",
+      "node_type": "artifact",
+      "path": "04_python_prep/03_output/py_feature_distributions.png",
+      "role": "deliverable",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/03_output/py_features.parquet",
+      "label": "py_features.parquet",
+      "node_type": "artifact",
+      "path": "04_python_prep/03_output/py_features.parquet",
+      "role": "generated_artifact",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/03_output/py_final_tables.xlsx",
+      "label": "py_final_tables.xlsx",
+      "node_type": "artifact",
+      "path": "04_python_prep/03_output/py_final_tables.xlsx",
+      "role": "deliverable",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/03_output/py_model_results.csv",
+      "label": "py_model_results.csv",
+      "node_type": "artifact",
+      "path": "04_python_prep/03_output/py_model_results.csv",
+      "role": "generated_artifact",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "04_python_prep/03_output/py_panel_merged.parquet",
+      "label": "py_panel_merged.parquet",
+      "node_type": "artifact",
+      "path": "04_python_prep/03_output/py_panel_merged.parquet",
+      "role": "generated_artifact",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/01_input/r_cohort_2020.csv",
+      "label": "r_cohort_2020.csv",
+      "node_type": "artifact",
+      "path": "05_r_analysis/01_input/r_cohort_2020.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/01_input/r_cohort_2021.csv",
+      "label": "r_cohort_2021.csv",
+      "node_type": "artifact",
+      "path": "05_r_analysis/01_input/r_cohort_2021.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/01_input/r_household_weights.xlsx",
+      "label": "r_household_weights.xlsx",
+      "node_type": "artifact",
+      "path": "05_r_analysis/01_input/r_household_weights.xlsx",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/01_input/r_legacy_stata.dta",
+      "label": "r_legacy_stata.dta",
+      "node_type": "artifact",
+      "path": "05_r_analysis/01_input/r_legacy_stata.dta",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/01_input/r_model_results.csv",
+      "label": "r_model_results.csv",
+      "node_type": "artifact",
+      "path": "05_r_analysis/01_input/r_model_results.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/01_input/r_panel_data.feather",
+      "label": "r_panel_data.feather",
+      "node_type": "artifact",
+      "path": "05_r_analysis/01_input/r_panel_data.feather",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/01_input/r_panel_data.fst",
+      "label": "r_panel_data.fst",
+      "node_type": "artifact",
+      "path": "05_r_analysis/01_input/r_panel_data.fst",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/01_input/r_poi.geojson",
+      "label": "r_poi.geojson",
+      "node_type": "artifact",
+      "path": "05_r_analysis/01_input/r_poi.geojson",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/01_input/r_region_lookup.csv",
+      "label": "r_region_lookup.csv",
+      "node_type": "artifact",
+      "path": "05_r_analysis/01_input/r_region_lookup.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/01_input/r_scraped_page.html",
+      "label": "r_scraped_page.html",
+      "node_type": "artifact",
+      "path": "05_r_analysis/01_input/r_scraped_page.html",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/01_input/r_study_regions.shp",
+      "label": "r_study_regions.shp",
+      "node_type": "artifact",
+      "path": "05_r_analysis/01_input/r_study_regions.shp",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/02_scripts/r_clean_survey.R",
+      "label": "r_clean_survey.R",
+      "node_type": "script",
+      "path": "05_r_analysis/02_scripts/r_clean_survey.R",
+      "role": "script",
+      "cluster_id": "cluster_007",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "05_r_analysis/02_scripts/r_db_pipeline.R",
+      "label": "r_db_pipeline.R",
+      "node_type": "script",
+      "path": "05_r_analysis/02_scripts/r_db_pipeline.R",
+      "role": "script",
+      "cluster_id": "cluster_007",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "05_r_analysis/02_scripts/r_descriptives.R",
+      "label": "r_descriptives.R",
+      "node_type": "script",
+      "path": "05_r_analysis/02_scripts/r_descriptives.R",
+      "role": "script",
+      "cluster_id": "cluster_007",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "05_r_analysis/02_scripts/r_export_results.R",
+      "label": "r_export_results.R",
+      "node_type": "script",
+      "path": "05_r_analysis/02_scripts/r_export_results.R",
+      "role": "script",
+      "cluster_id": "cluster_007",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "05_r_analysis/02_scripts/r_format_zoo.R",
+      "label": "r_format_zoo.R",
+      "node_type": "script",
+      "path": "05_r_analysis/02_scripts/r_format_zoo.R",
+      "role": "script",
+      "cluster_id": "cluster_007",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "05_r_analysis/02_scripts/r_geo_analysis.R",
+      "label": "r_geo_analysis.R",
+      "node_type": "script",
+      "path": "05_r_analysis/02_scripts/r_geo_analysis.R",
+      "role": "script",
+      "cluster_id": "cluster_007",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "05_r_analysis/02_scripts/r_merge_cohorts.R",
+      "label": "r_merge_cohorts.R",
+      "node_type": "script",
+      "path": "05_r_analysis/02_scripts/r_merge_cohorts.R",
+      "role": "script",
+      "cluster_id": "cluster_007",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "05_r_analysis/02_scripts/r_model_persistence.R",
+      "label": "r_model_persistence.R",
+      "node_type": "script",
+      "path": "05_r_analysis/02_scripts/r_model_persistence.R",
+      "role": "script",
+      "cluster_id": "cluster_007",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "05_r_analysis/02_scripts/r_regressions.R",
+      "label": "r_regressions.R",
+      "node_type": "script",
+      "path": "05_r_analysis/02_scripts/r_regressions.R",
+      "role": "script",
+      "cluster_id": "cluster_007",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "05_r_analysis/02_scripts/r_scrape_output.R",
+      "label": "r_scrape_output.R",
+      "node_type": "script",
+      "path": "05_r_analysis/02_scripts/r_scrape_output.R",
+      "role": "script",
+      "cluster_id": "cluster_007",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "05_r_analysis/02_scripts/r_source_chain.R",
+      "label": "r_source_chain.R",
+      "node_type": "script",
+      "path": "05_r_analysis/02_scripts/r_source_chain.R",
+      "role": "script",
+      "cluster_id": "cluster_007",
+      "metadata": {
+        "language": "r"
+      }
+    },
+    {
+      "node_id": "05_r_analysis/03_output/r_coef_plot.png",
+      "label": "r_coef_plot.png",
+      "node_type": "artifact",
+      "path": "05_r_analysis/03_output/r_coef_plot.png",
+      "role": "deliverable",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/03_output/r_cohorts_merged.csv",
+      "label": "r_cohorts_merged.csv",
+      "node_type": "artifact",
+      "path": "05_r_analysis/03_output/r_cohorts_merged.csv",
+      "role": "generated_artifact",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/03_output/r_descriptive_plots.pdf",
+      "label": "r_descriptive_plots.pdf",
+      "node_type": "artifact",
+      "path": "05_r_analysis/03_output/r_descriptive_plots.pdf",
+      "role": "deliverable",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/03_output/r_descriptives_table.csv",
+      "label": "r_descriptives_table.csv",
+      "node_type": "artifact",
+      "path": "05_r_analysis/03_output/r_descriptives_table.csv",
+      "role": "deliverable",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/03_output/r_final_results.xlsx",
+      "label": "r_final_results.xlsx",
+      "node_type": "artifact",
+      "path": "05_r_analysis/03_output/r_final_results.xlsx",
+      "role": "deliverable",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/03_output/r_outcome_boxplot.png",
+      "label": "r_outcome_boxplot.png",
+      "node_type": "artifact",
+      "path": "05_r_analysis/03_output/r_outcome_boxplot.png",
+      "role": "deliverable",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/03_output/r_panel_clean.csv",
+      "label": "r_panel_clean.csv",
+      "node_type": "artifact",
+      "path": "05_r_analysis/03_output/r_panel_clean.csv",
+      "role": "generated_artifact",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/03_output/r_region_map.png",
+      "label": "r_region_map.png",
+      "node_type": "artifact",
+      "path": "05_r_analysis/03_output/r_region_map.png",
+      "role": "deliverable",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/03_output/r_regression_coefs.csv",
+      "label": "r_regression_coefs.csv",
+      "node_type": "artifact",
+      "path": "05_r_analysis/03_output/r_regression_coefs.csv",
+      "role": "generated_artifact",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/03_output/r_stata_export.xlsx",
+      "label": "r_stata_export.xlsx",
+      "node_type": "artifact",
+      "path": "05_r_analysis/03_output/r_stata_export.xlsx",
+      "role": "deliverable",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "05_r_analysis/03_output/r_top10_estimates.csv",
+      "label": "r_top10_estimates.csv",
+      "node_type": "artifact",
+      "path": "05_r_analysis/03_output/r_top10_estimates.csv",
+      "role": "deliverable",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "C:/data/gis/admin_boundaries.gpkg",
+      "label": "admin_boundaries.gpkg",
+      "node_type": "artifact",
+      "path": "C:/data/gis/admin_boundaries.gpkg",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "C:/data/r_model_priors.rds",
+      "label": "r_model_priors.rds",
+      "node_type": "artifact",
+      "path": "C:/data/r_model_priors.rds",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "C:/data/raw/py_survey_raw.csv",
+      "label": "py_survey_raw.csv",
+      "node_type": "artifact",
+      "path": "C:/data/raw/py_survey_raw.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "C:/data/raw/r_spss_survey.sav",
+      "label": "r_spss_survey.sav",
+      "node_type": "artifact",
+      "path": "C:/data/raw/r_spss_survey.sav",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "C:/data/raw/r_survey_micro.csv",
+      "label": "r_survey_micro.csv",
+      "node_type": "artifact",
+      "path": "C:/data/raw/r_survey_micro.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "C:/data/templates/py_table_template.xlsx",
+      "label": "py_table_template.xlsx",
+      "node_type": "artifact",
+      "path": "C:/data/templates/py_table_template.xlsx",
+      "role": "temporary",
+      "cluster_id": "cluster_006",
+      "metadata": {}
+    },
+    {
+      "node_id": "C:/projects/cache/r_auxiliary_estimates.rds",
+      "label": "r_auxiliary_estimates.rds",
+      "node_type": "artifact",
+      "path": "C:/projects/cache/r_auxiliary_estimates.rds",
+      "role": "reference_input",
+      "cluster_id": "cluster_007",
+      "metadata": {}
+    },
+    {
+      "node_id": "master.do",
+      "label": "master.do",
+      "node_type": "script",
+      "path": "master.do",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "stata"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "master.do",
+      "target": "01_data/02_scripts/00_build_all_data.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "master.do",
+      "target": "02_analysis/02_scripts/00_run_analysis.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/01_import_households.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/02_import_transactions_2023.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/03_import_transactions_2024.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/04_append_transactions.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/05_prepare_products.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/06_prepare_demographics.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/07_prepare_policy_flags.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/08_merge_households_transactions.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/09_merge_products.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/10_merge_demographics.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/11_merge_policy_flags.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/00_build_all_data.do",
+      "target": "01_data/02_scripts/12_enrich_region.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/02_scripts/00_run_analysis.do",
+      "target": "02_analysis/02_scripts/01_construct_sample.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/02_scripts/00_run_analysis.do",
+      "target": "02_analysis/02_scripts/02_descriptive_tables.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/02_scripts/00_run_analysis.do",
+      "target": "02_analysis/02_scripts/03_regression_models.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/02_scripts/00_run_analysis.do",
+      "target": "02_analysis/02_scripts/04_figures.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "03_robustness/02_scripts/00_run_robustness.do",
+      "target": "03_robustness/02_scripts/01_alt_sample.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "03_robustness/02_scripts/00_run_robustness.do",
+      "target": "03_robustness/02_scripts/02_robustness_models.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "03_robustness/02_scripts/00_run_robustness.do",
+      "target": "03_robustness/02_scripts/03_placebo_checks.do",
+      "operation": "do",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_descriptives.R",
+      "target": "05_r_analysis/02_scripts/r_merge_cohorts.R",
+      "operation": "source",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_source_chain.R",
+      "target": "../02_scripts/r_helpers.R",
+      "operation": "source",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_source_chain.R",
+      "target": "05_r_analysis/02_scripts/r_clean_survey.R",
+      "operation": "source",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_source_chain.R",
+      "target": "05_r_analysis/02_scripts/r_merge_cohorts.R",
+      "operation": "source",
+      "kind": "script_call",
+      "visible_label": null,
+      "metadata": {}
+    },
+    {
+      "source": "01_data/01_input/households.csv",
+      "target": "01_data/02_scripts/01_import_households.do",
+      "operation": "import",
+      "kind": "reference_input",
+      "visible_label": "import",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/01_input/transactions_2023.csv",
+      "target": "01_data/02_scripts/02_import_transactions_2023.do",
+      "operation": "import",
+      "kind": "reference_input",
+      "visible_label": "import",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/01_input/transactions_2024.csv",
+      "target": "01_data/02_scripts/03_import_transactions_2024.do",
+      "operation": "import",
+      "kind": "reference_input",
+      "visible_label": "import",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/transactions_2023_raw.dta",
+      "target": "01_data/02_scripts/04_append_transactions.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/transactions_2024_raw.dta",
+      "target": "01_data/02_scripts/04_append_transactions.do",
+      "operation": "append",
+      "kind": "intermediate",
+      "visible_label": "append",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/households_raw.dta",
+      "target": "01_data/02_scripts/05_merge_households_transactions.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/transactions_all.dta",
+      "target": "01_data/02_scripts/05_merge_households_transactions.do",
+      "operation": "merge",
+      "kind": "intermediate",
+      "visible_label": "merge",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/01_input/products.csv",
+      "target": "01_data/02_scripts/05_prepare_products.do",
+      "operation": "import",
+      "kind": "reference_input",
+      "visible_label": "import",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/01_input/region_lookup.dta",
+      "target": "01_data/02_scripts/06_enrich_region.do",
+      "operation": "merge",
+      "kind": "reference_input",
+      "visible_label": "merge",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/panel_base.dta",
+      "target": "01_data/02_scripts/06_enrich_region.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/01_input/demographics.csv",
+      "target": "01_data/02_scripts/06_prepare_demographics.do",
+      "operation": "import",
+      "kind": "reference_input",
+      "visible_label": "import",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/01_input/policy_flags.dta",
+      "target": "01_data/02_scripts/07_prepare_policy_flags.do",
+      "operation": "use",
+      "kind": "reference_input",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/households_raw.dta",
+      "target": "01_data/02_scripts/08_merge_households_transactions.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/transactions_all.dta",
+      "target": "01_data/02_scripts/08_merge_households_transactions.do",
+      "operation": "merge",
+      "kind": "intermediate",
+      "visible_label": "merge",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/panel_base.dta",
+      "target": "01_data/02_scripts/09_merge_products.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/products_prepared.dta",
+      "target": "01_data/02_scripts/09_merge_products.do",
+      "operation": "merge",
+      "kind": "intermediate",
+      "visible_label": "merge",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/demographics_prepared.dta",
+      "target": "01_data/02_scripts/10_merge_demographics.do",
+      "operation": "merge",
+      "kind": "intermediate",
+      "visible_label": "merge",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/panel_with_products.dta",
+      "target": "01_data/02_scripts/10_merge_demographics.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/panel_with_demographics.dta",
+      "target": "01_data/02_scripts/11_merge_policy_flags.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/policy_flags_prepared.dta",
+      "target": "01_data/02_scripts/11_merge_policy_flags.do",
+      "operation": "merge",
+      "kind": "intermediate",
+      "visible_label": "merge",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/01_input/region_lookup.dta",
+      "target": "01_data/02_scripts/12_enrich_region.do",
+      "operation": "merge",
+      "kind": "reference_input",
+      "visible_label": "merge",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/panel_with_policies.dta",
+      "target": "01_data/02_scripts/12_enrich_region.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/01_input/scenarios.dta",
+      "target": "02_analysis/02_scripts/01_construct_sample.do",
+      "operation": "cross",
+      "kind": "reference_input",
+      "visible_label": "cross",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/panel_enriched.dta",
+      "target": "02_analysis/02_scripts/01_construct_sample.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/03_outputs/analysis_sample.dta",
+      "target": "02_analysis/02_scripts/02_descriptive_tables.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/03_outputs/analysis_sample.dta",
+      "target": "02_analysis/02_scripts/03_regression_models.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/03_outputs/analysis_sample.dta",
+      "target": "02_analysis/02_scripts/04_figures.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/03_cleaned_data/panel_enriched.dta",
+      "target": "03_robustness/02_scripts/01_alt_sample.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "03_robustness/03_outputs/robust_sample.dta",
+      "target": "03_robustness/02_scripts/02_robustness_models.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "03_robustness/03_outputs/robust_sample.dta",
+      "target": "03_robustness/02_scripts/03_placebo_checks.do",
+      "operation": "use",
+      "kind": "intermediate",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/03_output/py_panel_merged.parquet",
+      "target": "04_python_prep/02_scripts/py_build_features.py",
+      "operation": "read_parquet",
+      "kind": "generated_artifact",
+      "visible_label": "read_parquet",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/03_output/py_features.parquet",
+      "target": "04_python_prep/02_scripts/py_db_pipeline.py",
+      "operation": "read_parquet",
+      "kind": "generated_artifact",
+      "visible_label": "read_parquet",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/01_input/py_admin_data.xlsx",
+      "target": "04_python_prep/02_scripts/py_excel_json.py",
+      "operation": "read_excel",
+      "kind": "reference_input",
+      "visible_label": "read_excel",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/03_output/py_model_results.csv",
+      "target": "04_python_prep/02_scripts/py_export_tables.py",
+      "operation": "read_csv",
+      "kind": "generated_artifact",
+      "visible_label": "read_csv",
+      "metadata": {}
+    },
+    {
+      "source": "C:/data/templates/py_table_template.xlsx",
+      "target": "04_python_prep/02_scripts/py_export_tables.py",
+      "operation": "read_excel",
+      "kind": "temporary",
+      "visible_label": "read_excel",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/01_input/py_panel_clean.feather",
+      "target": "04_python_prep/02_scripts/py_format_zoo.py",
+      "operation": "read_feather",
+      "kind": "reference_input",
+      "visible_label": "read_feather",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/01_input/py_survey.dta",
+      "target": "04_python_prep/02_scripts/py_format_zoo.py",
+      "operation": "read_stata",
+      "kind": "reference_input",
+      "visible_label": "read_stata",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/01_input/py_timeseries.h5",
+      "target": "04_python_prep/02_scripts/py_format_zoo.py",
+      "operation": "read_hdf",
+      "kind": "reference_input",
+      "visible_label": "read_hdf",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/01_input/py_districts.shp",
+      "target": "04_python_prep/02_scripts/py_geo_analysis.py",
+      "operation": "gpd_read_file",
+      "kind": "reference_input",
+      "visible_label": "gpd_read_file",
+      "metadata": {}
+    },
+    {
+      "source": "C:/data/gis/admin_boundaries.gpkg",
+      "target": "04_python_prep/02_scripts/py_geo_analysis.py",
+      "operation": "gpd_read_file",
+      "kind": "reference_input",
+      "visible_label": "gpd_read_file",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/03_output/py_districts_joined.geojson",
+      "target": "04_python_prep/02_scripts/py_geo_map.py",
+      "operation": "gpd_read_file",
+      "kind": "generated_artifact",
+      "visible_label": "gpd_read_file",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/01_input/py_raw_panel.parquet",
+      "target": "04_python_prep/02_scripts/py_helper_imports.py",
+      "operation": "read_parquet",
+      "kind": "reference_input",
+      "visible_label": "read_parquet",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/01_input/py_census_data.csv",
+      "target": "04_python_prep/02_scripts/py_ingest_survey.py",
+      "operation": "read_csv",
+      "kind": "reference_input",
+      "visible_label": "read_csv",
+      "metadata": {}
+    },
+    {
+      "source": "C:/data/raw/py_survey_raw.csv",
+      "target": "04_python_prep/02_scripts/py_ingest_survey.py",
+      "operation": "read_csv",
+      "kind": "reference_input",
+      "visible_label": "read_csv",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/01_input/py_panel_a.parquet",
+      "target": "04_python_prep/02_scripts/py_merge_panels.py",
+      "operation": "read_parquet",
+      "kind": "reference_input",
+      "visible_label": "read_parquet",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/01_input/py_panel_b.parquet",
+      "target": "04_python_prep/02_scripts/py_merge_panels.py",
+      "operation": "read_parquet",
+      "kind": "reference_input",
+      "visible_label": "read_parquet",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/01_input/py_census_data.csv",
+      "target": "04_python_prep/02_scripts/py_path_patterns.py",
+      "operation": "read_csv",
+      "kind": "reference_input",
+      "visible_label": "read_csv",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/03_output/py_array_store.zarr",
+      "target": "04_python_prep/02_scripts/py_path_patterns.py",
+      "operation": "open_read",
+      "kind": "reference_input",
+      "visible_label": "open_read",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/03_output/py_features.parquet",
+      "target": "04_python_prep/02_scripts/py_run_models.py",
+      "operation": "read_parquet",
+      "kind": "generated_artifact",
+      "visible_label": "read_parquet",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/01_input/py_scraped_page.html",
+      "target": "04_python_prep/02_scripts/py_scrape_output.py",
+      "operation": "open_read",
+      "kind": "reference_input",
+      "visible_label": "open_read",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/01_input/r_household_weights.xlsx",
+      "target": "05_r_analysis/02_scripts/r_clean_survey.R",
+      "operation": "read_xlsx",
+      "kind": "reference_input",
+      "visible_label": "read_xlsx",
+      "metadata": {}
+    },
+    {
+      "source": "C:/data/raw/r_survey_micro.csv",
+      "target": "05_r_analysis/02_scripts/r_clean_survey.R",
+      "operation": "read_csv",
+      "kind": "reference_input",
+      "visible_label": "read_csv",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/01_input/r_model_results.csv",
+      "target": "05_r_analysis/02_scripts/r_db_pipeline.R",
+      "operation": "read_csv_readr",
+      "kind": "reference_input",
+      "visible_label": "read_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/01_input/r_region_lookup.csv",
+      "target": "05_r_analysis/02_scripts/r_db_pipeline.R",
+      "operation": "read_csv_readr",
+      "kind": "reference_input",
+      "visible_label": "read_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/03_output/r_cohorts_merged.csv",
+      "target": "05_r_analysis/02_scripts/r_descriptives.R",
+      "operation": "read_csv_readr",
+      "kind": "generated_artifact",
+      "visible_label": "read_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/03_output/r_regression_coefs.csv",
+      "target": "05_r_analysis/02_scripts/r_export_results.R",
+      "operation": "read_csv_readr",
+      "kind": "generated_artifact",
+      "visible_label": "read_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "C:/projects/cache/r_auxiliary_estimates.rds",
+      "target": "05_r_analysis/02_scripts/r_export_results.R",
+      "operation": "readRDS",
+      "kind": "reference_input",
+      "visible_label": "readRDS",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/01_input/r_legacy_stata.dta",
+      "target": "05_r_analysis/02_scripts/r_format_zoo.R",
+      "operation": "read_dta",
+      "kind": "reference_input",
+      "visible_label": "read_dta",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/01_input/r_panel_data.feather",
+      "target": "05_r_analysis/02_scripts/r_format_zoo.R",
+      "operation": "read_feather",
+      "kind": "reference_input",
+      "visible_label": "read_feather",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/01_input/r_panel_data.fst",
+      "target": "05_r_analysis/02_scripts/r_format_zoo.R",
+      "operation": "read.fst",
+      "kind": "reference_input",
+      "visible_label": "read.fst",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/03_output/r_panel_clean.csv",
+      "target": "05_r_analysis/02_scripts/r_format_zoo.R",
+      "operation": "read_csv_readr",
+      "kind": "generated_artifact",
+      "visible_label": "read_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "C:/data/raw/r_spss_survey.sav",
+      "target": "05_r_analysis/02_scripts/r_format_zoo.R",
+      "operation": "read_sav",
+      "kind": "reference_input",
+      "visible_label": "read_sav",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/01_input/r_poi.geojson",
+      "target": "05_r_analysis/02_scripts/r_geo_analysis.R",
+      "operation": "st_read",
+      "kind": "reference_input",
+      "visible_label": "st_read",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/01_input/r_study_regions.shp",
+      "target": "05_r_analysis/02_scripts/r_geo_analysis.R",
+      "operation": "st_read",
+      "kind": "reference_input",
+      "visible_label": "st_read",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/01_input/r_cohort_2020.csv",
+      "target": "05_r_analysis/02_scripts/r_merge_cohorts.R",
+      "operation": "read_csv_readr",
+      "kind": "reference_input",
+      "visible_label": "read_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/01_input/r_cohort_2021.csv",
+      "target": "05_r_analysis/02_scripts/r_merge_cohorts.R",
+      "operation": "read_csv_readr",
+      "kind": "reference_input",
+      "visible_label": "read_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/03_output/r_panel_clean.csv",
+      "target": "05_r_analysis/02_scripts/r_model_persistence.R",
+      "operation": "read_csv_readr",
+      "kind": "generated_artifact",
+      "visible_label": "read_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/03_output/r_cohorts_merged.csv",
+      "target": "05_r_analysis/02_scripts/r_regressions.R",
+      "operation": "read_csv_readr",
+      "kind": "generated_artifact",
+      "visible_label": "read_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "C:/data/r_model_priors.rds",
+      "target": "05_r_analysis/02_scripts/r_regressions.R",
+      "operation": "readRDS",
+      "kind": "reference_input",
+      "visible_label": "readRDS",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/01_input/r_scraped_page.html",
+      "target": "05_r_analysis/02_scripts/r_scrape_output.R",
+      "operation": "read_html",
+      "kind": "reference_input",
+      "visible_label": "read_html",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/01_import_households.do",
+      "target": "01_data/03_cleaned_data/households_raw.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/02_import_transactions_2023.do",
+      "target": "01_data/03_cleaned_data/transactions_2023_raw.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/03_import_transactions_2024.do",
+      "target": "01_data/03_cleaned_data/transactions_2024_raw.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/04_append_transactions.do",
+      "target": "01_data/03_cleaned_data/transactions_all.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/05_merge_households_transactions.do",
+      "target": "01_data/03_cleaned_data/panel_base.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/05_prepare_products.do",
+      "target": "01_data/03_cleaned_data/products_prepared.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/06_enrich_region.do",
+      "target": "01_data/03_cleaned_data/panel_enriched.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/06_prepare_demographics.do",
+      "target": "01_data/03_cleaned_data/demographics_prepared.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/07_prepare_policy_flags.do",
+      "target": "01_data/03_cleaned_data/policy_flags_prepared.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/08_merge_households_transactions.do",
+      "target": "01_data/03_cleaned_data/panel_base.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/09_merge_products.do",
+      "target": "01_data/03_cleaned_data/panel_with_products.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/10_merge_demographics.do",
+      "target": "01_data/03_cleaned_data/panel_with_demographics.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/11_merge_policy_flags.do",
+      "target": "01_data/03_cleaned_data/panel_with_policies.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "01_data/02_scripts/12_enrich_region.do",
+      "target": "01_data/03_cleaned_data/panel_enriched.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/02_scripts/01_construct_sample.do",
+      "target": "02_analysis/03_outputs/analysis_sample.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/02_scripts/02_descriptive_tables.do",
+      "target": "02_analysis/03_outputs/table_summary.xlsx",
+      "operation": "export_excel",
+      "kind": "deliverable",
+      "visible_label": "export_excel",
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/02_scripts/03_regression_models.do",
+      "target": "02_analysis/03_outputs/model_main.ster",
+      "operation": "save",
+      "kind": "deliverable",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/02_scripts/03_regression_models.do",
+      "target": "02_analysis/03_outputs/regression_coefficients.csv",
+      "operation": "export_delimited",
+      "kind": "deliverable",
+      "visible_label": "export_delimited",
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/02_scripts/04_figures.do",
+      "target": "02_analysis/03_outputs/figure_binscatter.pdf",
+      "operation": "graph_export",
+      "kind": "deliverable",
+      "visible_label": "graph_export",
+      "metadata": {}
+    },
+    {
+      "source": "02_analysis/02_scripts/04_figures.do",
+      "target": "02_analysis/03_outputs/figure_trends.png",
+      "operation": "graph_export",
+      "kind": "deliverable",
+      "visible_label": "graph_export",
+      "metadata": {}
+    },
+    {
+      "source": "03_robustness/02_scripts/01_alt_sample.do",
+      "target": "03_robustness/03_outputs/robust_sample.dta",
+      "operation": "save",
+      "kind": "intermediate",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "03_robustness/02_scripts/02_robustness_models.do",
+      "target": "03_robustness/03_outputs/model_robust.ster",
+      "operation": "save",
+      "kind": "deliverable",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "03_robustness/02_scripts/03_placebo_checks.do",
+      "target": "03_robustness/03_outputs/placebo_summary.csv",
+      "operation": "export_delimited",
+      "kind": "deliverable",
+      "visible_label": "export_delimited",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/02_scripts/py_build_features.py",
+      "target": "04_python_prep/03_output/py_feature_distributions.png",
+      "operation": "savefig",
+      "kind": "deliverable",
+      "visible_label": "savefig",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/02_scripts/py_build_features.py",
+      "target": "04_python_prep/03_output/py_features.parquet",
+      "operation": "to_parquet",
+      "kind": "generated_artifact",
+      "visible_label": "to_parquet",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/02_scripts/py_excel_json.py",
+      "target": "04_python_prep/03_output/py_admin_clean.xlsx",
+      "operation": "to_excel",
+      "kind": "deliverable",
+      "visible_label": "to_excel",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/02_scripts/py_export_tables.py",
+      "target": "04_python_prep/03_output/py_final_tables.xlsx",
+      "operation": "to_excel",
+      "kind": "deliverable",
+      "visible_label": "to_excel",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/02_scripts/py_geo_analysis.py",
+      "target": "04_python_prep/03_output/py_districts_joined.geojson",
+      "operation": "to_file",
+      "kind": "generated_artifact",
+      "visible_label": "to_file",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/02_scripts/py_merge_panels.py",
+      "target": "04_python_prep/03_output/py_panel_merged.parquet",
+      "operation": "to_parquet",
+      "kind": "generated_artifact",
+      "visible_label": "to_parquet",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/02_scripts/py_model_persistence.py",
+      "target": "04_python_prep/03_output/py_coefs_plot.png",
+      "operation": "savefig",
+      "kind": "deliverable",
+      "visible_label": "savefig",
+      "metadata": {}
+    },
+    {
+      "source": "04_python_prep/02_scripts/py_run_models.py",
+      "target": "04_python_prep/03_output/py_model_results.csv",
+      "operation": "to_csv",
+      "kind": "deliverable",
+      "visible_label": "to_csv",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_db_pipeline.R",
+      "target": "05_r_analysis/03_output/r_top10_estimates.csv",
+      "operation": "write_csv_readr",
+      "kind": "deliverable",
+      "visible_label": "write_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_descriptives.R",
+      "target": "05_r_analysis/03_output/r_descriptive_plots.pdf",
+      "operation": "pdf",
+      "kind": "deliverable",
+      "visible_label": "pdf",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_descriptives.R",
+      "target": "05_r_analysis/03_output/r_descriptives_table.csv",
+      "operation": "write_csv_readr",
+      "kind": "deliverable",
+      "visible_label": "write_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_export_results.R",
+      "target": "05_r_analysis/03_output/r_final_results.xlsx",
+      "operation": "write_xlsx",
+      "kind": "deliverable",
+      "visible_label": "write_xlsx",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_format_zoo.R",
+      "target": "05_r_analysis/03_output/r_panel_clean.csv",
+      "operation": "write_csv_readr",
+      "kind": "deliverable",
+      "visible_label": "write_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_format_zoo.R",
+      "target": "05_r_analysis/03_output/r_stata_export.xlsx",
+      "operation": "write.xlsx",
+      "kind": "deliverable",
+      "visible_label": "write.xlsx",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_geo_analysis.R",
+      "target": "05_r_analysis/03_output/r_region_map.png",
+      "operation": "tmap_save",
+      "kind": "deliverable",
+      "visible_label": "tmap_save",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_merge_cohorts.R",
+      "target": "05_r_analysis/03_output/r_cohorts_merged.csv",
+      "operation": "write_csv_readr",
+      "kind": "deliverable",
+      "visible_label": "write_csv_readr",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_model_persistence.R",
+      "target": "05_r_analysis/03_output/r_outcome_boxplot.png",
+      "operation": "ggsave",
+      "kind": "deliverable",
+      "visible_label": "ggsave",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_regressions.R",
+      "target": "05_r_analysis/03_output/r_coef_plot.png",
+      "operation": "ggsave",
+      "kind": "deliverable",
+      "visible_label": "ggsave",
+      "metadata": {}
+    },
+    {
+      "source": "05_r_analysis/02_scripts/r_regressions.R",
+      "target": "05_r_analysis/03_output/r_regression_coefs.csv",
+      "operation": "write_csv_readr",
+      "kind": "deliverable",
+      "visible_label": "write_csv_readr",
+      "metadata": {}
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": "cluster_001",
+      "label": ".",
+      "node_ids": [
+        "master.do"
+      ],
+      "metadata": {
+        "folder_count": "1",
+        "kind": "auto",
+        "order": "1001",
+        "script_count": "1"
+      }
+    },
+    {
+      "cluster_id": "cluster_002",
+      "label": "../02_scripts",
+      "node_ids": [
+        "../02_scripts/r_helpers.R"
+      ],
+      "metadata": {
+        "folder_count": "1",
+        "kind": "auto",
+        "order": "1002",
+        "script_count": "1"
+      }
+    },
+    {
+      "cluster_id": "cluster_003",
+      "label": "01_data/02_scripts",
+      "node_ids": [
+        "01_data/01_input/demographics.csv",
+        "01_data/01_input/households.csv",
+        "01_data/01_input/policy_flags.dta",
+        "01_data/01_input/products.csv",
+        "01_data/01_input/region_lookup.dta",
+        "01_data/01_input/transactions_2023.csv",
+        "01_data/01_input/transactions_2024.csv",
+        "01_data/02_scripts/00_build_all_data.do",
+        "01_data/02_scripts/01_import_households.do",
+        "01_data/02_scripts/02_import_transactions_2023.do",
+        "01_data/02_scripts/03_import_transactions_2024.do",
+        "01_data/02_scripts/04_append_transactions.do",
+        "01_data/02_scripts/05_merge_households_transactions.do",
+        "01_data/02_scripts/05_prepare_products.do",
+        "01_data/02_scripts/06_enrich_region.do",
+        "01_data/02_scripts/06_prepare_demographics.do",
+        "01_data/02_scripts/07_prepare_policy_flags.do",
+        "01_data/02_scripts/08_merge_households_transactions.do",
+        "01_data/02_scripts/09_merge_products.do",
+        "01_data/02_scripts/10_merge_demographics.do",
+        "01_data/02_scripts/11_merge_policy_flags.do",
+        "01_data/02_scripts/12_enrich_region.do",
+        "01_data/03_cleaned_data/demographics_prepared.dta",
+        "01_data/03_cleaned_data/households_raw.dta",
+        "01_data/03_cleaned_data/panel_base.dta",
+        "01_data/03_cleaned_data/panel_with_demographics.dta",
+        "01_data/03_cleaned_data/panel_with_policies.dta",
+        "01_data/03_cleaned_data/panel_with_products.dta",
+        "01_data/03_cleaned_data/policy_flags_prepared.dta",
+        "01_data/03_cleaned_data/products_prepared.dta",
+        "01_data/03_cleaned_data/transactions_2023_raw.dta",
+        "01_data/03_cleaned_data/transactions_2024_raw.dta",
+        "01_data/03_cleaned_data/transactions_all.dta"
+      ],
+      "metadata": {
+        "folder_count": "1",
+        "kind": "auto",
+        "order": "1003",
+        "script_count": "15"
+      }
+    },
+    {
+      "cluster_id": "cluster_004",
+      "label": "02_analysis/02_scripts",
+      "node_ids": [
+        "01_data/01_input/scenarios.dta",
+        "02_analysis/02_scripts/00_run_analysis.do",
+        "02_analysis/02_scripts/01_construct_sample.do",
+        "02_analysis/02_scripts/02_descriptive_tables.do",
+        "02_analysis/02_scripts/03_regression_models.do",
+        "02_analysis/02_scripts/04_figures.do",
+        "02_analysis/03_outputs/analysis_sample.dta",
+        "02_analysis/03_outputs/figure_binscatter.pdf",
+        "02_analysis/03_outputs/figure_trends.png",
+        "02_analysis/03_outputs/model_main.ster",
+        "02_analysis/03_outputs/regression_coefficients.csv",
+        "02_analysis/03_outputs/table_summary.xlsx"
+      ],
+      "metadata": {
+        "folder_count": "1",
+        "kind": "auto",
+        "order": "1004",
+        "script_count": "5"
+      }
+    },
+    {
+      "cluster_id": "cluster_005",
+      "label": "03_robustness/02_scripts",
+      "node_ids": [
+        "03_robustness/02_scripts/00_run_robustness.do",
+        "03_robustness/02_scripts/01_alt_sample.do",
+        "03_robustness/02_scripts/02_robustness_models.do",
+        "03_robustness/02_scripts/03_placebo_checks.do",
+        "03_robustness/03_outputs/model_robust.ster",
+        "03_robustness/03_outputs/placebo_summary.csv",
+        "03_robustness/03_outputs/robust_sample.dta"
+      ],
+      "metadata": {
+        "folder_count": "1",
+        "kind": "auto",
+        "order": "1005",
+        "script_count": "4"
+      }
+    },
+    {
+      "cluster_id": "cluster_006",
+      "label": "04_python_prep/02_scripts",
+      "node_ids": [
+        "04_python_prep/01_input/py_admin_data.xlsx",
+        "04_python_prep/01_input/py_census_data.csv",
+        "04_python_prep/01_input/py_districts.shp",
+        "04_python_prep/01_input/py_panel_a.parquet",
+        "04_python_prep/01_input/py_panel_b.parquet",
+        "04_python_prep/01_input/py_panel_clean.feather",
+        "04_python_prep/01_input/py_raw_panel.parquet",
+        "04_python_prep/01_input/py_scraped_page.html",
+        "04_python_prep/01_input/py_survey.dta",
+        "04_python_prep/01_input/py_timeseries.h5",
+        "04_python_prep/02_scripts/py_build_features.py",
+        "04_python_prep/02_scripts/py_db_pipeline.py",
+        "04_python_prep/02_scripts/py_excel_json.py",
+        "04_python_prep/02_scripts/py_export_tables.py",
+        "04_python_prep/02_scripts/py_format_zoo.py",
+        "04_python_prep/02_scripts/py_geo_analysis.py",
+        "04_python_prep/02_scripts/py_geo_map.py",
+        "04_python_prep/02_scripts/py_helper_imports.py",
+        "04_python_prep/02_scripts/py_ingest_survey.py",
+        "04_python_prep/02_scripts/py_merge_panels.py",
+        "04_python_prep/02_scripts/py_model_persistence.py",
+        "04_python_prep/02_scripts/py_path_patterns.py",
+        "04_python_prep/02_scripts/py_run_models.py",
+        "04_python_prep/02_scripts/py_scrape_output.py",
+        "04_python_prep/03_output/py_admin_clean.xlsx",
+        "04_python_prep/03_output/py_array_store.zarr",
+        "04_python_prep/03_output/py_coefs_plot.png",
+        "04_python_prep/03_output/py_districts_joined.geojson",
+        "04_python_prep/03_output/py_feature_distributions.png",
+        "04_python_prep/03_output/py_features.parquet",
+        "04_python_prep/03_output/py_final_tables.xlsx",
+        "04_python_prep/03_output/py_model_results.csv",
+        "04_python_prep/03_output/py_panel_merged.parquet",
+        "C:/data/gis/admin_boundaries.gpkg",
+        "C:/data/raw/py_survey_raw.csv",
+        "C:/data/templates/py_table_template.xlsx"
+      ],
+      "metadata": {
+        "folder_count": "1",
+        "kind": "auto",
+        "order": "1006",
+        "script_count": "14"
+      }
+    },
+    {
+      "cluster_id": "cluster_007",
+      "label": "05_r_analysis/02_scripts",
+      "node_ids": [
+        "05_r_analysis/01_input/r_cohort_2020.csv",
+        "05_r_analysis/01_input/r_cohort_2021.csv",
+        "05_r_analysis/01_input/r_household_weights.xlsx",
+        "05_r_analysis/01_input/r_legacy_stata.dta",
+        "05_r_analysis/01_input/r_model_results.csv",
+        "05_r_analysis/01_input/r_panel_data.feather",
+        "05_r_analysis/01_input/r_panel_data.fst",
+        "05_r_analysis/01_input/r_poi.geojson",
+        "05_r_analysis/01_input/r_region_lookup.csv",
+        "05_r_analysis/01_input/r_scraped_page.html",
+        "05_r_analysis/01_input/r_study_regions.shp",
+        "05_r_analysis/02_scripts/r_clean_survey.R",
+        "05_r_analysis/02_scripts/r_db_pipeline.R",
+        "05_r_analysis/02_scripts/r_descriptives.R",
+        "05_r_analysis/02_scripts/r_export_results.R",
+        "05_r_analysis/02_scripts/r_format_zoo.R",
+        "05_r_analysis/02_scripts/r_geo_analysis.R",
+        "05_r_analysis/02_scripts/r_merge_cohorts.R",
+        "05_r_analysis/02_scripts/r_model_persistence.R",
+        "05_r_analysis/02_scripts/r_regressions.R",
+        "05_r_analysis/02_scripts/r_scrape_output.R",
+        "05_r_analysis/02_scripts/r_source_chain.R",
+        "05_r_analysis/03_output/r_coef_plot.png",
+        "05_r_analysis/03_output/r_cohorts_merged.csv",
+        "05_r_analysis/03_output/r_descriptive_plots.pdf",
+        "05_r_analysis/03_output/r_descriptives_table.csv",
+        "05_r_analysis/03_output/r_final_results.xlsx",
+        "05_r_analysis/03_output/r_outcome_boxplot.png",
+        "05_r_analysis/03_output/r_panel_clean.csv",
+        "05_r_analysis/03_output/r_region_map.png",
+        "05_r_analysis/03_output/r_regression_coefs.csv",
+        "05_r_analysis/03_output/r_stata_export.xlsx",
+        "05_r_analysis/03_output/r_top10_estimates.csv",
+        "C:/data/r_model_priors.rds",
+        "C:/data/raw/r_spss_survey.sav",
+        "C:/data/raw/r_survey_micro.csv",
+        "C:/projects/cache/r_auxiliary_estimates.rds"
+      ],
+      "metadata": {
+        "folder_count": "1",
+        "kind": "auto",
+        "order": "1007",
+        "script_count": "11"
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute path detected in 04_python_prep/02_scripts/py_build_features.py:18",
+      "payload": {
+        "path": "04_python_prep/03_output/py_feature_distributions.png",
+        "script": "04_python_prep/02_scripts/py_build_features.py"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 2 times in 04_python_prep/02_scripts/py_db_pipeline.py",
+      "payload": {
+        "count": "2",
+        "sample_paths": "04_python_prep/03_output/py_features.parquet | 04_python_prep/03_output/py_db_extract.parquet",
+        "script": "04_python_prep/02_scripts/py_db_pipeline.py",
+        "unique_paths": "2"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 4 times in 04_python_prep/02_scripts/py_excel_json.py",
+      "payload": {
+        "count": "4",
+        "sample_paths": "04_python_prep/01_input/py_admin_data.xlsx | 04_python_prep/03_output/py_admin_clean.xlsx | 04_python_prep/03_output/py_admin_records.json",
+        "script": "04_python_prep/02_scripts/py_excel_json.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 3 times in 04_python_prep/02_scripts/py_export_tables.py",
+      "payload": {
+        "count": "3",
+        "sample_paths": "04_python_prep/03_output/py_model_results.csv | C:/data/templates/py_table_template.xlsx | 04_python_prep/03_output/py_final_tables.xlsx",
+        "script": "04_python_prep/02_scripts/py_export_tables.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 6 times in 04_python_prep/02_scripts/py_format_zoo.py",
+      "payload": {
+        "count": "6",
+        "sample_paths": "04_python_prep/01_input/py_panel_clean.feather | 04_python_prep/03_output/py_panel_flagged.feather | 04_python_prep/01_input/py_survey.dta | 04_python_prep/03_output/py_survey_out.dta | 04_python_prep/01_input/py_timeseries.h5",
+        "script": "04_python_prep/02_scripts/py_format_zoo.py",
+        "unique_paths": "6"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 4 times in 04_python_prep/02_scripts/py_geo_analysis.py",
+      "payload": {
+        "count": "4",
+        "sample_paths": "04_python_prep/01_input/py_districts.shp | C:/data/gis/admin_boundaries.gpkg | 04_python_prep/03_output/py_districts_joined.shp | 04_python_prep/03_output/py_districts_joined.geojson",
+        "script": "04_python_prep/02_scripts/py_geo_analysis.py",
+        "unique_paths": "4"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 2 times in 04_python_prep/02_scripts/py_geo_map.py",
+      "payload": {
+        "count": "2",
+        "sample_paths": "04_python_prep/03_output/py_districts_joined.geojson | 04_python_prep/03_output/py_districts_map.html",
+        "script": "04_python_prep/02_scripts/py_geo_map.py",
+        "unique_paths": "2"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 2 times in 04_python_prep/02_scripts/py_helper_imports.py",
+      "payload": {
+        "count": "2",
+        "sample_paths": "04_python_prep/01_input/py_raw_panel.parquet | 04_python_prep/03_output/py_panel_indexed.parquet",
+        "script": "04_python_prep/02_scripts/py_helper_imports.py",
+        "unique_paths": "2"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 3 times in 04_python_prep/02_scripts/py_ingest_survey.py",
+      "payload": {
+        "count": "3",
+        "sample_paths": "C:/data/raw/py_survey_raw.csv | 04_python_prep/01_input/py_census_data.csv | 04_python_prep/03_output/py_survey_clean.parquet",
+        "script": "04_python_prep/02_scripts/py_ingest_survey.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "level": "info",
+      "code": "excluded_reference",
+      "message": "Excluded path omitted from graph at 04_python_prep/02_scripts/py_merge_panels.py:8 (read_stata): C:/projects/archive/py_legacy_panel.dta",
+      "payload": {
+        "command": "read_stata",
+        "line": "8",
+        "path": "C:/projects/archive/py_legacy_panel.dta",
+        "script": "04_python_prep/02_scripts/py_merge_panels.py"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 3 times in 04_python_prep/02_scripts/py_merge_panels.py",
+      "payload": {
+        "count": "3",
+        "sample_paths": "04_python_prep/01_input/py_panel_a.parquet | 04_python_prep/01_input/py_panel_b.parquet | 04_python_prep/03_output/py_panel_merged.parquet",
+        "script": "04_python_prep/02_scripts/py_merge_panels.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 7 times in 04_python_prep/02_scripts/py_model_persistence.py",
+      "payload": {
+        "count": "7",
+        "sample_paths": "04_python_prep/03_output/py_rf_model.pkl | 04_python_prep/03_output/py_rf_model.joblib | 04_python_prep/03_output/py_coefs.npy | 04_python_prep/03_output/py_coefs_plot.png",
+        "script": "04_python_prep/02_scripts/py_model_persistence.py",
+        "unique_paths": "4"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 2 times in 04_python_prep/02_scripts/py_path_patterns.py",
+      "payload": {
+        "count": "2",
+        "sample_paths": "04_python_prep/01_input/py_census_data.csv | 04_python_prep/03_output/py_array_store.zarr",
+        "script": "04_python_prep/02_scripts/py_path_patterns.py",
+        "unique_paths": "2"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 4 times in 04_python_prep/02_scripts/py_run_models.py",
+      "payload": {
+        "count": "4",
+        "sample_paths": "04_python_prep/03_output/py_features.parquet | 04_python_prep/03_output/py_model_results.csv | 04_python_prep/03_output/py_model_summary.json",
+        "script": "04_python_prep/02_scripts/py_run_models.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 4 times in 04_python_prep/02_scripts/py_scrape_output.py",
+      "payload": {
+        "count": "4",
+        "sample_paths": "04_python_prep/01_input/py_scraped_page.html | 04_python_prep/03_output/py_scraped_table.parquet | 04_python_prep/03_output/py_scraped_summary.html",
+        "script": "04_python_prep/02_scripts/py_scrape_output.py",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 3 times in 05_r_analysis/02_scripts/r_clean_survey.R",
+      "payload": {
+        "count": "3",
+        "sample_paths": "C:/data/raw/r_survey_micro.csv | 05_r_analysis/01_input/r_household_weights.xlsx | 05_r_analysis/03_output/r_survey_cleaned.rds",
+        "script": "05_r_analysis/02_scripts/r_clean_survey.R",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 3 times in 05_r_analysis/02_scripts/r_db_pipeline.R",
+      "payload": {
+        "count": "3",
+        "sample_paths": "05_r_analysis/01_input/r_model_results.csv | 05_r_analysis/01_input/r_region_lookup.csv | 05_r_analysis/03_output/r_top10_estimates.csv",
+        "script": "05_r_analysis/02_scripts/r_db_pipeline.R",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 2 times in 05_r_analysis/02_scripts/r_descriptives.R",
+      "payload": {
+        "count": "2",
+        "sample_paths": "05_r_analysis/03_output/r_descriptive_plots.pdf | 05_r_analysis/03_output/r_descriptives_table.csv",
+        "script": "05_r_analysis/02_scripts/r_descriptives.R",
+        "unique_paths": "2"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 3 times in 05_r_analysis/02_scripts/r_export_results.R",
+      "payload": {
+        "count": "3",
+        "sample_paths": "C:/projects/cache/r_auxiliary_estimates.rds | 05_r_analysis/03_output/r_final_results.xlsx | 05_r_analysis/03_output/r_results_summary.json",
+        "script": "05_r_analysis/02_scripts/r_export_results.R",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 12 times in 05_r_analysis/02_scripts/r_format_zoo.R",
+      "payload": {
+        "count": "12",
+        "sample_paths": "05_r_analysis/01_input/r_panel_data.feather | 05_r_analysis/03_output/r_panel_clean.feather | 05_r_analysis/01_input/r_panel_data.fst | 05_r_analysis/03_output/r_panel_clean.fst | 05_r_analysis/01_input/r_legacy_stata.dta",
+        "script": "05_r_analysis/02_scripts/r_format_zoo.R",
+        "unique_paths": "11"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 5 times in 05_r_analysis/02_scripts/r_geo_analysis.R",
+      "payload": {
+        "count": "5",
+        "sample_paths": "05_r_analysis/01_input/r_study_regions.shp | 05_r_analysis/01_input/r_poi.geojson | 05_r_analysis/03_output/r_regions_joined.gpkg | 05_r_analysis/03_output/r_regions_joined.shp | 05_r_analysis/03_output/r_region_map.png",
+        "script": "05_r_analysis/02_scripts/r_geo_analysis.R",
+        "unique_paths": "5"
+      }
+    },
+    {
+      "level": "info",
+      "code": "excluded_reference",
+      "message": "Excluded path omitted from graph at 05_r_analysis/02_scripts/r_merge_cohorts.R:9 (read_dta): C:/archive/r_legacy_cohort.dta",
+      "payload": {
+        "command": "read_dta",
+        "line": "9",
+        "path": "C:/archive/r_legacy_cohort.dta",
+        "script": "05_r_analysis/02_scripts/r_merge_cohorts.R"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 3 times in 05_r_analysis/02_scripts/r_merge_cohorts.R",
+      "payload": {
+        "count": "3",
+        "sample_paths": "05_r_analysis/01_input/r_cohort_2020.csv | 05_r_analysis/01_input/r_cohort_2021.csv | 05_r_analysis/03_output/r_cohorts_merged.csv",
+        "script": "05_r_analysis/02_scripts/r_merge_cohorts.R",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 6 times in 05_r_analysis/02_scripts/r_model_persistence.R",
+      "payload": {
+        "count": "6",
+        "sample_paths": "05_r_analysis/03_output/r_panel_clean.csv | 05_r_analysis/03_output/r_models.RData | 05_r_analysis/03_output/r_panel_final.rds | 05_r_analysis/03_output/r_outcome_boxplot.png",
+        "script": "05_r_analysis/02_scripts/r_model_persistence.R",
+        "unique_paths": "4"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 5 times in 05_r_analysis/02_scripts/r_regressions.R",
+      "payload": {
+        "count": "5",
+        "sample_paths": "05_r_analysis/03_output/r_cohorts_merged.csv | C:/data/r_model_priors.rds | 05_r_analysis/03_output/r_regression_model.rds | 05_r_analysis/03_output/r_regression_coefs.csv | 05_r_analysis/03_output/r_coef_plot.png",
+        "script": "05_r_analysis/02_scripts/r_regressions.R",
+        "unique_paths": "5"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "absolute_path_usage",
+      "message": "Absolute paths detected 3 times in 05_r_analysis/02_scripts/r_scrape_output.R",
+      "payload": {
+        "count": "3",
+        "sample_paths": "05_r_analysis/01_input/r_scraped_page.html | 05_r_analysis/03_output/r_interactive_chart.html | 05_r_analysis/03_output/r_scrape_report.html",
+        "script": "05_r_analysis/02_scripts/r_scrape_output.R",
+        "unique_paths": "3"
+      }
+    },
+    {
+      "level": "info",
+      "code": "erased_artifact",
+      "message": "Artifact erased inside script: 01_data/03_cleaned_data/sample_working_tmp.dta",
+      "payload": {
+        "path": "01_data/03_cleaned_data/sample_working_tmp.dta",
+        "script": "02_analysis/02_scripts/01_construct_sample.do"
+      }
+    },
+    {
+      "level": "info",
+      "code": "excluded_files",
+      "message": "Excluded 1 files during discovery.",
+      "payload": {
+        "count": "1"
+      }
+    },
+    {
+      "level": "info",
+      "code": "project_scan",
+      "message": "Project discovery completed.",
+      "payload": {
+        "input_files": "29",
+        "output_artifacts": "3",
+        "python_files": "14",
+        "r_files": "11",
+        "stata_files": "25"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "multiple_writers",
+      "message": "Multiple scripts appear to write the same target: 01_data/03_cleaned_data/panel_base.dta",
+      "payload": {
+        "count": "2",
+        "target": "01_data/03_cleaned_data/panel_base.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "multiple_writers",
+      "message": "Multiple scripts appear to write the same target: 01_data/03_cleaned_data/panel_enriched.dta",
+      "payload": {
+        "count": "2",
+        "target": "01_data/03_cleaned_data/panel_enriched.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_admin_data.xlsx",
+      "payload": {
+        "path": "04_python_prep/01_input/py_admin_data.xlsx"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_census_data.csv",
+      "payload": {
+        "path": "04_python_prep/01_input/py_census_data.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_districts.shp",
+      "payload": {
+        "path": "04_python_prep/01_input/py_districts.shp"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_panel_a.parquet",
+      "payload": {
+        "path": "04_python_prep/01_input/py_panel_a.parquet"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_panel_b.parquet",
+      "payload": {
+        "path": "04_python_prep/01_input/py_panel_b.parquet"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_panel_clean.feather",
+      "payload": {
+        "path": "04_python_prep/01_input/py_panel_clean.feather"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_raw_panel.parquet",
+      "payload": {
+        "path": "04_python_prep/01_input/py_raw_panel.parquet"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_scraped_page.html",
+      "payload": {
+        "path": "04_python_prep/01_input/py_scraped_page.html"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_survey.dta",
+      "payload": {
+        "path": "04_python_prep/01_input/py_survey.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/01_input/py_timeseries.h5",
+      "payload": {
+        "path": "04_python_prep/01_input/py_timeseries.h5"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_admin_clean.xlsx",
+      "payload": {
+        "path": "04_python_prep/03_output/py_admin_clean.xlsx"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_array_store.zarr",
+      "payload": {
+        "path": "04_python_prep/03_output/py_array_store.zarr"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_coefs_plot.png",
+      "payload": {
+        "path": "04_python_prep/03_output/py_coefs_plot.png"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_districts_joined.geojson",
+      "payload": {
+        "path": "04_python_prep/03_output/py_districts_joined.geojson"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_feature_distributions.png",
+      "payload": {
+        "path": "04_python_prep/03_output/py_feature_distributions.png"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_features.parquet",
+      "payload": {
+        "path": "04_python_prep/03_output/py_features.parquet"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_final_tables.xlsx",
+      "payload": {
+        "path": "04_python_prep/03_output/py_final_tables.xlsx"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_model_results.csv",
+      "payload": {
+        "path": "04_python_prep/03_output/py_model_results.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 04_python_prep/03_output/py_panel_merged.parquet",
+      "payload": {
+        "path": "04_python_prep/03_output/py_panel_merged.parquet"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_cohort_2020.csv",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_cohort_2020.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_cohort_2021.csv",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_cohort_2021.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_household_weights.xlsx",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_household_weights.xlsx"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_legacy_stata.dta",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_legacy_stata.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_model_results.csv",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_model_results.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_panel_data.feather",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_panel_data.feather"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_panel_data.fst",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_panel_data.fst"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_poi.geojson",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_poi.geojson"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_region_lookup.csv",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_region_lookup.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_scraped_page.html",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_scraped_page.html"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/01_input/r_study_regions.shp",
+      "payload": {
+        "path": "05_r_analysis/01_input/r_study_regions.shp"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_coef_plot.png",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_coef_plot.png"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_cohorts_merged.csv",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_cohorts_merged.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_descriptive_plots.pdf",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_descriptive_plots.pdf"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_descriptives_table.csv",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_descriptives_table.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_final_results.xlsx",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_final_results.xlsx"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_outcome_boxplot.png",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_outcome_boxplot.png"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_panel_clean.csv",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_panel_clean.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_region_map.png",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_region_map.png"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_regression_coefs.csv",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_regression_coefs.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_stata_export.xlsx",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_stata_export.xlsx"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: 05_r_analysis/03_output/r_top10_estimates.csv",
+      "payload": {
+        "path": "05_r_analysis/03_output/r_top10_estimates.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: C:/data/gis/admin_boundaries.gpkg",
+      "payload": {
+        "path": "C:/data/gis/admin_boundaries.gpkg"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: C:/data/r_model_priors.rds",
+      "payload": {
+        "path": "C:/data/r_model_priors.rds"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: C:/data/raw/py_survey_raw.csv",
+      "payload": {
+        "path": "C:/data/raw/py_survey_raw.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: C:/data/raw/r_spss_survey.sav",
+      "payload": {
+        "path": "C:/data/raw/r_spss_survey.sav"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: C:/data/raw/r_survey_micro.csv",
+      "payload": {
+        "path": "C:/data/raw/r_survey_micro.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: C:/data/templates/py_table_template.xlsx",
+      "payload": {
+        "path": "C:/data/templates/py_table_template.xlsx"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "orphan_artifact",
+      "message": "Orphan artifact node detected: C:/projects/cache/r_auxiliary_estimates.rds",
+      "payload": {
+        "path": "C:/projects/cache/r_auxiliary_estimates.rds"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: ../02_scripts/r_helpers.R",
+      "payload": {
+        "node_type": "script",
+        "path": "../02_scripts/r_helpers.R"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/demographics_prepared.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/demographics_prepared.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/households_raw.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/households_raw.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_base.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_base.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_enriched.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_enriched.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_with_demographics.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_with_demographics.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_with_policies.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_with_policies.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/panel_with_products.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/panel_with_products.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/policy_flags_prepared.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/policy_flags_prepared.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/products_prepared.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/products_prepared.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/transactions_2023_raw.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/transactions_2023_raw.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/transactions_2024_raw.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/transactions_2024_raw.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 01_data/03_cleaned_data/transactions_all.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "01_data/03_cleaned_data/transactions_all.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 02_analysis/03_outputs/analysis_sample.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "02_analysis/03_outputs/analysis_sample.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 03_robustness/03_outputs/robust_sample.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "03_robustness/03_outputs/robust_sample.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_admin_data.xlsx",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_admin_data.xlsx"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_districts.shp",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_districts.shp"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_panel_clean.feather",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_panel_clean.feather"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_raw_panel.parquet",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_raw_panel.parquet"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_scraped_page.html",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_scraped_page.html"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_survey.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_survey.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/01_input/py_timeseries.h5",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/01_input/py_timeseries.h5"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/03_output/py_array_store.zarr",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/03_output/py_array_store.zarr"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 04_python_prep/03_output/py_districts_joined.geojson",
+      "payload": {
+        "node_type": "artifact",
+        "path": "04_python_prep/03_output/py_districts_joined.geojson"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_legacy_stata.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_legacy_stata.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_model_results.csv",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_model_results.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_panel_data.feather",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_panel_data.feather"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_panel_data.fst",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_panel_data.fst"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_poi.geojson",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_poi.geojson"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_region_lookup.csv",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_region_lookup.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_scraped_page.html",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_scraped_page.html"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/01_input/r_study_regions.shp",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/01_input/r_study_regions.shp"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: 05_r_analysis/03_output/r_panel_clean.csv",
+      "payload": {
+        "node_type": "artifact",
+        "path": "05_r_analysis/03_output/r_panel_clean.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: C:/data/gis/admin_boundaries.gpkg",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/gis/admin_boundaries.gpkg"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: C:/data/r_model_priors.rds",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/r_model_priors.rds"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: C:/data/raw/py_survey_raw.csv",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/raw/py_survey_raw.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: C:/data/raw/r_spss_survey.sav",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/raw/r_spss_survey.sav"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: C:/data/raw/r_survey_micro.csv",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/raw/r_survey_micro.csv"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: C:/data/templates/py_table_template.xlsx",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/data/templates/py_table_template.xlsx"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: C:/projects/cache/r_auxiliary_estimates.rds",
+      "payload": {
+        "node_type": "artifact",
+        "path": "C:/projects/cache/r_auxiliary_estimates.rds"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "cycle_detected",
+      "message": "Cycle detected in graph.",
+      "payload": {
+        "cycle": "05_r_analysis/02_scripts/r_descriptives.R -> 05_r_analysis/02_scripts/r_merge_cohorts.R -> 05_r_analysis/03_output/r_cohorts_merged.csv -> 05_r_analysis/02_scripts/r_descriptives.R"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "cycle_detected",
+      "message": "Cycle detected in graph.",
+      "payload": {
+        "cycle": "05_r_analysis/02_scripts/r_format_zoo.R -> 05_r_analysis/03_output/r_panel_clean.csv -> 05_r_analysis/02_scripts/r_format_zoo.R"
+      }
+    },
+    {
+      "level": "info",
+      "code": "excluded_path_inventory",
+      "message": "1 excluded paths recorded in this run.",
+      "payload": {
+        "count": "1"
+      }
+    }
+  ],
+  "excluded_paths": [
+    "viewer_output/"
+  ]
+}

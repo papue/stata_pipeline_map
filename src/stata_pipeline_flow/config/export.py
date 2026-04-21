@@ -7,7 +7,7 @@ from stata_pipeline_flow.model.entities import Cluster, GraphModel
 SCRIPT_NODE_TYPE = 'script'
 
 
-def build_cluster_export_document(graph: GraphModel) -> str:
+def build_cluster_export_document(graph: GraphModel, strategy: str = 'auto') -> str:
     lines: list[str] = [
         '# Generated cluster starter config.',
         '# Edit cluster ids, labels, and script members as needed.',
@@ -15,14 +15,15 @@ def build_cluster_export_document(graph: GraphModel) -> str:
         'project_root: .',
         'clustering:',
         '  enabled: true',
-        '  strategy: auto',
+        f'  strategy: {strategy}',
         'clusters:',
     ]
 
     exported_any = False
     for cluster in graph.sorted_clusters():
         script_members = _script_members(graph, cluster)
-        if not script_members:
+        # Only skip if neither direct script members nor child cluster references exist
+        if not script_members and not cluster.member_cluster_ids:
             continue
         exported_any = True
         lines.extend(_serialize_cluster(cluster, script_members))
@@ -34,9 +35,9 @@ def build_cluster_export_document(graph: GraphModel) -> str:
 
 
 
-def write_cluster_export(graph: GraphModel, output_path: Path) -> Path:
+def write_cluster_export(graph: GraphModel, output_path: Path, strategy: str = 'auto') -> Path:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(build_cluster_export_document(graph), encoding='utf-8')
+    output_path.write_text(build_cluster_export_document(graph, strategy=strategy), encoding='utf-8')
     return output_path
 
 
@@ -45,9 +46,14 @@ def _serialize_cluster(cluster: Cluster, script_members: list[str]) -> list[str]
     lines = [f'  - id: {_quote_yaml_string(cluster.cluster_id)}']
     if cluster.label:
         lines.append(f'    label: {_quote_yaml_string(cluster.label)}')
-    lines.append('    members:')
-    for member in script_members:
-        lines.append(f'      - {_quote_yaml_string(member)}')
+    if cluster.member_cluster_ids:
+        lines.append('    member_cluster_ids:')
+        for child_id in cluster.member_cluster_ids:
+            lines.append(f'      - {_quote_yaml_string(child_id)}')
+    else:
+        lines.append('    members:')
+        for member in script_members:
+            lines.append(f'      - {_quote_yaml_string(member)}')
     return lines
 
 

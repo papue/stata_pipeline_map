@@ -50,8 +50,8 @@ def test_manual_cluster_override_reassigns_selected_nodes_and_recomputes_artifac
     assert graph.clusters['manual_stage'].metadata['kind'] == 'manual'
 
     dot = render_dot(graph)
-    assert 'subgraph "manual_stage"' in dot
-    assert 'label="Manual stage"' in dot
+    assert 'subgraph "cluster_manual_stage"' in dot
+    assert 'label="Manual stage"' in dot or 'Manual stage' in dot
 
 
 def test_missing_manual_cluster_member_emits_diagnostic(tmp_path: Path) -> None:

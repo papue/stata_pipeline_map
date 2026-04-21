@@ -1,0 +1,289 @@
+{
+  "project_root": "D:\\Sciebo New\\stata_pipeline\\tests\\fixtures\\stress\\stata_table_commands",
+  "metadata": {
+    "rankdir": "LR",
+    "unclustered_artifacts_position": "auto"
+  },
+  "config": {
+    "display": {
+      "show_edge_labels": false,
+      "mode": "overview",
+      "theme": "modern-light",
+      "show_terminal_outputs": true,
+      "show_temporary_outputs": false,
+      "placeholder_style": "dashed",
+      "label_path_depth": 0,
+      "show_extensions": true,
+      "node_label_style": "basename",
+      "view": "overview",
+      "edge_label_mode": "auto"
+    },
+    "layout": {
+      "rankdir": "LR",
+      "unclustered_artifacts_position": "auto"
+    }
+  },
+  "nodes": [
+    {
+      "node_id": "01_unsupported_outputs.do",
+      "label": "01_unsupported_outputs.do",
+      "node_type": "script",
+      "path": "01_unsupported_outputs.do",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "02_supported_commands.do",
+      "label": "02_supported_commands.do",
+      "node_type": "script",
+      "path": "02_supported_commands.do",
+      "role": "script",
+      "cluster_id": "cluster_001",
+      "metadata": {
+        "language": "stata"
+      }
+    },
+    {
+      "node_id": "data/extra.dta",
+      "label": "extra.dta",
+      "node_type": "artifact",
+      "path": "data/extra.dta",
+      "role": "reference_input",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "data/input.dta",
+      "label": "input.dta",
+      "node_type": "artifact",
+      "path": "data/input.dta",
+      "role": "reference_input",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "data/other.dta",
+      "label": "other.dta",
+      "node_type": "artifact",
+      "path": "data/other.dta",
+      "role": "reference_input",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "data/raw.csv",
+      "label": "raw.csv",
+      "node_type": "artifact",
+      "path": "data/raw.csv",
+      "role": "reference_input",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "figs/fig1.pdf",
+      "label": "fig1.pdf",
+      "node_type": "artifact",
+      "path": "figs/fig1.pdf",
+      "role": "deliverable",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "output/result.csv",
+      "label": "result.csv",
+      "node_type": "artifact",
+      "path": "output/result.csv",
+      "role": "deliverable",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "output/result.xlsx",
+      "label": "result.xlsx",
+      "node_type": "artifact",
+      "path": "output/result.xlsx",
+      "role": "deliverable",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    },
+    {
+      "node_id": "reports/analysis_report.docx",
+      "label": "analysis_report.docx",
+      "node_type": "artifact",
+      "path": "reports/analysis_report.docx",
+      "role": "deliverable",
+      "cluster_id": "cluster_001",
+      "metadata": {}
+    }
+  ],
+  "edges": [
+    {
+      "source": "data/extra.dta",
+      "target": "02_supported_commands.do",
+      "operation": "append",
+      "kind": "reference_input",
+      "visible_label": "append",
+      "metadata": {}
+    },
+    {
+      "source": "data/input.dta",
+      "target": "02_supported_commands.do",
+      "operation": "use",
+      "kind": "reference_input",
+      "visible_label": "use",
+      "metadata": {}
+    },
+    {
+      "source": "data/other.dta",
+      "target": "02_supported_commands.do",
+      "operation": "merge",
+      "kind": "reference_input",
+      "visible_label": "merge",
+      "metadata": {}
+    },
+    {
+      "source": "data/raw.csv",
+      "target": "02_supported_commands.do",
+      "operation": "import",
+      "kind": "reference_input",
+      "visible_label": "import",
+      "metadata": {}
+    },
+    {
+      "source": "01_unsupported_outputs.do",
+      "target": "reports/analysis_report.docx",
+      "operation": "save",
+      "kind": "deliverable",
+      "visible_label": "save",
+      "metadata": {}
+    },
+    {
+      "source": "02_supported_commands.do",
+      "target": "figs/fig1.pdf",
+      "operation": "graph_export",
+      "kind": "deliverable",
+      "visible_label": "graph_export",
+      "metadata": {}
+    },
+    {
+      "source": "02_supported_commands.do",
+      "target": "output/result.csv",
+      "operation": "export_delimited",
+      "kind": "deliverable",
+      "visible_label": "export_delimited",
+      "metadata": {}
+    },
+    {
+      "source": "02_supported_commands.do",
+      "target": "output/result.xlsx",
+      "operation": "export_excel",
+      "kind": "deliverable",
+      "visible_label": "export_excel",
+      "metadata": {}
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": "cluster_001",
+      "label": ".",
+      "node_ids": [
+        "01_unsupported_outputs.do",
+        "02_supported_commands.do",
+        "data/extra.dta",
+        "data/input.dta",
+        "data/other.dta",
+        "data/raw.csv",
+        "figs/fig1.pdf",
+        "output/result.csv",
+        "output/result.xlsx",
+        "reports/analysis_report.docx"
+      ],
+      "metadata": {
+        "folder_count": "1",
+        "kind": "auto",
+        "order": "1001",
+        "script_count": "2"
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "level": "info",
+      "code": "excluded_files",
+      "message": "Excluded 1 files during discovery.",
+      "payload": {
+        "count": "1"
+      }
+    },
+    {
+      "level": "info",
+      "code": "project_scan",
+      "message": "Project discovery completed.",
+      "payload": {
+        "input_files": "1",
+        "output_artifacts": "0",
+        "python_files": "0",
+        "r_files": "0",
+        "stata_files": "2"
+      }
+    },
+    {
+      "level": "info",
+      "code": "unconsumed_output",
+      "message": "Produced artifact is not consumed downstream: reports/analysis_report.docx",
+      "payload": {
+        "path": "reports/analysis_report.docx"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: data/extra.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "data/extra.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: data/input.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "data/input.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: data/other.dta",
+      "payload": {
+        "node_type": "artifact",
+        "path": "data/other.dta"
+      }
+    },
+    {
+      "level": "warning",
+      "code": "missing_referenced_file",
+      "message": "Referenced path does not exist in project tree: data/raw.csv",
+      "payload": {
+        "node_type": "artifact",
+        "path": "data/raw.csv"
+      }
+    },
+    {
+      "level": "info",
+      "code": "excluded_path_inventory",
+      "message": "1 excluded paths recorded in this run.",
+      "payload": {
+        "count": "1"
+      }
+    }
+  ],
+  "excluded_paths": [
+    "viewer_output/"
+  ]
+}

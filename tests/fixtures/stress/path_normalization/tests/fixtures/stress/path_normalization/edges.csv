@@ -1,0 +1,10 @@
+source,target,command,kind
+data/cohort.dta,02_forward_slash.do,use,intermediate
+data/cohort.dta,03_backslash.do,use,intermediate
+data/cohort.dta,04_double_slash.do,use,intermediate
+data/cohort.dta,05_leading_dot.do,use,intermediate
+data/cohort.dta,06_whitespace.do,use,intermediate
+Data/Cohort.DTA,07_case_variant.do,use,reference_input
+data/cohort.dta,08_python_reader.py,read_stata,intermediate
+data/cohort.dta,09_r_reader.R,read_dta,intermediate
+01_writer.do,data/cohort.dta,save,intermediate

@@ -1,0 +1,3 @@
+exclusions:
+  presets:
+    - genrated_outputs
