@@ -1,173 +1,93 @@
 # data-pipeline-flow
 
-`data-pipeline-flow` helps you understand a research project's data pipeline.
+`data-pipeline-flow` maps a research project's data pipeline from `.do`, `.py`, and `.R` scripts. It shows which scripts read and write which files, where scripts depend on each other, and where the pipeline may be messy or suspicious.
 
-It scans your `.do`, `.py`, and `.R` files and builds a pipeline map:
-- which scripts exist
-- which files they read
-- which files they write
-- where scripts depend on each other
-- where the pipeline may be messy or suspicious
+It is designed for quickly answering questions like:
 
-Multi-language support (Stata, Python, R) is enabled by default and can be controlled via the `languages:` config section.
+- Which script creates this dataset?
+- Which scripts write the same file?
+- Where are the missing or suspicious links in the pipeline?
+- Can I generate a figure of the pipeline for documentation or discussion?
 
-This repo already includes a **runnable example project** so you can try the tool immediately.
+## Installation
 
-## What this tool is for
+Requirements:
 
-Use it when you want to answer questions like:
-- "What is the structure of this Stata project?"
-- "Which script creates this dataset?"
-- "Which scripts write the same file?"
-- "Which files are missing or only referenced?"
-- "Can I generate a pipeline figure for documentation or discussion?"
+- Python 3.10+
+- Graphviz only if you want PNG, SVG, or PDF output
 
-## Before you start
-
-You need:
-- **Python 3.10 or newer**
-- optionally **Graphviz** if you want PNG, SVG, or PDF output
-
-Graphviz is only needed for final images. The tool itself can still create `.dot` graph files without it.
-
-## Repository structure
-
-These are the folders most users care about first:
-
-- `src/` → the actual Python package
-- `tests/` → automated tests
-- `example/project/` → fake Stata project you can scan immediately
-- `example/configs/` → example config file you can copy and edit
-- `example/output/` → suggested place for generated output
-- `docs/` → more detailed documentation for later
-
-If you are new, start with `example/`.
-
----
-
-## Easiest way to use this project
-
-If you do not want to remember CLI commands, use the interactive helpers.
-They ask questions, explain the available values, and save your choices so you do not need to repeat them every time.
-
-After installation the following commands are available directly:
-
-| Command | What it does |
-|---|---|
-| `data-pipeline-flow-setup` | First-run setup: choose project root, output folder, theme, view, and format |
-| `data-pipeline-flow-make` | Render the pipeline figure using your saved defaults |
-| `data-pipeline-flow-inspect` | Run `summary`, `validate`, or both |
-| `data-pipeline-flow-edit-exclusions` | Add or remove ignored files, folders, and glob patterns |
-| `data-pipeline-flow-manage-clusters` | Add, edit, or delete manual clusters |
-
-You can also run the equivalent root-level Python scripts directly (`python setup_project.py` etc.) — they do the same thing and are still available.
-
-They save their remembered choices in:
-
-```text
-pipeline_user_settings.yaml
-```
-
-And by default they create the editable config here:
-
-```text
-user_configs/project_config.yaml
-```
-
-You can still change answers later. The scripts will show the saved values first and let you keep or replace them.
-
----
-
-## Recommended beginner workflow
+From the repository root:
 
 ```bash
 python install.py
 ```
 
-That single command creates the virtual environment, installs the package, checks Graphviz, and runs a smoke test. It works on Windows, macOS, and Linux.
+This creates a virtual environment, installs the package, checks for Graphviz, and runs a smoke test on the bundled example project.
 
-After it finishes, activate the virtual environment once for your session:
+Activate the environment for your session:
 
 ```powershell
-# Windows
+# Windows PowerShell
 .\.venv\Scripts\Activate.ps1
 ```
 
 ```bash
 # macOS / Linux
-. .venv/bin/activate
+source .venv/bin/activate
 ```
 
-Then use the interactive helpers to get started:
+## First use
+
+The fastest path is:
 
 ```bash
-data-pipeline-flow-setup    # first-run setup: choose project root, theme, output folder
-data-pipeline-flow-make     # render the pipeline image using your saved settings
+data-pipeline-flow-setup
+data-pipeline-flow-make
 ```
 
----
+The setup helper saves your default choices, and the make helper rebuilds the figure from those saved settings.
 
-## 5-minute quick start
+## Main commands
+
+Use the direct CLI when you want full control:
+
+| Command | Purpose |
+|---|---|
+| `data-pipeline-flow summary --project-root <path>` | Print a quick terminal overview |
+| `data-pipeline-flow render-dot --project-root <path> --output <file.dot>` | Write the Graphviz `.dot` graph |
+| `data-pipeline-flow render-image --project-root <path> --format <png|svg|pdf> --output <file>` | Render the final image |
+| `data-pipeline-flow validate --project-root <path> --output <file.json>` | Write a validation report |
+| `data-pipeline-flow extract-edges --project-root <path> --output <file.csv>` | Export parsed pipeline edges |
+| `data-pipeline-flow snapshot-json --project-root <path> --output <file.json>` | Export a graph snapshot |
+| `data-pipeline-flow export-clusters --project-root <path> --output <file.yaml>` | Export inferred or resolved clusters |
+
+Interactive helpers are also installed:
+
+| Helper | Purpose |
+|---|---|
+| `data-pipeline-flow-setup` | First-run setup for project root, output folder, theme, view, and format |
+| `data-pipeline-flow-make` | Render using saved defaults |
+| `data-pipeline-flow-inspect` | Run `summary`, `validate`, or both |
+| `data-pipeline-flow-edit-exclusions` | Edit ignored files, folders, and patterns |
+| `data-pipeline-flow-manage-clusters` | Edit manual clusters |
+
+Saved settings are stored in `pipeline_user_settings.yaml`. The editable project config is created by default at `user_configs/project_config.yaml`.
+
+## Example workflow
+
+The repository includes a runnable example project. From the repo root:
 
 ```bash
-python install.py
-```
-
-Once that finishes, activate the venv and verify everything works:
-
-```bash
+# 1) check that the install worked
 data-pipeline-flow summary --project-root example/project
-```
 
-If `summary` prints node/edge counts, the installation is complete.
+# 2) create a pipeline image
+data-pipeline-flow render-image \
+  --project-root example/project \
+  --format svg \
+  --output example/output/pipeline_overview.svg
 
----
-
-## The fastest useful workflow
-
-### 1. Get a quick text overview
-
-```bash
-data-pipeline-flow summary --project-root example/project
-```
-
-Use `summary` when you want a quick terminal overview.
-
-It tells you:
-- how many scripts and artifacts were found
-- how many edges exist in the pipeline
-- how many clusters were inferred
-- which diagnostics were raised
-
-### 2. Create a graph file
-
-```bash
-data-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
-```
-
-Use `render-dot` when you want the intermediate Graphviz `.dot` file.
-
-A `.dot` file is a graph description. It is useful when:
-- you want full control over later rendering
-- you want to inspect the graph source
-- you want to render with Graphviz manually
-
-### 3. Create a final image directly
-
-```bash
-data-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
-```
-
-Use `render-image` when you want the final figure directly from the CLI.
-
-Supported formats:
-- `png`
-- `svg`
-- `pdf`
-
-If you also want to keep the `.dot` file:
-
-```bash
+# 3) optionally keep the intermediate DOT file too
 data-pipeline-flow render-image \
   --project-root example/project \
   --format svg \
@@ -175,74 +95,26 @@ data-pipeline-flow render-image \
   --dot-output example/output/pipeline_overview.dot
 ```
 
-### 4. Write a validation report
+The example is intentionally realistic rather than perfectly clean. Warnings such as missing referenced files or multiple writers can be expected and often demonstrate what the tool is designed to detect.
 
-```bash
-data-pipeline-flow validate --project-root example/project --output example/output/validation_report.json
-```
+## Configuration
 
-Use `validate` when you want a structured machine-readable diagnostics report.
-
-### 5. Run the automated tests
-
-```bash
-python -m pytest -q
-```
-
-Use this when you are changing code and want to check that nothing broke.
-
----
-
-## What the main commands mean
-
-### `summary`
-Prints a human-readable overview in the terminal.
-
-### `render-dot`
-Creates a `.dot` graph file.
-
-### `render-image`
-Creates a final image directly through Graphviz.
-
-### `validate`
-Writes a JSON report of diagnostics and validation findings.
-
-### `extract-edges`
-Writes a CSV of parsed edges from the Stata scripts.
-
-### `snapshot-json`
-Writes a stable JSON snapshot of the graph model itself.
-
-### `export-clusters`
-Exports inferred or resolved clusters as an editable YAML starter config.
-
----
-
-## The example project: what to expect
-
-The bundled example is **not a perfectly clean toy project**.
-It is closer to a **realistic demo project** and intentionally includes some situations that produce diagnostics.
-
-That means it is normal to see things like:
-- missing referenced files
-- multiple writers to the same target
-- temporary files that get erased
-- excluded files or folders
-
-So if you run `summary` and see warnings, that does **not** automatically mean the tool is failing.
-It often means the example is demonstrating what the tool can detect.
-
----
-
-## Where to change settings
-
-The easiest place to start is:
+Start from:
 
 ```text
 example/configs/config_example.yaml
 ```
 
-Run commands with that config like this:
+Common settings most users will care about first:
+
+- `display.view`: choose the graph view such as `overview`, `scripts_only`, `deliverables`, or `stage_overview`
+- `display.theme`: choose the visual style such as `modern-light`, `modern-dark`, or `warm-neutral`
+- `display.label_path_depth`: control how much folder context appears in labels
+- `exclusions.*`: ignore clutter such as generated folders, archive folders, or glob patterns
+- `parser.version_families`: control how file versions such as `_v1`, `_qc`, `_pp`, or `final` are handled
+- `clustering` / `clusters`: control automatic grouping and manual cluster overrides
+
+Example:
 
 ```bash
 data-pipeline-flow render-image \
@@ -252,172 +124,30 @@ data-pipeline-flow render-image \
   --output example/output/pipeline_custom.svg
 ```
 
-## The most important settings for a normal user
-
-### `display.view`
-Controls **what kind of graph** you see.
-
-Common values:
-- `overview` → the normal default view
-- `scripts_only` → only scripts, no artifact nodes
-- `deliverables` → focus on key outputs
-- `stage_overview` → more compressed stage-style summary
-
-### `display.theme`
-Controls the visual style.
-
-Available themes in this repo:
-- `modern-light`
-- `modern-dark`
-- `warm-neutral`
-
-### `display.label_path_depth`
-Controls how much folder context is shown in node labels.
-
-Examples:
-- `0` → just the file name
-- `1` → one parent folder plus the file name
-- `2` → two parent folders plus the file name
-
-This is useful when names repeat across folders.
-
-### `display.show_extensions`
-Controls whether labels keep extensions like `.do` or `.dta`.
-
-### `display.node_label_style`
-Controls the label style.
-
-Common values:
-- `basename` → file name only
-- `full_path` → full relative path
-- `stem` → file name without extension
-
-### `exclusions.presets`
-Turns on built-in exclusion groups.
-
-In the example config these remove common clutter such as generated outputs, archival folders, and Python runtime noise.
-
-### `exclusions.paths`, `folder_names`, `globs`
-Use these to ignore folders or files you do not want in the graph.
-
-### `parser.version_families`
-Controls how file versions like `_v1`, `_v2`, `_qc`, `_pp`, or `final` are handled.
-
-This matters when many file variants belong to the same logical output.
-
-### `clustering`
-Controls automatic grouping of the pipeline.
-
-### `clusters`
-Lets you manually override cluster membership. Supports two types:
-- **leaf clusters** — group individual files via `members`
-- **meta-clusters** — group other clusters via `member_cluster_ids`, rendering as nested boxes in the graph
-
----
-
-## A very common beginner workflow
-
-1. run `summary`
-2. run `render-image` to create a PNG or SVG
-3. inspect the figure
-4. if the graph is too busy, edit `example/configs/config_example.yaml`
-5. rerun the same command
-6. once happy, use the same process on your real project
-
----
-
-
-## PNG / SVG export and Graphviz
-
-`python install.py` checks for Graphviz automatically and warns you if it is missing. If you skipped `install.py`, check manually with `dot -V` in your terminal.
-
-The tool can create image files such as PNG, SVG, and PDF through the `render-image` command.
-
-Example:
-
-```powershell
-data-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
-```
-
-This command needs **Graphviz** to be installed, because the actual image rendering uses Graphviz's `dot` program behind the scenes.
-
-### Windows: check whether Graphviz is available
-
-In PowerShell, test this first:
-
-```powershell
-where.exe dot
-dot -V
-```
-
-If both commands work, then `render-image` should work too.
-
-### Windows: common problem
-
-A very common Windows issue is:
+## Repository layout
 
 ```text
-Graphviz was not found on PATH. Install Graphviz and make sure the "dot" command works in your terminal.
+src/                 Python package
+example/project/     bundled demo project
+example/configs/     example configuration
+example/output/      suggested output location
+tests/               automated tests
+docs/                additional documentation
 ```
 
-This usually means one of these is true:
-- Graphviz is not installed yet
-- Graphviz is installed, but its `bin` folder is not on your PATH
-- Graphviz was just installed, but you did not open a new PowerShell window yet
+## Notes
 
-### Windows: quick fix for the current PowerShell session
-
-If Graphviz is installed in the default location, run:
-
-```powershell
-$env:Path += ";C:\Program Files\Graphviz\bin"
-where.exe dot
-dot -V
-```
-
-Then retry:
-
-```powershell
-data-pipeline-flow render-image --project-root example/project --format png --output example/output/pipeline_overview.png
-```
-
-### Windows: permanent fix
-
-Add this folder to your Windows PATH:
-
-```text
-C:\Program Files\Graphviz\bin
-```
-
-Then:
-1. close PowerShell
-2. open a new PowerShell window
-3. reactivate your virtual environment
-4. rerun the command
-
-### If you want to bypass PATH entirely
-
-You can still create the DOT file and render it manually with the full Graphviz path:
-
-```powershell
-data-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
-& "C:\Program Files\Graphviz\bin\dot.exe" -Tpng "example\output\pipeline_overview.dot" -o "example\output\pipeline_overview.png"
-```
-
-### If you do not want image export yet
-
-You can always generate the `.dot` file first:
-
-```powershell
-data-pipeline-flow render-dot --project-root example/project --output example/output/pipeline_overview.dot
-```
-
-A `.dot` file is the graph description. It is useful for checking the graph structure even before you render a final image.
+- Multi-language parsing for Stata, Python, and R is enabled by default.
+- If Graphviz is not available, you can still generate `.dot` files with `render-dot`.
+- For development checks, run `python -m pytest -q`.
 
 ## Troubleshooting
 
-### PowerShell says `.venv/bin/activate` does not exist
-You are using the Linux/macOS activation path on Windows.
+### `dot` is not recognized
+
+Graphviz is missing or not on your PATH. You can either install/fix Graphviz and use `render-image`, or use `render-dot` first and render later.
+
+### PowerShell activation fails
 
 Use:
 
@@ -425,58 +155,8 @@ Use:
 .\.venv\Scripts\Activate.ps1
 ```
 
-If PowerShell blocks this, run once and retry:
+If needed, run once in the current session:
+
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
-
-### `Package requires a different Python: 3.9.x not in >=3.10`
-Your virtual environment was created with too old a Python.
-
-Delete `.venv` and rerun `install.py` — it will recreate it with the correct version:
-
-```powershell
-Remove-Item -Recurse -Force .venv
-python install.py
-```
-
-### `dot` is not recognized
-Graphviz is not installed or not on your PATH.
-
-You now have two options:
-- install/fix Graphviz and use `render-image`
-- or use `render-dot` first and render later once Graphviz works
-
-On Windows, Graphviz often installs to:
-
-```text
-C:\Program Files\Graphviz\bin
-```
-
-That folder must be on PATH if you want `dot` to work directly.
-
-### `can't open example/output/...dot: No such file or directory`
-You are probably running the command from the wrong folder.
-
-Run commands from the **repo root** (`pubrepo`) or use absolute paths.
-
-### The example prints many warnings
-That is expected. The bundled example intentionally contains realistic diagnostics.
-
----
-
-## Development notes
-
-This repo is usable as a normal development repository.
-
-Typical loop:
-
-```bash
-python -m pytest -q
-data-pipeline-flow summary --project-root example/project
-data-pipeline-flow render-image --project-root example/project --format svg --output example/output/dev_check.svg
-```
-
-If you want more detail after the README, continue with:
-- `docs/configuration.md`
-- `docs/development.md`
