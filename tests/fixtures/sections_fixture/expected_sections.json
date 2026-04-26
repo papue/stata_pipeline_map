@@ -1,0 +1,63 @@
+{
+  "analysis/model.py": [
+    {
+      "line": 1,
+      "level": 1,
+      "title": "1. Load data"
+    },
+    {
+      "line": 5,
+      "level": 1,
+      "title": "2. Run regressions"
+    },
+    {
+      "line": 6,
+      "level": 2,
+      "title": "2.1 OLS"
+    },
+    {
+      "line": 10,
+      "level": 2,
+      "title": "2.2 Fixed effects"
+    }
+  ],
+  "analysis/plots.r": [
+    {
+      "line": 1,
+      "level": 1,
+      "title": "1. Setup"
+    },
+    {
+      "line": 4,
+      "level": 1,
+      "title": "2. Plots"
+    },
+    {
+      "line": 5,
+      "level": 1,
+      "title": "Prepare data"
+    },
+    {
+      "line": 7,
+      "level": 2,
+      "title": "2.1 Bar chart"
+    }
+  ],
+  "analysis/prepare.do": [
+    {
+      "line": 2,
+      "level": 1,
+      "title": "1. Load raw data"
+    },
+    {
+      "line": 6,
+      "level": 2,
+      "title": "1.1 Drop missing values"
+    },
+    {
+      "line": 11,
+      "level": 1,
+      "title": "2. Save cleaned"
+    }
+  ]
+}

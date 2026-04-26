@@ -1,0 +1,5 @@
+script_dir <- dirname(sys.frame(1)$ofile)
+png_path <- file.path(script_dir, "plots", "figure.png")
+png(filename = png_path)
+plot(x, y)
+dev.off()

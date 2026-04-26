@@ -280,3 +280,81 @@ def test_fixture_r_project_parses():
             ParserConfig(),
         )
         assert result is not None
+
+
+# ---------------------------------------------------------------------------
+# MO-26: spurious "." node — file.path(".") must not emit a node
+# ---------------------------------------------------------------------------
+
+def test_file_path_dot_no_spurious_node():
+    """file.path('.') stored in a var then used in read.csv must produce no node."""
+    result = _parse(
+        '''
+        path <- file.path(".")
+        df <- read.csv(path)
+        '''
+    )
+    paths = _paths(result)
+    assert '.' not in paths, f"Spurious '.' node emitted: {paths}"
+    assert not any(p in ('./', '.\\') for p in paths)
+
+
+def test_paste0_dot_slash_no_spurious_node():
+    """paste0('./') used directly in read.csv must not emit a bare './' node."""
+    result = _parse(
+        '''
+        df <- read.csv(paste0("./"))
+        '''
+    )
+    paths = _paths(result)
+    assert not any(p.rstrip('/\\') in ('', '.') for p in paths), (
+        f"Spurious directory node emitted: {paths}"
+    )
+
+
+def test_file_path_dot_with_known_suffix_resolves():
+    """file.path('.', 'data', 'out.csv') is a valid path and must be emitted."""
+    result = _parse(
+        '''
+        df <- read.csv(file.path(".", "data", "out.csv"))
+        '''
+    )
+    paths = _paths(result)
+    assert any("out.csv" in p for p in paths), f"Expected out.csv in paths: {paths}"
+
+
+def test_r_spurious_dot_fixture_trigger_script():
+    """trigger_dot.R in the r_spurious_dot fixture must produce no events."""
+    fixture_root = Path(__file__).parent / "fixtures" / "r_spurious_dot"
+    trigger = fixture_root / "scripts" / "trigger_dot.R"
+    if not trigger.exists():
+        pytest.skip("trigger_dot.R fixture not found")
+    result = parse_r_file(
+        fixture_root,
+        trigger,
+        ExclusionConfig(),
+        NormalizationConfig(),
+        ParserConfig(),
+    )
+    paths = _paths(result)
+    assert '.' not in paths, f"Spurious '.' node emitted by trigger_dot.R: {paths}"
+    assert len(result.events) == 0, f"Expected 0 events, got: {result.events}"
+
+
+def test_r_spurious_dot_fixture_load_known_still_works():
+    """load_known.R in the r_spurious_dot fixture must still resolve data/final.csv."""
+    fixture_root = Path(__file__).parent / "fixtures" / "r_spurious_dot"
+    load_known = fixture_root / "scripts" / "load_known.R"
+    if not load_known.exists():
+        pytest.skip("load_known.R fixture not found")
+    result = parse_r_file(
+        fixture_root,
+        load_known,
+        ExclusionConfig(),
+        NormalizationConfig(),
+        ParserConfig(),
+    )
+    paths = _paths(result)
+    assert any("final.csv" in p for p in paths), (
+        f"Expected data/final.csv edge from load_known.R, got: {paths}"
+    )

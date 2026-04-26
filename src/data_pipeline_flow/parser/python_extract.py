@@ -32,6 +32,14 @@ _VAR_PATH_ASSIGN_RE = re.compile(
 )
 
 # ---------------------------------------------------------------------------
+# Pattern: VAR = Path(other_var)  (pathlib.Path wrapping a variable)
+# Resolved in sub-pass 1a when other_var is already in vars_map.
+# ---------------------------------------------------------------------------
+_VAR_PATH_VAR_ASSIGN_RE = re.compile(
+    r'^\s*(\w+)\s*=\s*(?:pathlib\.)?Path\s*\(\s*(\w+)\s*\)\s*$'
+)
+
+# ---------------------------------------------------------------------------
 # Pattern: VAR = os.path.join(...)  assignment
 # ---------------------------------------------------------------------------
 _VAR_OSPATH_JOIN_RE = re.compile(r'^\s*(\w+)\s*=\s*os\.path\.join\s*\(([^)]+)\)')
@@ -54,13 +62,23 @@ _VAR_CONCAT_RE = re.compile(
 )
 
 # ---------------------------------------------------------------------------
+# Pattern: VAR = token + token [+ token ...]   (general chained + concat)
+# Each token is either a bare identifier (variable) or a quoted string literal.
+# Captures: group(1)=var_name, group(2)=rest-of-RHS (everything after the '=')
+# ---------------------------------------------------------------------------
+_VAR_CONCAT_CHAIN_RE = re.compile(
+    r'^\s*(\w+)\s*=\s*((?:(?:\w+|(?:[rRbBuU]?"[^"]*")|(?:[rRbBuU]?\'[^\']*\'))\s*\+\s*)*'
+    r'(?:\w+|(?:[rRbBuU]?"[^"]*")|(?:[rRbBuU]?\'[^\']*\')))\s*$'
+)
+
+# ---------------------------------------------------------------------------
 # Pattern: f-string with a known file extension (lower priority, produces
 # a placeholder node so the edge is at least visible in the graph).
 # Matches: f"...{expr}....<ext>"  where ext is a data file extension.
 # ---------------------------------------------------------------------------
 _FSTRING_WITH_EXT_RE = re.compile(
-    r'\bf(?:"[^"]*\{[^}]+\}[^"]*\.(parquet|csv|pkl|pickle|feather|json|xlsx|dta|npy|npz|hdf|h5|orc)"'
-    r"|'[^']*\{[^}]+\}[^']*\.(parquet|csv|pkl|pickle|feather|json|xlsx|dta|npy|npz|hdf|h5|orc)')",
+    r'\bf(?:"[^"]*\{[^}]+\}[^"]*\.(parquet|csv|pkl|pickle|feather|json|xlsx|dta|npy|npz|hdf|h5|orc|pdf|png|svg|eps)"'
+    r"|'[^']*\{[^}]+\}[^']*\.(parquet|csv|pkl|pickle|feather|json|xlsx|dta|npy|npz|hdf|h5|orc|pdf|png|svg|eps)')",
     re.I,
 )
 
@@ -120,6 +138,39 @@ _RAW_STR_PREFIX_RE = re.compile(r'\b([rRbBuU])((?:"[^"]*"|\'[^\']*\'))')
 _EXTERNAL_PREFIXES = ('http://', 'https://', 'ftp://', 's3://', 'gs://')
 
 # ---------------------------------------------------------------------------
+# Absolute path base detection
+# A "real" absolute base has multiple path components (not a bare filename or
+# a single-segment suffix like "/file.csv").  This prevents values like
+# "/results_final.csv" from being treated as absolute path variables.
+# ---------------------------------------------------------------------------
+_WINDOWS_ABS_RE = re.compile(r'^[A-Za-z]:[/\\]')
+
+
+def _is_absolute_base(val: str) -> bool:
+    """Return True only when *val* looks like an absolute directory base.
+
+    Unlike ``_is_absolute_like``, this excludes bare ``/filename.ext`` strings
+    so that path-suffix variables (``suffix = "/file.csv"``) are NOT added to
+    ``abs_vars`` and can participate in normal string concatenation.
+    """
+    # Windows drive-letter paths: C:\ or C:/
+    if _WINDOWS_ABS_RE.match(val):
+        return True
+    # UNC paths: \\server\share
+    if val.startswith('\\\\'):
+        return True
+    # Unix absolute: must have at least one segment beyond the leading /
+    # e.g. "/home/user" yes, "/file.csv" no
+    if val.startswith('/'):
+        rest = val.lstrip('/')
+        # If the remainder has a directory separator it's a multi-segment abs path
+        if '/' in rest or '\\' in rest:
+            return True
+        # Single segment starting with /: treat as a suffix, not an abs base
+        return False
+    return False
+
+# ---------------------------------------------------------------------------
 # __file__-based variable resolution patterns
 # ---------------------------------------------------------------------------
 # VAR = os.path.dirname(os.path.abspath(__file__))  or  os.path.dirname(__file__)
@@ -142,11 +193,31 @@ _PATHLIB_CHAIN_RE = re.compile(
 _PATH_DIV_INLINE_RE = re.compile(
     r'\bPath\s*\(\s*(?:"([^"]+)"|\'([^\']+)\')\s*\)\s*(?:/\s*(?:"[^"]+"|\'[^\']+\')\s*)+'
 )
+# Inline Path("val") with NO following / — transparent unwrap to "val"
+# (must not match when followed by / since _PATH_DIV_INLINE_RE handles that)
+_PATH_WRAP_INLINE_RE = re.compile(
+    r'\bPath\s*\(\s*(?:"([^"]+)"|\'([^\']+)\')\s*\)(?!\s*/)'
+)
 # Inline "a" + "b"  string concatenation (after variable expansion)
 _STR_CONCAT_INLINE_RE = re.compile(r'"([^"]*?)"\s*\+\s*"([^"]*?)"')
 # Inline "a" / "b" [/ "c"]*  path division (after variable expansion replaces pathlib vars)
 # This handles cases like: pd.read_csv("data" / "input.csv") after expansion
 _STR_DIV_INLINE_RE = re.compile(r'"([^"]*?)"\s*(?:/\s*"[^"]*?"\s*)+')
+
+# ---------------------------------------------------------------------------
+# Kwarg path heuristic — names of keyword arguments that commonly carry a
+# file-path value.  When a function call passes one of these kwargs with a
+# resolved string value we emit a write edge from the call site.
+# ---------------------------------------------------------------------------
+_PATH_KWARG_NAMES: frozenset[str] = frozenset({
+    'filename', 'path', 'output', 'output_path', 'save_path',
+    'filepath', 'file', 'fname',
+})
+# Matches:  keyword="literal"  or  keyword='literal'  or  keyword=variable
+_KWARG_PATH_RE = re.compile(
+    r'\b(' + '|'.join(_PATH_KWARG_NAMES) + r')\s*=\s*'
+    r'(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\'|(\w+))'
+)
 
 # ---------------------------------------------------------------------------
 # F-string resolution patterns
@@ -272,16 +343,20 @@ def _make_np_write_patterns(prefixes: list[str]) -> list[tuple[str, re.Pattern[s
 _FIXED_WRITE_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     # .savefig("path") — method call (e.g. fig.savefig)
     ('savefig',       re.compile(r'\.savefig\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')', re.I)),
+    # pickle.dump(obj, open("path", "wb")) — more specific than open_write
+    ('pickle_dump',   re.compile(r'\bpickle\.dump\s*\([^,]+,\s*open\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')', re.I)),
+    # json.dump(obj, open("path", "w")) — more specific than open_write
+    ('json_dump',     re.compile(r'\bjson\.dump\s*\([^,]+,\s*open\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')', re.I)),
     # open("path", "w"/"wb"/"a"/"ab")
     ('open_write',    re.compile(r'\bopen\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')\s*,\s*(?:[rRbBuU]?"[wa][bt]?"|[rRbBuU]?\'[wa][bt]?\')', re.I)),
-    # pickle.dump(obj, open("path", "wb"))
-    ('pickle_dump',   re.compile(r'\bpickle\.dump\s*\([^,]+,\s*open\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')', re.I)),
-    # json.dump(obj, open("path", "w"))
-    ('json_dump',     re.compile(r'\bjson\.dump\s*\([^,]+,\s*open\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')', re.I)),
     # joblib.dump(obj, "path")
     ('joblib_dump',   re.compile(r'\bjoblib\.dump\s*\([^,]+,\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')', re.I)),
     # .save("path") — method call (folium, networkx, etc.)
     ('save_method',   re.compile(r'\.save\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')', re.I)),
+    # pathlib .write_text() / .write_bytes() — after variable expansion the path
+    # variable becomes a quoted string, so we match "path".write_text(
+    ('write_text',    re.compile(r'(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')\.write_text\s*\(', re.I)),
+    ('write_bytes',   re.compile(r'(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')\.write_bytes\s*\(', re.I)),
 ]
 
 _DEFAULT_WRITE_PATTERNS = _make_write_patterns([])  # method patterns don't need a prefix
@@ -373,7 +448,12 @@ def _resolve_ospath_join(
     contained_absolute = False
     for piece in args_text.split(','):
         piece = piece.strip()
-        quoted = _extract_quoted(piece)
+        # A compound expression like `name + ".pdf"` is NOT a pure quoted literal.
+        # _extract_quoted would return only ".pdf" (the extension suffix), which
+        # would produce a garbled node like "output/.pdf".  Detect compound pieces
+        # (identifier + string) and treat them as unresolvable.
+        _is_compound = bool(re.search(r'\b[A-Za-z_]\w*\s*\+', piece))
+        quoted = None if _is_compound else _extract_quoted(piece)
         if quoted is not None:
             if _is_absolute_like(quoted):
                 # Skip absolute base components — we keep only the literal suffix parts
@@ -437,6 +517,56 @@ def _resolve_path_div(text: str, vars_map: dict[str, str]) -> list[str]:
         if a and b:
             results.append(f'{a}/{b}')
     return results
+
+
+def _resolve_concat_chain(
+    rhs: str,
+    vars_map: dict[str, str],
+    abs_vars: set[str],
+) -> tuple[str | None, bool]:
+    """Resolve a chain of ``+`` concatenations (e.g. ``a + b + "/file.csv"``).
+
+    Each token is a bare identifier (variable) or a quoted string literal.
+    Returns ``(resolved_string, contained_absolute)`` where
+    ``contained_absolute`` is True when an absolute-path variable was part of
+    the chain (so the caller can emit a ``force_abs`` edge instead of dropping
+    the result entirely).
+
+    Returns ``(None, False)`` if any token cannot be resolved.
+    """
+    # Tokenize: split on '+' and classify each piece
+    _TOKEN_RE = re.compile(
+        r'[rRbBuU]?"([^"]*)"|[rRbBuU]?\'([^\']*)\'|(\w+)'
+    )
+    tokens = rhs.split('+')
+    parts: list[str] = []
+    contained_absolute = False
+    for tok in tokens:
+        tok = tok.strip()
+        m = _TOKEN_RE.fullmatch(tok)
+        if not m:
+            return None, False
+        if m.group(1) is not None or m.group(2) is not None:
+            # Quoted literal
+            lit = m.group(1) if m.group(1) is not None else m.group(2)
+            # Normalise Windows backslash separators
+            parts.append(lit.replace('\\', '/'))
+        else:
+            # Bare identifier — look up in vars_map
+            var = m.group(3)
+            if var not in vars_map:
+                return None, False
+            if var in abs_vars:
+                contained_absolute = True
+                # Skip the absolute prefix — only keep non-absolute suffix parts
+            else:
+                parts.append(vars_map[var].replace('\\', '/'))
+    if not parts:
+        return None, contained_absolute
+    joined = ''.join(parts)
+    # Normalise path separators and redundant slashes
+    joined = joined.replace('//', '/')
+    return joined, contained_absolute
 
 
 def _module_to_path(module: str) -> str:
@@ -618,7 +748,7 @@ def parse_python_file(
         if m:
             val = m.group(2) if m.group(2) is not None else m.group(3)
             vars_map[m.group(1)] = val
-            if _is_absolute_like(val):
+            if _is_absolute_base(val):
                 abs_vars.add(m.group(1))
         # VAR = Path("literal")
         m2 = _VAR_PATH_ASSIGN_RE.match(clean)
@@ -629,6 +759,20 @@ def parse_python_file(
         m3 = _VAR_ASSIGN_SENTINEL_RE.match(clean)
         if m3:
             vars_map[m3.group(1)] = vars_map['__script_dir__']
+
+    # Sub-pass 1a2: VAR = Path(other_var)  — transparent Path wrapping of a variable.
+    # Runs after 1a so that other_var is already resolved in vars_map.
+    # Repeat to handle chains like:  a = os.path.join(...); b = Path(a)
+    for line in joined_lines:
+        clean = _strip_comment(line)
+        m_pv = _VAR_PATH_VAR_ASSIGN_RE.match(clean)
+        if m_pv:
+            var_name = m_pv.group(1)
+            src_var = m_pv.group(2)
+            if src_var in vars_map and var_name not in vars_map:
+                vars_map[var_name] = vars_map[src_var]
+                if src_var in abs_vars:
+                    abs_vars.add(var_name)
 
     # Sub-pass 1b: VAR = os.path.join(...)  where components resolve from vars_map
     # Run on joined_lines so multi-line joins are captured.
@@ -677,16 +821,25 @@ def parse_python_file(
                 resolved = template.replace('%s', vars_map[arg_var], 1)
                 vars_map[var_name] = resolved
 
-    # Sub-pass 1d: VAR = other_var + "suffix"
+    # Sub-pass 1d: VAR = token + token [+ token ...]
+    # Handles: var + "suffix", "prefix" + var, var + var, and chained a+b+c.
+    # When the chain contains an abs_var, we still store the non-absolute suffix
+    # parts so a force_abs edge can be emitted at the call site.
     for line in joined_lines:
         clean = _strip_comment(line)
-        m = _VAR_CONCAT_RE.match(clean)
-        if m:
-            var_name = m.group(1)
-            base_var = m.group(2)
-            suffix = m.group(3) if m.group(3) is not None else m.group(4)
-            if base_var in vars_map and base_var not in abs_vars:
-                vars_map[var_name] = vars_map[base_var] + suffix
+        m = _VAR_CONCAT_CHAIN_RE.match(clean)
+        if not m:
+            continue
+        var_name = m.group(1)
+        rhs = m.group(2)
+        # Skip if RHS contains no '+' (plain assignment already handled in 1a)
+        if '+' not in rhs:
+            continue
+        resolved, is_abs = _resolve_concat_chain(rhs, vars_map, abs_vars)
+        if resolved is not None:
+            vars_map[var_name] = resolved
+            if is_abs:
+                abs_vars.add(var_name)
 
     # Sub-pass 1e: resolve __file__-based path variables
     # Patterns handled:
@@ -802,11 +955,30 @@ def parse_python_file(
                 payload={'script': rel_script, 'path': raw_path},
             ))
             return
+        # Guard: a raw_path that ends with "/" (e.g. "./" or "../data/") is a
+        # directory-only prefix captured because the read pattern grabbed only the
+        # first quoted literal before a runtime variable in the middle of a concat
+        # expression (e.g. open("./" + VAR + ".json")).  Such fragments produce
+        # spurious nodes like "." or "data"; drop them silently.
+        if raw_path.endswith('/') or raw_path.endswith('\\'):
+            return
         resolved_path = raw_path
         if '..' in raw_path and not Path(raw_path).is_absolute():
             resolved_path = str((py_file.parent / raw_path).resolve())
         norm, was_abs = to_project_relative(project_root, Path(resolved_path), normalization)
         norm = normalize_token(norm)
+        # When force_abs=True the path came from stripping an absolute base in
+        # os.path.join(abs_var, "suffix").  The remaining suffix may be just a
+        # bare filename with no directory component.  If the file actually exists
+        # somewhere inside the project tree, use that project-relative path so
+        # the node ID matches the one produced by __file__-relative reads.
+        if force_abs and '/' not in norm and norm not in {'.', ''}:
+            matches = list(project_root.rglob(norm))
+            if len(matches) == 1:
+                try:
+                    norm = normalize_token(str(matches[0].relative_to(project_root)).replace('\\', '/'))
+                except ValueError:
+                    pass  # outside project_root — keep bare filename
         if is_excluded(norm, exclusions):
             excluded_references.append(_excluded_reference(rel_script, line_no, command, norm))
             return
@@ -955,7 +1127,12 @@ def parse_python_file(
 
         # --- String concatenation: "a" + "b" -> "ab" (inline, after variable expansion) ---
         # Handles pd.read_csv(base + "suffix") after base is expanded to "data/"
-        for _cm in _STR_CONCAT_INLINE_RE.finditer(line):
+        # Fixed-point loop: repeat until no more adjacent quoted-string pairs remain
+        # (single-pass finditer missed chained concatenations like "a" + "b" + "c").
+        for _ in range(10):
+            _cm = _STR_CONCAT_INLINE_RE.search(line)
+            if not _cm:
+                break
             _concat_result = _cm.group(1) + _cm.group(2)
             line = line.replace(_cm.group(0), f'"{_concat_result}"', 1)
 
@@ -974,6 +1151,16 @@ def parse_python_file(
                 _resolved = '/'.join(_parts)
                 line = line.replace(_full_match, f'"{_resolved}"', 1)
                 break  # one substitution per line
+
+        # --- Fix A: transparent Path("val") unwrap (no / following) ---
+        # After variable expansion, plt.savefig(Path("resolved")) becomes
+        # plt.savefig("resolved") so that the savefig write pattern can match.
+        # _PATH_WRAP_INLINE_RE uses a negative lookahead (?!\s*/) to avoid
+        # conflicts with _PATH_DIV_INLINE_RE (which handles Path("a")/"b").
+        for _pwm in _PATH_WRAP_INLINE_RE.finditer(line):
+            _pw_val = _pwm.group(1) or _pwm.group(2)
+            if _pw_val:
+                line = line.replace(_pwm.group(0), f'"{_pw_val}"', 1)
 
         # --- Read patterns ---
         read_matched = False
@@ -995,6 +1182,40 @@ def parse_python_file(
                 _add_event(line_no, command, expanded, is_write=True, force_abs=_join_force_abs)
                 write_matched = True
                 break  # one write per line (first match)
+
+        # --- Fix B: kwarg path heuristic for user-defined functions ---
+        # When a call passes a known path-keyword argument (filename=, output=,
+        # output_path=, etc.) with a resolvable value, emit a write edge.
+        # This fires even when no conventional write pattern matched, so that
+        # calls like plot_and_save(..., filename=path) are captured.
+        # Guard: only fire when the keyword appears AFTER an opening '(' on the
+        # same line — this prevents matching VAR assignments like
+        # filename = os.path.join(...) where 'filename' is the LHS, not a kwarg.
+        if not write_matched:
+            for _km in _KWARG_PATH_RE.finditer(line):
+                # Require that there is an unmatched '(' before the match start
+                _pre = line[:_km.start()]
+                if _pre.count('(') <= _pre.count(')'):
+                    continue  # match is not inside a function call
+                # Groups: 1=keyword, 2=double-quoted literal, 3=single-quoted literal, 4=var name
+                _kw_lit_d = _km.group(2)
+                _kw_lit_s = _km.group(3)
+                _kw_var   = _km.group(4)
+                if _kw_lit_d is not None:
+                    _kw_path = _kw_lit_d
+                elif _kw_lit_s is not None:
+                    _kw_path = _kw_lit_s
+                elif _kw_var is not None:
+                    _kw_path = vars_map.get(_kw_var)  # type: ignore[assignment]
+                else:
+                    _kw_path = None
+                if _kw_path and _kw_path not in vars_map:
+                    # Looks like a resolved path string (contains a dot or slash)
+                    # Avoid emitting edges for plain variable names or short tokens
+                    if '.' in _kw_path or '/' in _kw_path or '\\' in _kw_path:
+                        _add_event(line_no, 'kwarg_write', _kw_path, is_write=True, force_abs=_join_force_abs)
+                        write_matched = True
+                        break  # one kwarg write per line
 
         # --- F-string partial placeholder (lower priority) ---
         # Only emit a placeholder when no concrete path was already found,

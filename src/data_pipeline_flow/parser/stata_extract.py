@@ -27,11 +27,17 @@ INSHEET_RE = re.compile(r'\binsheet\s+(?:using\s+)?(?:"([^"]+)"|([^\s,]+\.[^\s,]
 EXPORT_EXCEL_RE = re.compile(r'\bexport\s+excel\s+using\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 GRAPH_EXPORT_RE = re.compile(r'\bgraph\s+export\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 ESTIMATES_SAVE_RE = re.compile(r'\bestimates\s+save\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
+PUTEXCEL_SET_RE = re.compile(r'\bputexcel\s+set\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
+OUTSHEET_RE = re.compile(r'\boutsheet\s+(?:using\s+)?(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
+LOG_USING_RE = re.compile(r'\blog\s+using\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
+ESTTAB_RE = re.compile(r'\besttab\b[^\n]*?\busing\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
+OUTREG2_RE = re.compile(r'\boutreg2\b[^\n]*?\busing\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 APPEND_RE = re.compile(r'\bappend\s+using\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 MERGE_RE = re.compile(r'\bmerge\s+[^\n]*?using\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 CROSS_RE = re.compile(r'\bcross\s+using\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 ERASE_RE = re.compile(r'\berase\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 MACRO_TOKEN_RE = re.compile(r"`([^']+)'")
+DOLLAR_GLOBAL_RE = re.compile(r'\$\{(\w+)\}|\$(\w+)')
 VERSION_TOKEN_RE = re.compile(r'(?i)(?:_v\d+|_(?:qc|pp|final|draft))(?=\.[^.]+$)')
 
 READ_COMMANDS = {
@@ -48,6 +54,11 @@ WRITE_COMMANDS = {
     'export_excel': EXPORT_EXCEL_RE,
     'graph_export': GRAPH_EXPORT_RE,
     'estimates_save': ESTIMATES_SAVE_RE,
+    'putexcel_set': PUTEXCEL_SET_RE,
+    'outsheet': OUTSHEET_RE,
+    'log_using': LOG_USING_RE,
+    'esttab': ESTTAB_RE,
+    'outreg2': OUTREG2_RE,
 }
 
 
@@ -111,8 +122,19 @@ def expand(path_expr: str, globals_map: dict[str, str]) -> str:
     return path
 
 
+_INLINE_BLOCK_COMMENT_RE = re.compile(r'/\*.*?\*/', re.DOTALL)
+_INLINE_LINE_COMMENT_RE = re.compile(r'\s*//.*$')
+
+
+def _strip_inline_comments(text: str) -> str:
+    """Remove /* ... */ block comments and // end-of-line comments from a string."""
+    text = _INLINE_BLOCK_COMMENT_RE.sub('', text)
+    text = _INLINE_LINE_COMMENT_RE.sub('', text)
+    return text.strip()
+
+
 def _collect_local_values(raw_value: str) -> list[str]:
-    cleaned = _strip_quotes(raw_value)
+    cleaned = _strip_quotes(_strip_inline_comments(raw_value))
     return [piece for piece in cleaned.split() if piece]
 
 
@@ -127,6 +149,35 @@ def _resolve_dynamic_path(
     env: dict[str, list[str]] = {key: values[:] for key, values in local_map.items()}
     for frame in loop_stack:
         env[frame.variable] = frame.values[:]
+
+    # Check for unresolved ${macro} or $macro global references remaining after expand().
+    # Before marking partial, try resolving them from locals (dollar-form local references).
+    dollar_matches = DOLLAR_GLOBAL_RE.findall(expanded)
+    if dollar_matches:
+        # First attempt: substitute from env (locals + loop vars) for any dollar-form refs
+        # that expand() missed because it only consults globals_map.
+        still_expanded = expanded
+        still_unresolved = []
+        for braced, bare in dollar_matches:
+            name = braced or bare
+            if name in env and len(env[name]) == 1:
+                # Single-valued local: substitute directly
+                still_expanded = still_expanded.replace(f'${{{name}}}', env[name][0])
+                still_expanded = re.sub(rf'\${re.escape(name)}(?!\w)', env[name][0], still_expanded)
+            else:
+                still_unresolved.append((braced, bare))
+        # Re-check: any remaining unresolved dollar refs?
+        remaining_dollar = DOLLAR_GLOBAL_RE.findall(still_expanded)
+        if remaining_dollar:
+            # Still partial — convert remaining unresolved refs to placeholders
+            placeholder = still_expanded
+            for braced, bare in remaining_dollar:
+                name = braced or bare
+                placeholder = placeholder.replace(f'${{{name}}}', f'{{{name}}}')
+                placeholder = re.sub(rf'\${re.escape(name)}(?!\w)', f'{{{name}}}', placeholder)
+            return [placeholder], 'partial', placeholder
+        # All dollar refs resolved via locals — continue with macro token resolution
+        expanded = still_expanded
 
     tokens = MACRO_TOKEN_RE.findall(expanded)
     if not tokens:
@@ -157,29 +208,68 @@ def _resolve_dynamic_path(
             current = current.replace(f"`{token}'", replacement)
         expansions.append(current)
 
-    # Second pass: resolve any nested local references that appeared after substitution
-    second_pass: list[str] = []
-    for path_str in expansions:
-        nested_tokens = MACRO_TOKEN_RE.findall(path_str)
-        if not nested_tokens:
-            second_pass.append(path_str)
-            continue
-        nested_missing = [t for t in nested_tokens if t not in env]
-        if nested_missing:
-            # Some still unresolved — keep as partial
-            second_pass.append(path_str)
-            continue
-        nested_unique: list[str] = []
-        for token in nested_tokens:
-            if token not in nested_unique:
-                nested_unique.append(token)
-        for combination2 in itertools.product(*(env[token] for token in nested_unique)):
-            current2 = path_str
-            for token, replacement in zip(nested_unique, combination2):
-                current2 = current2.replace(f"`{token}'", replacement)
-            second_pass.append(current2)
+    # Multi-pass: resolve nested local/global references up to 3 total passes.
+    # After substituting locals, remaining values may contain:
+    #   - more local refs (``nested_local'')
+    #   - global refs that the local value carried ($global embedded in local value)
+    for _pass in range(2):  # up to 2 additional passes (3 total)
+        next_pass: list[str] = []
+        any_changed = False
+        for path_str in expansions:
+            # First re-expand any global refs that surfaced after local substitution
+            re_expanded = expand(path_str, globals_map)
+            if re_expanded != path_str:
+                any_changed = True
+            # Then resolve any remaining local tokens
+            nested_tokens = MACRO_TOKEN_RE.findall(re_expanded)
+            if not nested_tokens:
+                next_pass.append(re_expanded)
+                continue
+            nested_missing = [t for t in nested_tokens if t not in env]
+            if nested_missing:
+                # Some still unresolved — keep as partial
+                next_pass.append(re_expanded)
+                continue
+            nested_unique: list[str] = []
+            for token in nested_tokens:
+                if token not in nested_unique:
+                    nested_unique.append(token)
+            for combination2 in itertools.product(*(env[token] for token in nested_unique)):
+                current2 = re_expanded
+                for token, replacement in zip(nested_unique, combination2):
+                    current2 = current2.replace(f"`{token}'", replacement)
+                next_pass.append(current2)
+                any_changed = True
+        expansions = next_pass
+        if not any_changed:
+            break
 
-    deduped = list(dict.fromkeys(second_pass))
+    # Check for any remaining unresolved global/local refs after all passes.
+    # Convert any remaining unresolved tokens to {token} placeholder form.
+    final_pass: list[str] = []
+    has_partial = False
+    for path_str in expansions:
+        remaining_dollar = DOLLAR_GLOBAL_RE.findall(path_str)
+        if remaining_dollar:
+            has_partial = True
+            for braced, bare in remaining_dollar:
+                name = braced or bare
+                path_str = path_str.replace(f'${{{name}}}', f'{{{name}}}')
+                path_str = re.sub(rf'\${re.escape(name)}(?!\w)', f'{{{name}}}', path_str)
+        remaining_local = MACRO_TOKEN_RE.findall(path_str)
+        unresolved_local = [t for t in remaining_local if t not in env]
+        if unresolved_local:
+            has_partial = True
+            for token in sorted(set(unresolved_local)):
+                path_str = path_str.replace(f'`{token}\'', f'{{{token}}}')
+        # Normalize backslashes to forward slashes after full substitution
+        path_str = path_str.replace('\\', '/')
+        final_pass.append(path_str)
+
+    if has_partial:
+        return final_pass, 'partial', final_pass[0] if final_pass else None
+
+    deduped = list(dict.fromkeys(final_pass))
     return deduped, 'full', None
 
 
@@ -217,9 +307,27 @@ def _excluded_reference(rel_script: str, line: int, command: str, normalized_pat
     )
 
 
+_BARE_DIRECTORY_RE = re.compile(r'^[./\\]*$')
+
+
+def _is_bare_directory(path: str) -> bool:
+    """Return True if the path resolves to a bare directory marker (e.g. '.', '/', '\\')
+    with no meaningful file component. Such paths should be discarded to avoid spurious nodes."""
+    return bool(_BARE_DIRECTORY_RE.match(path))
+
+
 def _path_group(m: re.Match) -> str:
     """Return the captured path from a two-group regex (quoted | unquoted)."""
     return m.group(1) if m.group(1) is not None else m.group(2)
+
+
+def _resolve_script_relative(do_file: Path, expanded: str) -> str:
+    """If a path contains '..' and is not absolute, resolve it relative to the
+    script's directory so that '../data/x.dta' from 'scripts/analyze.do' maps
+    to 'data/x.dta' rather than staying as '../data/x.dta'."""
+    if '..' in expanded and not Path(expanded).is_absolute():
+        return str((do_file.parent / expanded).resolve())
+    return expanded
 
 
 def parse_do_file(project_root: Path, do_file: Path, exclusions: ExclusionConfig, normalization: NormalizationConfig, parser_config: ParserConfig) -> ScriptParseResult:
@@ -328,7 +436,7 @@ def parse_do_file(project_root: Path, do_file: Path, exclusions: ExclusionConfig
         if d:
             expansions, _, _ = _resolve_dynamic_path(_path_group(d), globals_map, local_map, loop_stack, parser_config.dynamic_paths.placeholder_token)
             for expanded in expansions:
-                norm, _ = to_project_relative(project_root, expanded, normalization)
+                norm, _ = to_project_relative(project_root, _resolve_script_relative(do_file, expanded), normalization)
                 norm = normalize_token(norm)
                 if is_excluded(norm, exclusions):
                     excluded_references.append(_excluded_reference(rel_script, i, 'do', norm))
@@ -346,9 +454,16 @@ def parse_do_file(project_root: Path, do_file: Path, exclusions: ExclusionConfig
             normalized_paths: list[str] = []
             any_absolute = False
             for expanded in expansions:
-                norm, was_absolute = to_project_relative(project_root, expanded, normalization)
+                # Check if path was originally absolute BEFORE _resolve_script_relative
+                # converts relative ../paths to absolute system paths (false positive prevention)
+                originally_absolute = Path(expanded).is_absolute() or expanded.startswith('/') or expanded.startswith('\\\\')
+                resolved = _resolve_script_relative(do_file, expanded)
+                norm, was_absolute = to_project_relative(project_root, resolved, normalization)
                 norm = normalize_token(norm)
-                any_absolute = any_absolute or was_absolute
+                # Fix C: discard paths that reduce to a bare directory marker (e.g. ".", "/")
+                if _is_bare_directory(norm):
+                    continue
+                any_absolute = any_absolute or (was_absolute and originally_absolute)
                 if is_excluded(norm, exclusions):
                     excluded_references.append(_excluded_reference(rel_script, i, command, norm))
                 else:
@@ -369,9 +484,16 @@ def parse_do_file(project_root: Path, do_file: Path, exclusions: ExclusionConfig
             normalized_paths: list[str] = []
             any_absolute = False
             for expanded in expansions:
-                norm, was_absolute = to_project_relative(project_root, expanded, normalization)
+                # Check if path was originally absolute BEFORE _resolve_script_relative
+                # converts relative ../paths to absolute system paths (false positive prevention)
+                originally_absolute = Path(expanded).is_absolute() or expanded.startswith('/') or expanded.startswith('\\\\')
+                resolved = _resolve_script_relative(do_file, expanded)
+                norm, was_absolute = to_project_relative(project_root, resolved, normalization)
                 norm = normalize_token(norm)
-                any_absolute = any_absolute or was_absolute
+                # Fix C: discard paths that reduce to a bare directory marker (e.g. ".", "/")
+                if _is_bare_directory(norm):
+                    continue
+                any_absolute = any_absolute or (was_absolute and originally_absolute)
                 if is_excluded(norm, exclusions):
                     excluded_references.append(_excluded_reference(rel_script, i, command, norm))
                 else:

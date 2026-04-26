@@ -74,6 +74,9 @@ _PYTHON_READ_CMDS: set[str] = {
     'open_read', 'pickle_load', 'json_load', 'yaml_safe_load',
     'runpy',
     'gpd_read_file', 'joblib_load',
+    # f-string placeholder paths (e.g. data/*.parquet) emitted when an f-string
+    # contains a runtime variable but ends with a known data-file extension.
+    'fstring_path',
 }
 
 _PYTHON_WRITE_CMDS: set[str] = {
@@ -82,6 +85,10 @@ _PYTHON_WRITE_CMDS: set[str] = {
     'savefig', 'open_write', 'pickle_dump', 'json_dump',
     'np_save', 'np_savetxt', 'np_savez', 'np_savez_compressed',
     'to_file', 'joblib_dump', 'save_method',
+    # pathlib write methods (Fix A)
+    'write_text', 'write_bytes',
+    # keyword-argument path heuristic (Fix B)
+    'kwarg_write',
 }
 
 _R_READ_CMDS: set[str] = {
@@ -102,11 +109,14 @@ _R_WRITE_CMDS: set[str] = {
     'write_parquet', 'write_feather',
     'saveRDS_kw', 'save_rdata',
     'ggsave', 'ggsave_kw',
-    'pdf', 'png', 'svg', 'jpeg', 'tiff',
+    'pdf', 'pdf_kw', 'png', 'png_kw', 'svg', 'svg_kw', 'jpeg', 'jpeg_kw', 'tiff', 'tiff_kw',
     'write_json', 'toJSON_write',
     'st_write', 'st_write_ns', 'tmap_save', 'tmap_save_kw',
     'saveWidget', 'saveWidget_kw', 'writeLines', 'writeLines_kw',
     'write.xlsx', 'saveWorkbook', 'write.fst',
+    'write_xlsx_kw', 'write_parquet_kw',
+    'cat_file', 'message_file',
+    'inferred_kwarg',
 }
 
 _LANGUAGE_READ_CMDS: dict[str, set[str]] = {

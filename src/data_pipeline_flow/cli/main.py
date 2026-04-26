@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import csv
+import io
+import json
 import os
 import shutil
 import subprocess
@@ -10,6 +13,8 @@ from pathlib import Path
 
 from data_pipeline_flow.config.export import write_cluster_export
 from data_pipeline_flow.config.schema import AppConfig, load_config, sanitize_config
+from data_pipeline_flow.parser.discovery import discover_project_files
+from data_pipeline_flow.parser.section_extract import extract_sections
 from data_pipeline_flow.parser.stata_extract import write_edge_csv
 from data_pipeline_flow.render.dot import render_dot, resolve_dot_executable
 from data_pipeline_flow.render.json_snapshot import write_snapshot_json
@@ -264,6 +269,70 @@ def command_validate(args: argparse.Namespace) -> int:
     return 0
 
 
+_FMT_TO_DEFAULT_EXT = {"json": "sections.json", "csv": "sections.csv", "text": "sections.txt"}
+
+
+def command_extract_sections(args: argparse.Namespace) -> int:
+    _validate_project_root(getattr(args, 'project_root', '.') or '.')
+    config = resolve_config(args)
+    project_root = Path(config.project_root)
+    scan = discover_project_files(project_root, config.exclusions, config.normalization, config.languages)
+
+    # Build list of (absolute_path, language) pairs for all script files
+    lang_map: list[tuple[Path, str]] = []
+    for rel in scan.do_files:
+        lang_map.append((project_root / rel, "stata"))
+    for rel in scan.py_files:
+        lang_map.append((project_root / rel, "python"))
+    for rel in scan.r_files:
+        lang_map.append((project_root / rel, "r"))
+
+    results: dict[str, list[dict]] = {}
+    for f, lang in sorted(lang_map, key=lambda x: x[0]):
+        sections = extract_sections(f, lang)
+        if sections:
+            node_id = str(f.relative_to(project_root)).replace("\\", "/")
+            results[node_id] = [{"line": s.line, "level": s.level, "title": s.title} for s in sections]
+
+    fmt = args.fmt
+    output_arg = getattr(args, 'output', None)
+
+    if output_arg == '-':
+        _write_sections_output(results, fmt, sys.stdout)
+        return 0
+
+    if output_arg:
+        output_path = Path(os.path.abspath(output_arg))
+    else:
+        output_path = project_root / _FMT_TO_DEFAULT_EXT[fmt]
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open('w', encoding='utf-8', newline='') as fh:
+        _write_sections_output(results, fmt, fh)
+
+    print(f'Wrote sections index to {output_path}')
+    print(f'Scripts with sections: {len(results)}')
+    return 0
+
+
+def _write_sections_output(results: dict, fmt: str, stream) -> None:
+    if fmt == 'json':
+        json.dump(results, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+    elif fmt == 'csv':
+        writer = csv.writer(stream)
+        writer.writerow(['script_id', 'line', 'level', 'title'])
+        for script_id, sections in results.items():
+            for s in sections:
+                writer.writerow([script_id, s['line'], s['level'], s['title']])
+    else:  # text
+        for script_id, sections in results.items():
+            stream.write(f'{script_id}\n')
+            for s in sections:
+                stream.write(f'  L{s["line"]:<4} [{s["level"]}]  {s["title"]}\n')
+            stream.write('\n')
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog='data-pipeline-flow')
     subparsers = parser.add_subparsers(dest='command', required=True)
@@ -304,6 +373,12 @@ def build_parser() -> argparse.ArgumentParser:
     export_clusters.add_argument('--output', default='viewer_output/cluster_starter.yaml')
     export_clusters.add_argument('--mode', choices=['auto', 'resolved'], default='auto')
     export_clusters.set_defaults(func=command_export_clusters)
+
+    extract_sections_cmd = subparsers.add_parser('extract-sections', help='Extract section headers from scripts and write a sections index.', parents=[common])
+    extract_sections_cmd.add_argument('--output', default=None, help='Output path, or - for stdout. Defaults to <project-root>/sections.{json,csv,txt}.')
+    extract_sections_cmd.add_argument('--format', dest='fmt', default='json', choices=['json', 'csv', 'text'], help='Output format (default: json).')
+    extract_sections_cmd.set_defaults(func=command_extract_sections)
+
     return parser
 
 

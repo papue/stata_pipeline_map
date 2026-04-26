@@ -20,6 +20,7 @@ digraph pipeline {
     penwidth=2.0;
     "02_analysis/01_input/specs.dta" [shape=ellipse, label="specs.dta"];
     "02_analysis/02_scripts/01_model.do" [shape=box, style="rounded,filled", margin="0.10,0.06", fillcolor="#EEF3FF", label="01_model.do"];
+    "02_analysis/03_outputs/model_output.dta" [shape=ellipse, style="filled", fillcolor="#FFF3D6", label="model_output.dta"];
     "02_analysis/03_outputs/results.csv" [shape=ellipse, style="filled", fillcolor="#FFF3D6", label="results.csv"];
   }
   "01_data/03_cleaned_data/panel_ready.dta" [shape=ellipse, label="panel_ready.dta"];
@@ -29,5 +30,6 @@ digraph pipeline {
   "02_analysis/01_input/specs.dta" -> "02_analysis/02_scripts/01_model.do";
   "01_data/02_scripts/01_build.do" -> "01_data/03_cleaned_data/panel_base.dta";
   "01_data/02_scripts/02_prepare.do" -> "01_data/03_cleaned_data/panel_ready.dta";
+  "02_analysis/02_scripts/01_model.do" -> "02_analysis/03_outputs/model_output.dta";
   "02_analysis/02_scripts/01_model.do" -> "02_analysis/03_outputs/results.csv";
 }

@@ -72,7 +72,7 @@ class ParserConfig:
 
 @dataclass(slots=True)
 class ClassificationConfig:
-    deliverable_extensions: list[str] = field(default_factory=lambda: ['.csv', '.xlsx', '.pdf', '.png', '.svg', '.docx', '.tex', '.ster', '.rds', '.rdata', '.rda', '.feather', '.parquet'])
+    deliverable_extensions: list[str] = field(default_factory=lambda: ['.csv', '.xlsx', '.pdf', '.png', '.svg', '.doc', '.docx', '.tex', '.ster', '.rds', '.rdata', '.rda', '.feather', '.parquet', '.txt', '.log', '.dta'])
     temporary_name_patterns: list[str] = field(default_factory=lambda: ['_tmp', '_temp', '_scratch', 'temp_', 'tmp_'])
 
 

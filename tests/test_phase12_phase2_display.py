@@ -37,10 +37,15 @@ def test_show_extensions_false_removes_suffixes_from_labels(tmp_path: Path) -> N
 
 
 def test_deliverables_view_hides_intermediate_artifacts(tmp_path: Path) -> None:
-    graph, config = _build_sample_graph(tmp_path, view='deliverables')
+    # Use a non-deliverable extension (.db) to test that intermediate artifacts are hidden.
+    # .dta is now in deliverable_extensions, so it correctly appears in the deliverables view.
+    _write(tmp_path / '01_data/02_scripts/01_build.do', 'import delimited using "01_data/01_input/source.csv"\nexport delimited using "02_analysis/03_outputs/results.csv"\nsave "01_data/03_cleaned_data/panel_ready.db"\n')
+    config = AppConfig(project_root=str(tmp_path))
+    config.display.view = 'deliverables'
+    graph = PipelineBuilder(config).build(tmp_path)
     dot = render_dot(graph, display=config.display)
     assert '02_analysis/03_outputs/results.csv' in dot
-    assert '01_data/03_cleaned_data/panel_ready.dta' not in dot
+    assert '01_data/03_cleaned_data/panel_ready.db' not in dot
     assert '01_data/02_scripts/01_build.do' in dot
 
 

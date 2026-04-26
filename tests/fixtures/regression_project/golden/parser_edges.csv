@@ -3,6 +3,7 @@ source,target,command,kind
 01_data/03_cleaned_data/panel_base.dta,01_data/02_scripts/02_prepare.do,use,intermediate
 01_data/03_cleaned_data/panel_ready.dta,02_analysis/02_scripts/01_model.do,use,intermediate
 02_analysis/01_input/specs.dta,02_analysis/02_scripts/01_model.do,merge,reference_input
-01_data/02_scripts/01_build.do,01_data/03_cleaned_data/panel_base.dta,save,intermediate
-01_data/02_scripts/02_prepare.do,01_data/03_cleaned_data/panel_ready.dta,save,intermediate
+01_data/02_scripts/01_build.do,01_data/03_cleaned_data/panel_base.dta,save,deliverable
+01_data/02_scripts/02_prepare.do,01_data/03_cleaned_data/panel_ready.dta,save,deliverable
+02_analysis/02_scripts/01_model.do,02_analysis/03_outputs/model_output.dta,save,deliverable
 02_analysis/02_scripts/01_model.do,02_analysis/03_outputs/results.csv,export_delimited,deliverable
