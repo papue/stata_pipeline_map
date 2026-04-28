@@ -30,6 +30,11 @@ _VAR_ASSIGN_RE = re.compile(
     r'^\s*(\w+)\s*(?:<-|=)\s*(?:"([^"\\]*)"|\'([^\'\\]*)\')\s*$'
 )
 
+# Numeric assignment:  name <- 0.05  or  name = 42  (integer or float)
+_VAR_ASSIGN_NUM_RE = re.compile(
+    r'^\s*(\w+)\s*(?:<-|=)\s*(-?\d+(?:\.\d+)?)\s*$'
+)
+
 # ---------------------------------------------------------------------------
 # Script-relative directory idioms (R's __file__ equivalents)
 # Matches:  var <- dirname(sys.frame(1)$ofile)
@@ -68,6 +73,8 @@ _PASTE0_RE = re.compile(r'\bpaste0\s*\(([^)]+)\)', re.I)
 _PASTE_SEP_RE = re.compile(r'\bpaste\s*\(([^)]+)\)', re.I)
 # sprintf("template/%s/file.csv", arg1, arg2, ...)  — one or more placeholders
 _SPRINTF_RE = re.compile(r'\bsprintf\s*\(\s*(?:"([^"]+)"|\'([^\']+)\')\s*,\s*(.+)\)\s*$', re.I)
+# glue("path/{var}.png")  — R glue package string interpolation
+_GLUE_RE = re.compile(r'\bglue\s*\(\s*(?:"([^"]+)"|\'([^\']+)\')\s*\)', re.I)
 # fs::path("a", var, "b") — same semantics as file.path
 _FS_PATH_RE = re.compile(r'\bfs::path\s*\(([^)]+)\)', re.I)
 
@@ -535,7 +542,7 @@ def _resolve_sprintf(line: str, vars_map: dict[str, str]) -> list[str]:
         template = m.group(1) or m.group(2)
         args_text = (m.group(3) or '').strip()
         # Count total format specifiers (%s, %d, %f, %i, %g)
-        placeholders = re.findall(r'%[sdfig]', template)
+        placeholders = re.findall(r'%[-+]?\d*\.?\d*[sdfig]', template)
         if not placeholders:
             continue
         # Split args by comma, resolve each
@@ -558,8 +565,38 @@ def _resolve_sprintf(line: str, vars_map: dict[str, str]) -> list[str]:
             continue
         result = template
         for sub in subs:
-            result = re.sub(r'%[sdfig]', sub, result, count=1)
+            result = re.sub(r'%[-+]?\d*\.?\d*[sdfig]', sub, result, count=1)
         results.append(result)
+    return results
+
+
+def _resolve_glue(line: str, vars_map: dict[str, str]) -> list[str]:
+    """Resolve glue("path/{var}.png") calls by substituting {varname} tokens.
+
+    R glue() uses {varname} interpolation.  Substitutes known vars from vars_map;
+    if a variable is unknown a placeholder token {varname} is kept in the result.
+    Returns a list of resolved path strings (fully resolved only).
+    """
+    results = []
+    for m in _GLUE_RE.finditer(line):
+        template = m.group(1) if m.group(1) is not None else m.group(2)
+        if not template:
+            continue
+        # Substitute each {varname} token
+        result = template
+        unresolved = False
+
+        def _sub_glue_var(vm: re.Match[str]) -> str:
+            nonlocal unresolved
+            vname = vm.group(1)
+            if vname in vars_map:
+                return vars_map[vname]
+            unresolved = True
+            return vm.group(0)  # keep placeholder
+
+        result = re.sub(r'\{(\w+)\}', _sub_glue_var, result)
+        if not unresolved and ('.' in result or '/' in result):
+            results.append(result)
     return results
 
 
@@ -664,6 +701,38 @@ def _apply_balanced_substitutions(line: str, vars_map: dict[str, str], allow_par
         if new_line != line:
             line = new_line
 
+        # --- glue("path/{var}") — R glue package interpolation ---
+        def _sub_glue(gm: re.Match[str]) -> str:
+            nonlocal was_partial, changed
+            template = gm.group(1) if gm.group(1) is not None else gm.group(2)
+            if not template:
+                return gm.group(0)
+            _unresolved = False
+
+            def _sub_var(vm: re.Match[str]) -> str:
+                nonlocal _unresolved
+                vname = vm.group(1)
+                if vname in vars_map:
+                    return vars_map[vname]
+                _unresolved = True
+                return vm.group(0)
+
+            result = re.sub(r'\{(\w+)\}', _sub_var, template)
+            if _unresolved:
+                if allow_partial:
+                    was_partial = True
+                    changed = True
+                    return f'"{result}"'
+                return gm.group(0)
+            if '.' in result or '/' in result:
+                changed = True
+                return f'"{result}"'
+            return gm.group(0)
+
+        new_line = _GLUE_RE.sub(_sub_glue, line)
+        if new_line != line:
+            line = new_line
+
         # --- sprintf(...) ---
         new_line = _SPRINTF_RE.sub(
             lambda m: _replace_sprintf(m, vars_map),
@@ -683,7 +752,7 @@ def _replace_sprintf(m: re.Match[str], vars_map: dict[str, str]) -> str:
     """Replacement callback for sprintf in _apply_balanced_substitutions."""
     template = m.group(1) or m.group(2)
     args_text = (m.group(3) or '').strip()
-    placeholders = re.findall(r'%[sdfig]', template)
+    placeholders = re.findall(r'%[-+]?\d*\.?\d*[sdfig]', template)
     if not placeholders:
         return m.group(0)
     raw_args = [a.strip() for a in args_text.split(',')]
@@ -701,7 +770,7 @@ def _replace_sprintf(m: re.Match[str], vars_map: dict[str, str]) -> str:
             return m.group(0)
     result = template
     for sub in subs:
-        result = re.sub(r'%[sdfig]', sub, result, count=1)
+        result = re.sub(r'%[-+]?\d*\.?\d*[sdfig]', sub, result, count=1)
     return f'"{result}"'
 
 
@@ -737,6 +806,7 @@ def parse_r_file(
     exclusions: ExclusionConfig,
     normalization: NormalizationConfig,
     parser_config: ParserConfig,
+    inherited_vars: dict[str, str] | None = None,
 ) -> ScriptParseResult:
     try:
         text = r_file.read_text(encoding='utf-8', errors='replace')
@@ -751,18 +821,25 @@ def parse_r_file(
     joined_lines = _join_continued_lines(raw_lines)
 
     # --- Pre-pass: collect variable assignments ---
-    # Seed with the script's own directory (R's __file__ equivalents resolve to this)
-    vars_map: dict[str, str] = {}
+    # Seed with inherited variables from caller (cross-script propagation),
+    # then with the script's own directory (__file__ equivalents).
+    # Local definitions override inherited ones.
+    vars_map: dict[str, str] = dict(inherited_vars) if inherited_vars else {}
     script_dir_str = str(r_file.parent).replace('\\', '/')
     vars_map['__script_dir__'] = script_dir_str
 
-    # First pass: collect literal string assignments
+    # First pass: collect literal string assignments and numeric assignments
     for line in joined_lines:
         clean = _strip_comment(line)
         m = _VAR_ASSIGN_RE.match(clean)
         if m:
             val = m.group(2) if m.group(2) is not None else m.group(3)
             vars_map[m.group(1)] = val
+            continue
+        # Also track numeric assignments (e.g. alpha <- 0.05) so sprintf can use them
+        mn = _VAR_ASSIGN_NUM_RE.match(clean)
+        if mn:
+            vars_map[mn.group(1)] = mn.group(2)
 
     # Second pass: resolve script-dir idioms and function-call RHS assignments
     # Repeat a few times to handle chained assignments (script_path -> script_dir -> path)
@@ -825,6 +902,14 @@ def parse_r_file(
                 resolved_list = _resolve_sprintf(clean[sp_start:], vars_map)
                 if resolved_list:
                     vars_map[m_assign2.group(1)] = resolved_list[0]
+                continue
+            # Pattern: var <- glue("path/{var}")  — store resolved value
+            m_glue = re.match(r'^\s*(\w+)\s*(?:<-|=)\s*glue\s*\(', clean, re.I)
+            if m_glue:
+                varname = m_glue.group(1)
+                glue_paths = _resolve_glue(clean, vars_map)
+                if glue_paths:
+                    vars_map[varname] = glue_paths[0]
                 continue
             # Pattern: var <- file.path(...)  — store resolved value
             m_assign3 = re.match(r'^\s*(\w+)\s*(?:<-|=)\s*(file\.path\s*\()', clean, re.I)
@@ -1074,4 +1159,5 @@ def parse_r_file(
         child_scripts=child_scripts,
         global_warnings=global_warnings,
         excluded_references=excluded_references,
+        globals_map=vars_map,
     )

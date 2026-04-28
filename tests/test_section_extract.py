@@ -362,3 +362,165 @@ def test_sections_fixture_golden():
     actual = json.loads(result.stdout)
     expected = json.loads(expected_path.read_text(encoding="utf-8"))
     assert actual == expected
+
+
+# ---------------------------------------------------------------------------
+# TOC deduplication regression tests
+# ---------------------------------------------------------------------------
+
+from data_pipeline_flow.parser.section_extract import _suppress_toc_block  # noqa: E402
+
+
+class TestTocSuppression:
+    """Regression tests for _suppress_toc_block and the full extract_sections pipeline."""
+
+    # --- Case 2: Standard TOC (Python) ---
+
+    def test_standard_toc_python_suppressed(self):
+        """TOC cluster at top of a Python file is suppressed; real headers kept."""
+        lines = [
+            "# Table of contents",
+            "## 1. Load data",
+            "## 2. Process data",
+            "## 3. Save results",
+            "",
+            "import pandas as pd",
+            "",
+            "## 1. Load data",
+            "df = pd.read_csv('data/input.csv')",
+            "",
+            "## 2. Process data",
+            "df = df.dropna()",
+            "",
+            "## 3. Save results",
+            "df.to_csv('data/output.csv')",
+        ]
+        result = _sections_from_lines(lines, "python")
+        titles_by_line = {s.line: s.title for s in result}
+        # TOC lines (2, 3, 4) must be gone
+        assert 2 not in titles_by_line
+        assert 3 not in titles_by_line
+        assert 4 not in titles_by_line
+        # Real headers kept
+        assert titles_by_line.get(8) == "1. Load data"
+        assert titles_by_line.get(11) == "2. Process data"
+        assert titles_by_line.get(14) == "3. Save results"
+
+    # --- Case 2: Standard TOC (Stata) ---
+
+    def test_standard_toc_stata_suppressed(self):
+        """TOC cluster at top of a Stata file is suppressed; real headers kept."""
+        lines = [
+            "* ====================================",
+            "* Table of contents",
+            "* 1. Load and clean data",
+            "* 2. Run regressions",
+            "* 3. Export tables",
+            "* ====================================",
+            "",
+            "use \"data/input.dta\", clear",
+            "",
+            "* 1. Load and clean data",
+            "drop if missing(y)",
+            "",
+            "* 2. Run regressions",
+            "reg y x1 x2",
+            "",
+            "* 3. Export tables",
+            "esttab using \"results/regs.tex\", replace",
+        ]
+        result = _sections_from_lines(lines, "stata")
+        titles_by_line = {s.line: s.title for s in result}
+        # TOC lines (3, 4, 5) must be gone
+        assert 3 not in titles_by_line
+        assert 4 not in titles_by_line
+        assert 5 not in titles_by_line
+        # Real headers kept
+        assert titles_by_line.get(10) == "1. Load and clean data"
+        assert titles_by_line.get(13) == "2. Run regressions"
+        assert titles_by_line.get(16) == "3. Export tables"
+
+    # --- Case 1: Legitimate repeated heading (NOT suppressed) ---
+
+    def test_legitimate_repeated_heading_not_suppressed(self):
+        """Two identical headings spread across a file must both be kept.
+
+        The early occurrence is not part of a consecutive cluster of duplicates,
+        so condition 1 (len >= 2) fails and nothing is suppressed.
+        """
+        lines = [
+            "import pandas as pd",
+            "",
+            "## 1. Setup",
+            "df = pd.read_csv('data/phase1_input.csv')",
+            "x = df.groupby('id').mean()",
+            "",
+            "# lots of phase 1 code",
+            "",
+            "## 1. Setup",
+            "df2 = pd.read_csv('data/phase2_input.csv')",
+        ]
+        result = _sections_from_lines(lines, "python")
+        assert len(result) == 2
+        assert result[0] == Section(3, 1, "1. Setup")
+        assert result[1] == Section(9, 1, "1. Setup")
+
+    # --- Case 3: Mixed TOC (one title does not recur — conservative, keep all) ---
+
+    def test_mixed_toc_conservative_fallback(self):
+        """If one TOC title doesn't recur, the whole cluster is kept."""
+        lines = [
+            "# Table of contents:",
+            "## 0. Helper functions",
+            "## 1. Load data",
+            "## 2. Process data",
+            "",
+            "import pandas as pd",
+            "",
+            "## 1. Load data",
+            "df = pd.read_csv('data/input.csv')",
+            "",
+            "## 2. Process data",
+            "df = df.dropna()",
+        ]
+        result = _sections_from_lines(lines, "python")
+        lines_found = {s.line for s in result}
+        # All TOC lines kept (condition 3 fails because "0. Helper functions" does not recur)
+        assert 2 in lines_found  # TOC: 0. Helper functions
+        assert 3 in lines_found  # TOC: 1. Load data
+        assert 4 in lines_found  # TOC: 2. Process data
+        # Real headers also present
+        assert 8 in lines_found   # 1. Load data
+        assert 11 in lines_found  # 2. Process data
+
+    # --- Case 4: Single-entry cluster (NOT suppressed) ---
+
+    def test_single_entry_cluster_not_suppressed(self):
+        """A single early entry recurring later must not be suppressed (len < 2)."""
+        lines = [
+            "## 1. Load data",
+            "",
+            "import pandas as pd",
+            "",
+            "## 1. Load data",
+            "df = pd.read_csv('data/input.csv')",
+        ]
+        result = _sections_from_lines(lines, "python")
+        assert len(result) == 2
+        assert result[0].line == 1
+        assert result[1].line == 5
+
+    # --- _suppress_toc_block unit test: empty input ---
+
+    def test_suppress_toc_block_empty(self):
+        assert _suppress_toc_block([]) == []
+
+    # --- _suppress_toc_block unit test: no duplicates → unchanged ---
+
+    def test_suppress_toc_block_no_duplicates(self):
+        sections = [
+            Section(1, 1, "A"),
+            Section(5, 1, "B"),
+            Section(10, 1, "C"),
+        ]
+        assert _suppress_toc_block(sections) == sections

@@ -1,0 +1,147 @@
+{
+  "analysis/extract_data.py": [
+    {
+      "line": 3,
+      "level": 1,
+      "title": "0. Helper functions"
+    },
+    {
+      "line": 4,
+      "level": 2,
+      "title": "0.1 Check Constant Action"
+    },
+    {
+      "line": 5,
+      "level": 1,
+      "title": "1. Collect averages per run"
+    },
+    {
+      "line": 6,
+      "level": 1,
+      "title": "2. Convert results to a df and save"
+    },
+    {
+      "line": 11,
+      "level": 1,
+      "title": "0. Helper functions"
+    },
+    {
+      "line": 15,
+      "level": 2,
+      "title": "0.1 Check Constant Action"
+    },
+    {
+      "line": 22,
+      "level": 1,
+      "title": "1. Collect averages per run"
+    },
+    {
+      "line": 25,
+      "level": 1,
+      "title": "2. Convert results to a df and save"
+    }
+  ],
+  "analysis/master_analysis.do": [
+    {
+      "line": 3,
+      "level": 1,
+      "title": "1. Load and clean data"
+    },
+    {
+      "line": 4,
+      "level": 1,
+      "title": "2. Run regressions"
+    },
+    {
+      "line": 5,
+      "level": 1,
+      "title": "3. Export tables"
+    },
+    {
+      "line": 10,
+      "level": 1,
+      "title": "1. Load and clean data"
+    },
+    {
+      "line": 13,
+      "level": 1,
+      "title": "2. Run regressions"
+    },
+    {
+      "line": 16,
+      "level": 1,
+      "title": "3. Export tables"
+    }
+  ],
+  "analysis/mixed_toc.py": [
+    {
+      "line": 2,
+      "level": 1,
+      "title": "0. Helper functions"
+    },
+    {
+      "line": 3,
+      "level": 1,
+      "title": "1. Load data"
+    },
+    {
+      "line": 4,
+      "level": 1,
+      "title": "2. Process data"
+    },
+    {
+      "line": 8,
+      "level": 1,
+      "title": "1. Load data"
+    },
+    {
+      "line": 11,
+      "level": 1,
+      "title": "2. Process data"
+    }
+  ],
+  "analysis/run_models.r": [
+    {
+      "line": 2,
+      "level": 1,
+      "title": "1. Load data"
+    },
+    {
+      "line": 3,
+      "level": 1,
+      "title": "2. Fit models"
+    },
+    {
+      "line": 4,
+      "level": 1,
+      "title": "3. Export results"
+    },
+    {
+      "line": 8,
+      "level": 1,
+      "title": "1. Load data"
+    },
+    {
+      "line": 11,
+      "level": 1,
+      "title": "2. Fit models"
+    },
+    {
+      "line": 14,
+      "level": 1,
+      "title": "3. Export results"
+    }
+  ],
+  "analysis/two_phase.py": [
+    {
+      "line": 3,
+      "level": 1,
+      "title": "1. Setup"
+    },
+    {
+      "line": 9,
+      "level": 1,
+      "title": "1. Setup"
+    }
+  ]
+}

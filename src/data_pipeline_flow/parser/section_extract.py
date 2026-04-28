@@ -520,6 +520,57 @@ def _parse_header(line: str, lang: str, lineno: int) -> Section | None:
 
 
 # ---------------------------------------------------------------------------
+# TOC-block suppression
+# ---------------------------------------------------------------------------
+
+def _suppress_toc_block(sections: list[Section]) -> list[Section]:
+    """Suppress a leading consecutive cluster of entries that form a TOC block.
+
+    A cluster is treated as a TOC if **all three** conditions hold:
+
+    1. Consecutive lines — each entry is at most 2 lines after the previous one
+       (no gaps > 2 within the cluster).
+    2. Early in the file — the cluster starts within the first 30 lines.
+    3. All titles recur later — every title in the cluster also appears at a
+       strictly higher line number elsewhere in the same file.
+
+    If any condition fails the sections list is returned unchanged (conservative
+    fallback: when in doubt, keep everything).
+    """
+    if not sections:
+        return sections
+
+    from collections import Counter
+    title_counts = Counter(s.title.strip() for s in sections)
+    duplicate_titles = {t for t, n in title_counts.items() if n > 1}
+    if not duplicate_titles:
+        return sections  # no duplicates at all — nothing to check
+
+    by_line = sorted(sections, key=lambda s: s.line)
+
+    # Build the leading consecutive cluster (gap ≤ 2 lines between neighbours)
+    toc_candidate: list[Section] = [by_line[0]]
+    for prev, curr in zip(by_line, by_line[1:]):
+        if curr.line - prev.line <= 2:
+            toc_candidate.append(curr)
+        else:
+            break
+
+    # All three conditions must hold
+    toc_lines: set[int] = set()
+    if (
+        toc_candidate[0].line <= 30          # condition 2: early in file
+        and len(toc_candidate) >= 2          # at least 2 entries
+        and all(                             # condition 3: all titles recur later
+            s.title.strip() in duplicate_titles for s in toc_candidate
+        )
+    ):
+        toc_lines = {s.line for s in toc_candidate}
+
+    return [s for s in by_line if s.line not in toc_lines]
+
+
+# ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
@@ -569,7 +620,7 @@ def extract_sections(file_path: Path, language: str = "auto") -> list[Section]:
                 sections.append(section)
             decorator_seen = False  # noqa: F841 (kept for spec compliance)
 
-        return sections
+        return _suppress_toc_block(sections)
 
     except Exception as e:
         logger.debug("section_extract: skipping %s: %s", file_path, e)

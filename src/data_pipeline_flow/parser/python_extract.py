@@ -574,6 +574,37 @@ def _module_to_path(module: str) -> str:
     return module.replace('.', '/') + '.py'
 
 
+def extract_module_constants(py_file: Path) -> dict[str, str]:
+    """Extract top-level ``NAME = "literal"`` (or ``Path("literal")``) string
+    constants from *py_file*.
+
+    This is a lightweight pre-scan used by multi_extract.py to build a
+    cross-module constant map for ``from <module> import NAME`` resolution.
+    Only simple string assignments are extracted; dynamic values are ignored.
+
+    Returns a mapping of variable name → string value.
+    """
+    try:
+        text = py_file.read_text(encoding='utf-8', errors='replace')
+    except OSError:
+        return {}
+    constants: dict[str, str] = {}
+    for raw_line in text.splitlines():
+        clean = _strip_comment(raw_line)
+        # Plain string literal: NAME = "value" or NAME = 'value'
+        m = _VAR_ASSIGN_RE.match(clean)
+        if m:
+            val = m.group(2) if m.group(2) is not None else m.group(3)
+            constants[m.group(1)] = val
+            continue
+        # Path("literal") wrapping: NAME = Path("value")
+        m2 = _VAR_PATH_ASSIGN_RE.match(clean)
+        if m2:
+            val = m2.group(2) if m2.group(2) is not None else m2.group(3)
+            constants[m2.group(1)] = val
+    return constants
+
+
 def _collect_aliases(lines: list[str]) -> tuple[dict[str, str], set[str]]:
     """
     Pre-scan: collect import alias info.
@@ -667,6 +698,7 @@ def parse_python_file(
     exclusions: ExclusionConfig,
     normalization: NormalizationConfig,
     parser_config: ParserConfig,
+    imported_constants: dict[str, str] | None = None,
 ) -> ScriptParseResult:
     try:
         text = py_file.read_text(encoding='utf-8', errors='replace')
@@ -739,6 +771,16 @@ def parse_python_file(
     if _script_dir_for_vars == '.':
         _script_dir_for_vars = ''
     vars_map['__script_dir__'] = _script_dir_for_vars if _script_dir_for_vars else '.'
+
+    # Seed imported constants from other project modules (cross-script global propagation).
+    # These are injected before sub-pass 1a so that f-string / variable-path resolution
+    # in the importing script can use them.  Local assignments (sub-pass 1a and later)
+    # will overwrite these if the same name is re-defined locally.
+    if imported_constants:
+        for _ic_name, _ic_val in imported_constants.items():
+            vars_map[_ic_name] = _ic_val
+            if _is_absolute_base(_ic_val):
+                abs_vars.add(_ic_name)
 
     # Sub-pass 1a: plain string literals  VAR = "value"  or  VAR = r"value"
     _VAR_ASSIGN_SENTINEL_RE = re.compile(r'^\s*(\w+)\s*=\s*__script_dir__\s*$')
@@ -993,6 +1035,7 @@ def parse_python_file(
             raw_path=raw_path,
             normalized_paths=[norm],
             was_absolute=was_abs or force_abs,
+            is_write=is_write,
         ))
 
     def _add_child(raw_path: str) -> None:
@@ -1227,7 +1270,15 @@ def parse_python_file(
                 if placeholder:
                     # Guess write vs read: if the line contains "open" with a
                     # write-mode flag or a known write method, treat as write.
-                    is_write = bool(re.search(
+                    # Also treat f-strings ending in output-only extensions
+                    # (.png, .pdf, .svg, .eps, .tex) as writes by default —
+                    # these formats are almost never read back in, and this
+                    # handles the two-line pattern where savefig appears on a
+                    # separate line from the f-string assignment.
+                    _write_ext = bool(re.search(
+                        r'\.(png|pdf|svg|eps|tex)["\']', raw_fstr, re.I
+                    ))
+                    is_write = _write_ext or bool(re.search(
                         r'open\s*\([^)]*[,\s]["\'][wa]', raw_line, re.I
                     ) or re.search(
                         r'\.(to_csv|to_parquet|to_excel|to_json|to_feather|'

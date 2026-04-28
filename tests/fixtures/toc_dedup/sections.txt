@@ -1,0 +1,31 @@
+analysis/extract_data.py
+  L11   [1]  0. Helper functions
+  L15   [2]  0.1 Check Constant Action
+  L22   [1]  1. Collect averages per run
+  L25   [1]  2. Convert results to a df and save
+
+analysis/master_analysis.do
+  L10   [1]  1. Load and clean data
+  L13   [1]  2. Run regressions
+  L16   [1]  3. Export tables
+
+analysis/mixed_toc.py
+  L2    [1]  0. Helper functions
+  L3    [1]  1. Load data
+  L4    [1]  2. Process data
+  L8    [1]  1. Load data
+  L11   [1]  2. Process data
+
+analysis/run_models.r
+  L8    [1]  1. Load data
+  L11   [1]  2. Fit models
+  L14   [1]  3. Export results
+
+analysis/single_entry_toc.py
+  L1    [1]  1. Load data
+  L5    [1]  1. Load data
+
+analysis/two_phase.py
+  L3    [1]  1. Setup
+  L9    [1]  1. Setup
+

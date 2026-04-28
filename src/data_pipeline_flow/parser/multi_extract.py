@@ -6,7 +6,8 @@ by dispatching to language-specific parsers via PARSER_REGISTRY.
 """
 from __future__ import annotations
 
-from collections import defaultdict
+import re
+from collections import defaultdict, deque
 from pathlib import Path
 from typing import Callable
 
@@ -25,7 +26,7 @@ from data_pipeline_flow.parser.stata_extract import (
     _is_temporary,
     _add_version_family_diagnostics,
 )
-from data_pipeline_flow.parser.python_extract import parse_python_file
+from data_pipeline_flow.parser.python_extract import parse_python_file, extract_module_constants
 from data_pipeline_flow.parser.r_extract import parse_r_file
 from data_pipeline_flow.rules.exclusions import is_excluded
 
@@ -74,9 +75,9 @@ _PYTHON_READ_CMDS: set[str] = {
     'open_read', 'pickle_load', 'json_load', 'yaml_safe_load',
     'runpy',
     'gpd_read_file', 'joblib_load',
-    # f-string placeholder paths (e.g. data/*.parquet) emitted when an f-string
-    # contains a runtime variable but ends with a known data-file extension.
-    'fstring_path',
+    # Note: 'fstring_path' is intentionally omitted here.
+    # It is routed below using event.is_write so that write-context f-strings
+    # produce script → artifact edges instead of artifact → script edges.
 }
 
 _PYTHON_WRITE_CMDS: set[str] = {
@@ -159,6 +160,139 @@ def _classify_artifact_generic(
     return 'artifact'
 
 # ---------------------------------------------------------------------------
+# Python cross-script constant propagation helpers
+# ---------------------------------------------------------------------------
+
+_PY_FROM_IMPORT_RE = re.compile(r'^\s*from\s+([\w.]+)\s+import\s+(.+)')
+_PY_IMPORT_RE = re.compile(r'^\s*import\s+([\w.]+)')
+
+
+def _gather_imported_constants(
+    py_file: Path,
+    project_root: Path,
+    module_constants: dict[str, dict[str, str]],
+) -> dict[str, str]:
+    """Scan *py_file* for ``from <module> import <names>`` and ``import <module>``
+    statements that reference project-local modules, and return a merged dict of
+    the imported string constants (name → value).
+
+    Only constants that are top-level string literals in the imported module are
+    included.  Dynamic values and third-party packages are ignored (no entry in
+    *module_constants*).
+
+    *module_constants* maps project-relative module path (e.g. ``"config.py"``)
+    to the dict returned by :func:`extract_module_constants`.
+    """
+    try:
+        text = py_file.read_text(encoding='utf-8', errors='replace')
+    except OSError:
+        return {}
+
+    result: dict[str, str] = {}
+    for raw_line in text.splitlines():
+        # ``from config import DATA_DIR, OUTPUT_DIR``
+        m = _PY_FROM_IMPORT_RE.match(raw_line)
+        if m:
+            module = m.group(1)
+            names_str = m.group(2)
+            # Resolve module to a project-relative path (check project root and
+            # the script's own directory)
+            candidate_path = module.replace('.', '/') + '.py'
+            mod_constants: dict[str, str] | None = None
+            for base in (project_root, py_file.parent):
+                candidate = base / candidate_path
+                try:
+                    rel = str(candidate.relative_to(project_root)).replace('\\', '/')
+                except ValueError:
+                    continue
+                if rel in module_constants:
+                    mod_constants = module_constants[rel]
+                    break
+            if mod_constants is None:
+                continue
+            # Parse the imported names (handles aliases: DATA_DIR as DIR)
+            for item in names_str.split(','):
+                item = item.strip()
+                if ' as ' in item:
+                    orig, alias = item.split(' as ', 1)
+                    orig = orig.strip()
+                    alias = alias.strip()
+                    if orig in mod_constants:
+                        result[alias] = mod_constants[orig]
+                        result[orig] = mod_constants[orig]  # also keep original name
+                else:
+                    if item in mod_constants:
+                        result[item] = mod_constants[item]
+            continue
+
+        # ``import config`` — makes constants available as ``config.NAME``
+        # We inject them as plain NAME too since attribute-access tracking is
+        # limited; this helps the simpler cases.
+        m2 = _PY_IMPORT_RE.match(raw_line)
+        if m2:
+            module = m2.group(1)
+            candidate_path = module.replace('.', '/') + '.py'
+            for base in (project_root, py_file.parent):
+                candidate = base / candidate_path
+                try:
+                    rel = str(candidate.relative_to(project_root)).replace('\\', '/')
+                except ValueError:
+                    continue
+                if rel in module_constants:
+                    result.update(module_constants[rel])
+                    break
+
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Stata cross-script global propagation helpers
+# ---------------------------------------------------------------------------
+
+def _topo_sort_scripts(
+    all_scripts: list[str],
+    call_edges: dict[str, list[str]],
+) -> tuple[list[str], set[tuple[str, str]]]:
+    """Return scripts in topological order (parents before children).
+
+    Uses Kahn's algorithm.  Detected back-edges (cycles) are returned as a set
+    of (parent, child) pairs so callers can emit diagnostics.
+    """
+    # Build in-degree from the *known* script set only.
+    in_degree: dict[str, int] = {s: 0 for s in all_scripts}
+    for parent, children in call_edges.items():
+        for child in children:
+            if child in in_degree:
+                in_degree[child] += 1
+
+    queue: deque[str] = deque(s for s in all_scripts if in_degree[s] == 0)
+    order: list[str] = []
+    visited: set[str] = set()
+    cycle_edges: set[tuple[str, str]] = set()
+
+    while queue:
+        node = queue.popleft()
+        order.append(node)
+        visited.add(node)
+        for child in call_edges.get(node, []):
+            if child not in in_degree:
+                continue
+            if child in visited:
+                cycle_edges.add((node, child))
+                continue
+            in_degree[child] -= 1
+            if in_degree[child] == 0:
+                queue.append(child)
+
+    # Any script not yet visited is part of a cycle; append in arbitrary order.
+    for s in all_scripts:
+        if s not in visited:
+            order.append(s)
+
+    return order, cycle_edges
+
+
+# ---------------------------------------------------------------------------
 # Main multi-language graph builder
 # ---------------------------------------------------------------------------
 
@@ -176,6 +310,35 @@ def build_graph_from_scripts(
     script_writes: dict[str, set[tuple[str, str, str, str | None]]] = defaultdict(set)
     script_erases: dict[str, set[str]] = defaultdict(set)
 
+    # -----------------------------------------------------------------------
+    # Pass 0 — pre-scan Python files for top-level string constants
+    # Used to resolve ``from <module> import NAME`` in other Python scripts.
+    # -----------------------------------------------------------------------
+    # module_constants maps project-relative path (e.g. "config.py") →
+    #   { NAME: "value", ... } for each top-level string constant in that file.
+    py_module_constants: dict[str, dict[str, str]] = {}
+    for rel in script_files:
+        if Path(rel).suffix.lower() == '.py':
+            py_file_path = project_root / rel
+            constants = extract_module_constants(py_file_path)
+            if constants:
+                py_module_constants[rel] = constants
+
+    # -----------------------------------------------------------------------
+    # Pass 1 — parse every script to build call graph and collect Stata globals
+    # -----------------------------------------------------------------------
+    # For Stata scripts we need a second pass with inherited globals, so store
+    # first-pass results keyed by rel path.
+    first_pass_results: dict[str, ScriptParseResult] = {}
+    # call_graph maps each Stata parent → list of Stata child rel paths
+    stata_call_graph: dict[str, list[str]] = {}
+    stata_scripts: list[str] = []
+    # call_graph maps each R parent → list of R child rel paths (all lowercase-normalised)
+    r_call_graph: dict[str, list[str]] = {}
+    r_scripts: list[str] = []
+    # mapping from lowercase-normalised rel path → original case rel path (for filesystem access)
+    r_norm_to_orig: dict[str, str] = {}
+
     for rel in script_files:
         suffix = Path(rel).suffix.lower()
         parser = PARSER_REGISTRY.get(suffix)
@@ -190,7 +353,140 @@ def build_graph_from_scripts(
 
         lang = _detect_language(rel)
         path = project_root / rel
-        result = parser(project_root, path, exclusions, normalization, parser_config)
+        if lang == 'python' and py_module_constants:
+            imported = _gather_imported_constants(path, project_root, py_module_constants)
+            result = parse_python_file(
+                project_root, path, exclusions, normalization, parser_config,
+                imported_constants=imported if imported else None,
+            )
+        else:
+            result = parser(project_root, path, exclusions, normalization, parser_config)
+        first_pass_results[rel] = result
+
+        if lang == 'stata':
+            stata_scripts.append(rel)
+            stata_call_graph[rel] = [c for c in result.child_scripts if Path(c).suffix.lower() == '.do']
+        elif lang == 'r':
+            # Normalise to lowercase so child_scripts (already normalised by parse_r_file
+            # via normalize_token) match the keys we store here.
+            r_norm = rel.lower()
+            if r_norm not in r_scripts:
+                r_scripts.append(r_norm)
+            r_norm_to_orig[r_norm] = rel
+            # child_scripts are already lowercase-normalised by normalize_token inside parse_r_file
+            r_call_graph[r_norm] = [c for c in result.child_scripts if Path(c).suffix.lower() == '.r']
+            # Re-key first_pass_results with the normalised key so second-pass lookup works
+            first_pass_results[r_norm] = result
+
+    # -----------------------------------------------------------------------
+    # Pass 2 — re-parse Stata scripts in topological order with inherited globals
+    # -----------------------------------------------------------------------
+    topo_order, cycle_edges = _topo_sort_scripts(stata_scripts, stata_call_graph)
+    for parent, child in cycle_edges:
+        graph.add_diagnostic(Diagnostic(
+            level='warning',
+            code='cycle_detected',
+            message=f'Cycle detected in Stata script call graph: {parent} → {child}',
+            payload={'parent': parent, 'child': child},
+        ))
+
+    # accumulated_globals[rel] = merged globals available to this script's children
+    accumulated_globals: dict[str, dict[str, str]] = {}
+    # second_pass_results replaces first_pass_results for Stata scripts only
+    second_pass_results: dict[str, ScriptParseResult] = {}
+
+    for rel in topo_order:
+        if rel not in stata_call_graph:
+            continue  # not a Stata script or not in known set
+
+        # Collect inherited globals from all parents in call graph
+        inherited: dict[str, str] = {}
+        for parent in stata_scripts:
+            if rel in stata_call_graph.get(parent, []):
+                # Merge parent's accumulated globals (grandparent → parent) first,
+                # then parent's own globals — closer caller wins on conflict.
+                parent_accumulated = accumulated_globals.get(parent, {})
+                inherited.update(parent_accumulated)
+
+        path = project_root / rel
+        result2 = parse_do_file(
+            project_root,
+            path,
+            exclusions,
+            normalization,
+            parser_config,
+            inherited_globals=inherited if inherited else None,
+        )
+        second_pass_results[rel] = result2
+        # This script's accumulated globals = inherited + own definitions (own wins)
+        merged = dict(inherited)
+        merged.update(result2.globals_map)
+        accumulated_globals[rel] = merged
+
+    # -----------------------------------------------------------------------
+    # Pass 2b — re-parse R scripts in topological order with inherited vars
+    # -----------------------------------------------------------------------
+    r_topo_order, r_cycle_edges = _topo_sort_scripts(r_scripts, r_call_graph)
+    for parent, child in r_cycle_edges:
+        graph.add_diagnostic(Diagnostic(
+            level='warning',
+            code='cycle_detected',
+            message=f'Cycle detected in R script call graph: {parent} → {child}',
+            payload={'parent': parent, 'child': child},
+        ))
+
+    # accumulated_r_vars[rel] = merged vars available to this script's children
+    accumulated_r_vars: dict[str, dict[str, str]] = {}
+    # r_second_pass_results replaces first_pass_results for R scripts only
+    r_second_pass_results: dict[str, ScriptParseResult] = {}
+
+    for rel in r_topo_order:
+        if rel not in r_call_graph:
+            continue  # not an R script or not in known set
+
+        # Collect inherited vars from all parents in R call graph
+        inherited_r: dict[str, str] = {}
+        for parent in r_scripts:
+            if rel in r_call_graph.get(parent, []):
+                # Merge parent's accumulated vars (grandparent → parent) first,
+                # then parent's own vars — closer caller wins on conflict.
+                parent_accumulated = accumulated_r_vars.get(parent, {})
+                inherited_r.update(parent_accumulated)
+
+        # Use the original case path for filesystem access (R files often use .R extension)
+        orig_rel = r_norm_to_orig.get(rel, rel)
+        path = project_root / orig_rel
+        result2 = parse_r_file(
+            project_root,
+            path,
+            exclusions,
+            normalization,
+            parser_config,
+            inherited_vars=inherited_r if inherited_r else None,
+        )
+        r_second_pass_results[rel] = result2
+        # This script's accumulated vars = inherited + own definitions (own wins)
+        merged_r = dict(inherited_r)
+        merged_r.update(result2.globals_map)
+        accumulated_r_vars[rel] = merged_r
+
+    # -----------------------------------------------------------------------
+    # Main processing loop — use second-pass results for Stata/R, first-pass otherwise
+    # -----------------------------------------------------------------------
+    for rel in script_files:
+        suffix = Path(rel).suffix.lower()
+        if suffix not in PARSER_REGISTRY:
+            continue  # already diagnosed in pass 1
+
+        lang = _detect_language(rel)
+        if lang == 'stata' and rel in second_pass_results:
+            result = second_pass_results[rel]
+        elif lang == 'r' and rel.lower() in r_second_pass_results:
+            result = r_second_pass_results[rel.lower()]
+        elif rel in first_pass_results:
+            result = first_pass_results[rel]
+        else:
+            continue
 
         # Script node — includes language metadata
         graph.add_node(Node(
@@ -268,7 +564,14 @@ def build_graph_from_scripts(
                 ))
 
             target_collection = None
-            if event.command in read_cmds:
+            if event.command == 'fstring_path':
+                # Route using the is_write flag set by python_extract.py so that
+                # write-context f-strings produce script → artifact edges.
+                if event.is_write:
+                    target_collection = script_writes[rel]
+                else:
+                    target_collection = script_reads[rel]
+            elif event.command in read_cmds:
                 target_collection = script_reads[rel]
             elif event.command in write_cmds:
                 target_collection = script_writes[rel]

@@ -24,7 +24,7 @@ SAVE_RE = re.compile(r'\bsave\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 IMPORT_RE = re.compile(r'\bimport\s+(?:delimited|excel)\s+(?:using\s+)?(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 EXPORT_DELIMITED_RE = re.compile(r'\bexport\s+delimited\s+(?:using\s+)?(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 INSHEET_RE = re.compile(r'\binsheet\s+(?:using\s+)?(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
-EXPORT_EXCEL_RE = re.compile(r'\bexport\s+excel\s+using\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
+EXPORT_EXCEL_RE = re.compile(r'\bexport\s+excel\s+(?:using\s+)?(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 GRAPH_EXPORT_RE = re.compile(r'\bgraph\s+export\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 ESTIMATES_SAVE_RE = re.compile(r'\bestimates\s+save\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
 PUTEXCEL_SET_RE = re.compile(r'\bputexcel\s+set\s+(?:"([^"]+)"|([^\s,]+\.[^\s,]+))', re.I)
@@ -72,6 +72,7 @@ class ParsedEvent:
     was_absolute: bool
     resolution_status: str = 'full'
     dynamic_pattern: str | None = None
+    is_write: bool = False
 
 
 @dataclass(slots=True)
@@ -80,6 +81,7 @@ class ScriptParseResult:
     child_scripts: list[str]
     global_warnings: list[Diagnostic]
     excluded_references: list[Diagnostic] = field(default_factory=list)
+    globals_map: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -330,8 +332,17 @@ def _resolve_script_relative(do_file: Path, expanded: str) -> str:
     return expanded
 
 
-def parse_do_file(project_root: Path, do_file: Path, exclusions: ExclusionConfig, normalization: NormalizationConfig, parser_config: ParserConfig) -> ScriptParseResult:
-    globals_map: dict[str, str] = {}
+def parse_do_file(
+    project_root: Path,
+    do_file: Path,
+    exclusions: ExclusionConfig,
+    normalization: NormalizationConfig,
+    parser_config: ParserConfig,
+    inherited_globals: dict[str, str] | None = None,
+) -> ScriptParseResult:
+    # Seed globals_map from inherited globals BEFORE the line loop so that
+    # chained definitions (e.g. global outdir "${root}/processed") expand correctly.
+    globals_map: dict[str, str] = dict(inherited_globals) if inherited_globals else {}
     local_map: dict[str, list[str]] = {}
     loop_stack: list[LoopFrame] = []
     events: list[ParsedEvent] = []
@@ -522,6 +533,7 @@ def parse_do_file(project_root: Path, do_file: Path, exclusions: ExclusionConfig
         child_scripts=child_scripts,
         global_warnings=global_warnings,
         excluded_references=excluded_references,
+        globals_map=globals_map,
     )
 
 
