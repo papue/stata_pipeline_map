@@ -75,6 +75,7 @@ _PYTHON_READ_CMDS: set[str] = {
     'open_read', 'pickle_load', 'json_load', 'yaml_safe_load',
     'runpy',
     'gpd_read_file', 'joblib_load',
+    'os_walk',
     # Note: 'fstring_path' is intentionally omitted here.
     # It is routed below using event.is_write so that write-context f-strings
     # produce script → artifact edges instead of artifact → script edges.
@@ -100,6 +101,7 @@ _R_READ_CMDS: set[str] = {
     'fread', 'read_parquet', 'read_feather', 'fromJSON',
     'st_read', 'st_read_ns', 'read_html',
     'read.xlsx', 'loadWorkbook', 'read.fst', 'read_fst',
+    'list_files',
 }
 
 _R_WRITE_CMDS: set[str] = {
@@ -130,6 +132,13 @@ _LANGUAGE_WRITE_CMDS: dict[str, set[str]] = {
     'python': _PYTHON_WRITE_CMDS,
     'r': _R_WRITE_CMDS,
 }
+
+# Presentation-format suffixes that are never demoted from `deliverable` even when
+# consumed downstream (plots/documents are almost never read back programmatically).
+_PRESENTATION_SUFFIXES: frozenset[str] = frozenset({
+    '.png', '.pdf', '.svg', '.doc', '.docx', '.tex', '.ppt', '.pptx',
+    '.jpg', '.jpeg', '.tiff', '.eps', '.emf',
+})
 
 # ---------------------------------------------------------------------------
 # Language-agnostic artifact classification
@@ -621,6 +630,12 @@ def build_graph_from_scripts(
                     is_temporary=False,
                     deliverable_extensions=deliverable_extensions,
                 )
+                # Demote deliverable → intermediate when other scripts consume the file.
+                # Presentation formats (.png, .pdf, .svg, etc.) are excluded from
+                # this demotion because they are almost never read back programmatically.
+                if role == 'deliverable' and Path(p).suffix.lower() not in _PRESENTATION_SUFFIXES:
+                    if bool(consumers.get(p, set()) - {script}):
+                        role = 'intermediate'
                 if role != 'deliverable' and consumers.get(p, set()) <= {script}:
                     suppressed_internal_only.add((script, p))
                     if not consumers.get(p):
@@ -683,6 +698,12 @@ def build_graph_from_scripts(
                 is_temporary=is_temporary,
                 deliverable_extensions=deliverable_extensions,
             )
+            # Demote deliverable → intermediate when other scripts consume the file.
+            # Presentation formats (.png, .pdf, .svg, etc.) are excluded from
+            # this demotion because they are almost never read back programmatically.
+            if role == 'deliverable' and Path(p).suffix.lower() not in _PRESENTATION_SUFFIXES:
+                if bool(consumers.get(p, set()) - {script}):
+                    role = 'intermediate'
             if role == 'temporary' and not display_config.show_temporary_outputs:
                 hidden_temporary_paths.add(p)
                 continue
@@ -703,6 +724,24 @@ def build_graph_from_scripts(
                 role=role,
                 metadata=metadata,
             ))
+            # The reads loop runs first and may have already stored a weaker role
+            # (e.g. `generated_artifact`) via setdefault.  When the write loop now
+            # determines a more specific role (`intermediate` or `deliverable`),
+            # override the existing node role so the two representations stay consistent.
+            _ROLE_PRIORITY = {'deliverable': 3, 'intermediate': 2, 'generated_artifact': 1}
+            existing = graph.nodes.get(p)
+            if existing is not None and existing.role != role:
+                existing_prio = _ROLE_PRIORITY.get(existing.role, 0)
+                write_prio = _ROLE_PRIORITY.get(role, 0)
+                if write_prio > existing_prio:
+                    graph.nodes[p] = Node(
+                        node_id=p,
+                        label=existing.label,
+                        node_type=existing.node_type,
+                        path=existing.path,
+                        role=role,
+                        metadata=existing.metadata,
+                    )
             graph.add_edge(Edge(
                 source=script,
                 target=p,

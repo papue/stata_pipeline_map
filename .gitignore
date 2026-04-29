@@ -33,3 +33,11 @@ example/output/
 
 # Task planning files (local only)
 tasks/
+
+# Debug scratch files
+debug_*.py
+
+# Session handover notes (local only)
+*HANDOVER*.md
+SESSION_HANDOVER.md
+fstring_bug_handover.md

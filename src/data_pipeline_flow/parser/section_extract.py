@@ -446,7 +446,9 @@ _PY_PATTERNS = [
     # 4. decorated numbered: # ---- 1. Title ----
     (re.compile(r"^\s*#\s*[-=*]{2,}\s*(\d[\d.A-Za-z]*\.?\s+.+?)\s*[-=*]{0,}\s*$"), False),
     # 5. decorated unnumbered title-case: # ===== Section =====
-    (re.compile(r"^\s*#\s*[-=*]{2,}\s*([A-Z][^#]{3,}?)\s*[-=*]{0,}\s*$"), False),
+    #    Require no leading whitespace (column 0) so indented inline comments like
+    #    `    # --- Compute statistics ---` inside function bodies are not matched.
+    (re.compile(r"^#\s*[-=*]{2,}\s*([A-Z][^#]{3,}?)\s*[-=*]{0,}\s*$"), False),
 ]
 
 # --- R patterns (ordered; first match wins) ---
@@ -457,7 +459,9 @@ _R_PATTERNS = [
     #    Require whitespace after ## and reject [N] prefix (R console output, e.g. ## [1] TRUE)
     (re.compile(r"^\s*#{2,}(?:\s+)(?!\[\d)(.+?)\s*#{0,}\s*$"), False),
     # 3. decorated: # ==== Title ==== or # ---- Title ----
-    (re.compile(r"^\s*#\s*[-=*]{2,}\s*(.+?)\s*[-=*]{0,}\s*$"), False),
+    #    Require no leading whitespace (column 0) so indented inline comments like
+    #    `  # --- internal step ---` inside R function bodies are not matched.
+    (re.compile(r"^#\s*[-=*]{2,}\s*(.+?)\s*[-=*]{0,}\s*$"), False),
 ]
 
 
@@ -523,19 +527,74 @@ def _parse_header(line: str, lang: str, lineno: int) -> Section | None:
 # TOC-block suppression
 # ---------------------------------------------------------------------------
 
-def _suppress_toc_block(sections: list[Section]) -> list[Section]:
-    """Suppress a leading consecutive cluster of entries that form a TOC block.
+_TOC_KEYWORDS = ("table of contents", "contents", " toc")
 
-    A cluster is treated as a TOC if **all three** conditions hold:
 
-    1. Consecutive lines — each entry is at most 2 lines after the previous one
-       (no gaps > 2 within the cluster).
-    2. Early in the file — the cluster starts within the first 30 lines.
-    3. All titles recur later — every title in the cluster also appears at a
-       strictly higher line number elsewhere in the same file.
+def _detect_toc_end_line(lines: list[str], lang: str) -> int:
+    """Option A: scan raw file lines for a TOC block; return the last line number
+    of the block (1-based), or 0 if no TOC block is found.
 
-    If any condition fails the sections list is returned unchanged (conservative
-    fallback: when in doubt, keep everything).
+    A TOC block is detected when ALL of the following hold:
+
+    1. There are 3+ consecutive header-marker lines within the first 30 lines.
+       - Python/R:  lines starting with ``##`` or more hashes (``###``, etc.)
+       - Stata:     lines starting with ``*`` or ``//`` that are not pure
+                    decorator lines (handled by checking the stripped text)
+    2. At least one line in the cluster contains a TOC keyword (case-insensitive):
+       "table of contents", "contents", or " toc".
+    3. The cluster starts within line 30 of the file.
+    """
+    # Build per-language "looks like a header comment" detector
+    if lang == "python":
+        def _is_header_comment(raw: str) -> bool:
+            return bool(re.match(r"^\s*#{2,}\s*\S", raw))
+    elif lang == "r":
+        def _is_header_comment(raw: str) -> bool:
+            return bool(re.match(r"^\s*#{1,}\s*\S", raw))
+    else:  # stata
+        def _is_header_comment(raw: str) -> bool:
+            stripped = raw.strip()
+            if re.match(r"^\*\s*\S", stripped):
+                return True
+            if re.match(r"^//\s*\S", stripped):
+                return True
+            return False
+
+    # Find runs of consecutive header-comment lines within the first 30 lines
+    run_start = -1
+    run_lines: list[tuple[int, str]] = []  # (1-based lineno, stripped text)
+
+    for i, raw in enumerate(lines[:30], start=1):
+        if _is_header_comment(raw):
+            if run_start < 0:
+                run_start = i
+            run_lines.append((i, raw.strip()))
+        else:
+            if len(run_lines) >= 3:
+                # We have a qualifying run — check for TOC keyword
+                combined = " ".join(t for _, t in run_lines).lower()
+                if any(kw in combined for kw in _TOC_KEYWORDS):
+                    return run_lines[-1][0]
+            # Reset run (allow up to 1 blank line gap)
+            if raw.strip():
+                run_start = -1
+                run_lines = []
+
+    # Check run that extends to end of first-30-lines window
+    if len(run_lines) >= 3:
+        combined = " ".join(t for _, t in run_lines).lower()
+        if any(kw in combined for kw in _TOC_KEYWORDS):
+            return run_lines[-1][0]
+
+    return 0
+
+
+def _dedup_exact_titles(sections: list[Section]) -> list[Section]:
+    """Option B (secondary): for exact-title duplicates keep the last occurrence.
+
+    This is applied *after* Option A to handle any exact duplicates that escaped
+    TOC-block detection (e.g. single-entry TOC, or a non-detected TOC block).
+    Sections with unique titles are unaffected.
     """
     if not sections:
         return sections
@@ -544,30 +603,46 @@ def _suppress_toc_block(sections: list[Section]) -> list[Section]:
     title_counts = Counter(s.title.strip() for s in sections)
     duplicate_titles = {t for t, n in title_counts.items() if n > 1}
     if not duplicate_titles:
-        return sections  # no duplicates at all — nothing to check
+        return sections
 
-    by_line = sorted(sections, key=lambda s: s.line)
+    # For each duplicated title keep only the last (highest line number)
+    last_line_for: dict[str, int] = {}
+    for s in sections:
+        t = s.title.strip()
+        if t in duplicate_titles:
+            last_line_for[t] = max(last_line_for.get(t, 0), s.line)
 
-    # Build the leading consecutive cluster (gap ≤ 2 lines between neighbours)
-    toc_candidate: list[Section] = [by_line[0]]
-    for prev, curr in zip(by_line, by_line[1:]):
-        if curr.line - prev.line <= 2:
-            toc_candidate.append(curr)
-        else:
-            break
+    result = []
+    for s in sections:
+        t = s.title.strip()
+        if t in duplicate_titles and s.line != last_line_for[t]:
+            continue  # earlier duplicate — drop it
+        result.append(s)
+    return result
 
-    # All three conditions must hold
-    toc_lines: set[int] = set()
-    if (
-        toc_candidate[0].line <= 30          # condition 2: early in file
-        and len(toc_candidate) >= 2          # at least 2 entries
-        and all(                             # condition 3: all titles recur later
-            s.title.strip() in duplicate_titles for s in toc_candidate
-        )
-    ):
-        toc_lines = {s.line for s in toc_candidate}
 
-    return [s for s in by_line if s.line not in toc_lines]
+def _suppress_toc_block(
+    sections: list[Section],
+    lines: list[str],
+    lang: str,
+) -> list[Section]:
+    """Apply Option A (TOC block detection) then Option B (exact-title dedup).
+
+    Option A detects a dense cluster of header-comment lines near the top of the
+    file that contains a TOC keyword, and suppresses every parsed section whose
+    line number falls within that block.
+
+    Option B deduplicates any remaining exact-title duplicates by keeping the
+    last occurrence (highest line number).
+    """
+    if not sections:
+        return sections
+
+    toc_end = _detect_toc_end_line(lines, lang)
+    if toc_end > 0:
+        sections = [s for s in sections if s.line > toc_end]
+
+    return _dedup_exact_titles(sections)
 
 
 # ---------------------------------------------------------------------------
@@ -620,7 +695,7 @@ def extract_sections(file_path: Path, language: str = "auto") -> list[Section]:
                 sections.append(section)
             decorator_seen = False  # noqa: F841 (kept for spec compliance)
 
-        return _suppress_toc_block(sections)
+        return _suppress_toc_block(sections, lines, lang)
 
     except Exception as e:
         logger.debug("section_extract: skipping %s: %s", file_path, e)

@@ -79,6 +79,17 @@ _GLUE_RE = re.compile(r'\bglue\s*\(\s*(?:"([^"]+)"|\'([^\']+)\')\s*\)', re.I)
 _FS_PATH_RE = re.compile(r'\bfs::path\s*\(([^)]+)\)', re.I)
 
 # ---------------------------------------------------------------------------
+# Pattern: list.files(path, ...)  — directory-scan read (R analogue of os.listdir/os.walk)
+# Captures the first positional argument (a path string or variable).
+# If the call contains  pattern="\\.ext$"  we infer the suffix filter.
+# ---------------------------------------------------------------------------
+_LIST_FILES_RE = re.compile(r'\blist\.files\s*\(([^)]+)\)', re.I)
+# Detect suffix in pattern= arg inside the same list.files() call or nearby lines
+_LIST_FILES_PATTERN_RE = re.compile(r'\bpattern\s*=\s*(?:"([^"]+)"|\'([^\']+)\')', re.I)
+# Simple extension heuristic: match the last \.\w+ or \.\w+ in the pattern string
+_EXT_FROM_PATTERN_RE = re.compile(r'\\\.(\w+)')
+
+# ---------------------------------------------------------------------------
 # Quoted string extraction
 # ---------------------------------------------------------------------------
 _QUOTED_RE = re.compile(r'(?:"([^"\\]+)"|\'([^\'\\]+)\')')
@@ -1095,6 +1106,35 @@ def parse_r_file(
         # --- Expand bare variable names to quoted values for pattern matching ---
         for _var, _val in vars_map.items():
             line = re.sub(rf'\b{re.escape(_var)}\b', f'"{_val}"', line)
+
+        # --- list.files: directory-scan wildcard read ---
+        # Recognises list.files(path, ...) and emits a wildcard read edge.
+        # If a pattern= argument containing an escaped extension (e.g. "\\.csv$")
+        # is found on the same line, we use that extension; otherwise emit /**/*.
+        _lf_m = _LIST_FILES_RE.search(line)
+        if _lf_m:
+            _lf_args = _lf_m.group(1).strip()
+            # The first positional argument is either a quoted string or a variable
+            _lf_folder: str | None = None
+            _first_arg_m = _QUOTED_RE.search(_lf_args)
+            if _first_arg_m:
+                _lf_folder = _first_arg_m.group(1) or _first_arg_m.group(2)
+            else:
+                # Try resolving the first identifier token as a variable
+                _first_token = re.match(r'(\w+)', _lf_args)
+                if _first_token:
+                    _lf_folder = vars_map.get(_first_token.group(1))
+            if _lf_folder:
+                # Try to infer suffix from pattern= argument on same line
+                _lf_suffix: str | None = None
+                _lf_pat_m = _LIST_FILES_PATTERN_RE.search(line)
+                if _lf_pat_m:
+                    _lf_pat_str = _lf_pat_m.group(1) or _lf_pat_m.group(2)
+                    _lf_ext_m = _EXT_FROM_PATTERN_RE.search(_lf_pat_str)
+                    if _lf_ext_m:
+                        _lf_suffix = '.' + _lf_ext_m.group(1)
+                _wildcard_node_lf = _lf_folder.rstrip('/') + ('/**/*' + _lf_suffix if _lf_suffix else '/**/*')
+                _add_event(line_no, 'list_files', _wildcard_node_lf, is_write=False)
 
         # --- Read patterns ---
         matched_read = False

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import os
 import posixpath
 import re
 import sys
@@ -135,6 +136,18 @@ def to_project_relative(project_root: Path, candidate: str | Path, config: Norma
         inferred = _infer_existing_project_suffix(project_root, raw)
         if inferred is not None:
             return _case_fold(_join_relative('.', inferred, strip_leading_dot=config.strip_leading_dot)), was_absolute
+
+        # Fallback: compute relpath for absolute paths outside project_root.
+        # On the same drive this yields e.g. "../../results_store/file.parquet"
+        # which matches what __file__-relative resolvers produce for the same file.
+        # os.path.relpath raises ValueError on Windows when paths are on different
+        # drives, so the try/except is mandatory.
+        try:
+            rel = os.path.relpath(str(candidate), str(project_root))
+            norm = normalize_token(rel.replace('\\', '/'))
+            return _case_fold(norm), was_absolute
+        except ValueError:
+            pass  # different drives on Windows — fall through to bare filename
 
     normalized = raw
     if config.strip_leading_dot and normalized.startswith('./'):

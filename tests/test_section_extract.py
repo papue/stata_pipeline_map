@@ -440,13 +440,14 @@ class TestTocSuppression:
         assert titles_by_line.get(13) == "2. Run regressions"
         assert titles_by_line.get(16) == "3. Export tables"
 
-    # --- Case 1: Legitimate repeated heading (NOT suppressed) ---
+    # --- Case 1: Repeated heading without TOC keyword (Option B dedup) ---
 
-    def test_legitimate_repeated_heading_not_suppressed(self):
-        """Two identical headings spread across a file must both be kept.
+    def test_legitimate_repeated_heading_option_b_keeps_last(self):
+        """Two identical headings spread across a file: Option B (exact-title dedup)
+        keeps only the last occurrence (highest line number).
 
-        The early occurrence is not part of a consecutive cluster of duplicates,
-        so condition 1 (len >= 2) fails and nothing is suppressed.
+        There is no TOC keyword so Option A does not fire.  Option B fires because
+        the title is an exact duplicate and keeps only the later occurrence.
         """
         lines = [
             "import pandas as pd",
@@ -461,14 +462,18 @@ class TestTocSuppression:
             "df2 = pd.read_csv('data/phase2_input.csv')",
         ]
         result = _sections_from_lines(lines, "python")
-        assert len(result) == 2
-        assert result[0] == Section(3, 1, "1. Setup")
-        assert result[1] == Section(9, 1, "1. Setup")
+        assert len(result) == 1
+        assert result[0] == Section(9, 1, "1. Setup")
 
-    # --- Case 3: Mixed TOC (one title does not recur — conservative, keep all) ---
+    # --- Case 3: Mixed TOC where the TOC keyword is on a single-hash line ---
 
-    def test_mixed_toc_conservative_fallback(self):
-        """If one TOC title doesn't recur, the whole cluster is kept."""
+    def test_mixed_toc_single_hash_keyword_option_b_dedup(self):
+        """TOC keyword is on a single '#' line (not matched by Option A's ##+ detector).
+
+        Option A does not fire (the ##-run of 3 lines has no TOC keyword in it).
+        Option B deduplicates the exact-title entries, keeping last occurrence.
+        The unique TOC-only title "0. Helper functions" is retained at L2.
+        """
         lines = [
             "# Table of contents:",
             "## 0. Helper functions",
@@ -485,18 +490,22 @@ class TestTocSuppression:
         ]
         result = _sections_from_lines(lines, "python")
         lines_found = {s.line for s in result}
-        # All TOC lines kept (condition 3 fails because "0. Helper functions" does not recur)
-        assert 2 in lines_found  # TOC: 0. Helper functions
-        assert 3 in lines_found  # TOC: 1. Load data
-        assert 4 in lines_found  # TOC: 2. Process data
-        # Real headers also present
-        assert 8 in lines_found   # 1. Load data
-        assert 11 in lines_found  # 2. Process data
+        # Unique TOC title kept (not a duplicate)
+        assert 2 in lines_found   # 0. Helper functions (unique, no real-header match)
+        # Exact duplicates: only last occurrence kept
+        assert 3 not in lines_found  # TOC: 1. Load data (earlier duplicate, dropped)
+        assert 4 not in lines_found  # TOC: 2. Process data (earlier duplicate, dropped)
+        assert 8 in lines_found   # 1. Load data (last occurrence, kept)
+        assert 11 in lines_found  # 2. Process data (last occurrence, kept)
 
-    # --- Case 4: Single-entry cluster (NOT suppressed) ---
+    # --- Case 4: Single-entry duplicate (Option B dedup: keep last) ---
 
-    def test_single_entry_cluster_not_suppressed(self):
-        """A single early entry recurring later must not be suppressed (len < 2)."""
+    def test_single_entry_duplicate_option_b_keeps_last(self):
+        """A single exact-duplicate pair with no TOC keyword: Option B keeps only last.
+
+        Option A does not fire (only 1 consecutive ##-line before a gap, no keyword).
+        Option B fires and keeps only the last (highest line number) occurrence.
+        """
         lines = [
             "## 1. Load data",
             "",
@@ -506,14 +515,13 @@ class TestTocSuppression:
             "df = pd.read_csv('data/input.csv')",
         ]
         result = _sections_from_lines(lines, "python")
-        assert len(result) == 2
-        assert result[0].line == 1
-        assert result[1].line == 5
+        assert len(result) == 1
+        assert result[0].line == 5
 
     # --- _suppress_toc_block unit test: empty input ---
 
     def test_suppress_toc_block_empty(self):
-        assert _suppress_toc_block([]) == []
+        assert _suppress_toc_block([], [], "python") == []
 
     # --- _suppress_toc_block unit test: no duplicates → unchanged ---
 
@@ -523,4 +531,296 @@ class TestTocSuppression:
             Section(5, 1, "B"),
             Section(10, 1, "C"),
         ]
-        assert _suppress_toc_block(sections) == sections
+        assert _suppress_toc_block(sections, [], "python") == sections
+
+    # --- NH-10 regression: extract_data.py fixture (### TOC block) ---
+
+    def test_nh10_extract_data_toc_suppressed(self):
+        """extract_data.py fixture: ### TOC block (L1-L5) suppressed; real headers kept."""
+        lines = [
+            "### Table of contents",
+            "### 0. Helper functions",
+            "###     0.1 Check Constant Action",
+            "### 1. Collect data",
+            "### 2. Save results",
+            "",
+            "# test comment",
+            "",
+            "### 0. Helper functions",
+            "",
+            "def helper():",
+            "    pass",
+            "",
+            "### 0.1 Check Constant Action",
+            "",
+            "def check_constant(data):",
+            "    return data",
+            "",
+            "###     0.2 Validate data",
+            "",
+            "def validate(df):",
+            "    return df",
+            "",
+            "### 1. Collect data",
+            "",
+            "data = [1, 2, 3]",
+            "",
+            "### 2. Save results",
+        ]
+        result = _sections_from_lines(lines, "python")
+        lines_found = {s.line: s.title for s in result}
+        # TOC block (L1-L5) suppressed
+        assert 1 not in lines_found
+        assert 2 not in lines_found
+        assert 3 not in lines_found
+        assert 4 not in lines_found
+        assert 5 not in lines_found
+        # Real headers present
+        assert lines_found.get(9) == "0. Helper functions"
+        assert lines_found.get(14) == "0.1 Check Constant Action"
+        assert lines_found.get(19) == "0.2 Validate data"
+        assert lines_found.get(24) == "1. Collect data"
+        assert lines_found.get(28) == "2. Save results"
+
+    # --- NH-10 regression: generate_output.py fixture (near-duplicate) ---
+
+    def test_nh10_generate_output_near_duplicate_retained(self):
+        """generate_output.py fixture: TOC 'Boxplots' suppressed; real 'Boxplots - by case' kept."""
+        lines = [
+            "### Table of contents",
+            "### 1. Import data",
+            "### 2. Boxplots",
+            "###     2.1 Define Function",
+            "###     2.2 Generate Figures",
+            "### 3. Boxplots - comparing cases",
+            "",
+            "# test",
+            "",
+            "### 1. Import data",
+            "",
+            "import pandas as pd",
+            "df = pd.read_csv('results/output.csv')",
+            "",
+            "### 2. Boxplots - by case",
+            "",
+            "import matplotlib.pyplot as plt",
+            "",
+            "### 2.1 Define Function",
+            "",
+            "def make_boxplot(df):",
+            "    fig, ax = plt.subplots()",
+            "    return fig, ax",
+            "",
+            "### 2.2 Generate Figures",
+            "",
+            "fig, ax = make_boxplot(df)",
+            "plt.savefig('output/boxplot.png')",
+            "",
+            "### 3. Boxplots - comparing cases",
+        ]
+        result = _sections_from_lines(lines, "python")
+        lines_found = {s.line: s.title for s in result}
+        # Entire TOC block (L1-L6) suppressed including the "2. Boxplots" near-duplicate
+        for toc_line in range(1, 7):
+            assert toc_line not in lines_found, f"TOC line {toc_line} should be suppressed"
+        # Real headers present
+        assert lines_found.get(10) == "1. Import data"
+        assert lines_found.get(15) == "2. Boxplots - by case"  # near-dupe: different title, kept
+        assert lines_found.get(19) == "2.1 Define Function"
+        assert lines_found.get(25) == "2.2 Generate Figures"
+        assert lines_found.get(30) == "3. Boxplots - comparing cases"
+
+    # --- NH-10 regression: no-TOC file unaffected ---
+
+    def test_nh10_no_toc_file_unaffected(self):
+        """A file with no TOC block is unaffected by Option A and Option B."""
+        lines = [
+            "import pandas as pd",
+            "",
+            "## 1. Load data",
+            "df = pd.read_csv('data/input.csv')",
+            "",
+            "## 2. Process data",
+            "df = df.dropna()",
+            "",
+            "## 3. Save results",
+            "df.to_csv('data/output.csv')",
+        ]
+        result = _sections_from_lines(lines, "python")
+        assert len(result) == 3
+        assert result[0] == Section(3, 1, "1. Load data")
+        assert result[1] == Section(6, 1, "2. Process data")
+        assert result[2] == Section(9, 1, "3. Save results")
+
+    # --- NH-10 regression: R TOC block (## ---- markers) ---
+
+    def test_nh10_r_toc_block_suppressed(self):
+        """R file: TOC entries using ## ---- markers are suppressed."""
+        lines = [
+            "# Table of contents:",
+            "## 1. Load data ----",
+            "## 2. Fit models ----",
+            "## 3. Export results ----",
+            "",
+            "library(readr)",
+            "",
+            "## 1. Load data ----",
+            "df <- read_csv('data/input.csv')",
+            "",
+            "## 2. Fit models ----",
+            "model <- lm(y ~ x, data = df)",
+            "",
+            "## 3. Export results ----",
+            "write_csv(as.data.frame(coef(model)), 'results/coefs.csv')",
+        ]
+        result = _sections_from_lines(lines, "r")
+        lines_found = {s.line: s.title for s in result}
+        # TOC entries suppressed
+        assert 2 not in lines_found
+        assert 3 not in lines_found
+        assert 4 not in lines_found
+        # Real headers kept
+        assert lines_found.get(8) == "1. Load data"
+        assert lines_found.get(11) == "2. Fit models"
+        assert lines_found.get(14) == "3. Export results"
+
+
+# ---------------------------------------------------------------------------
+# NH-12 regression: indented `# ---` suppressed; column-0 markers retained
+# ---------------------------------------------------------------------------
+
+import pathlib  # noqa: E402 (already imported above but needed here for clarity)
+
+
+class TestNH12InlineCommentFix:
+    """Regression tests for NH-12: indented # --- ... --- must not be section headers."""
+
+    # --- Python: indented # --- inside function body is suppressed ---
+
+    def test_python_indented_dash_comment_suppressed(self):
+        """    # --- Compute statistics --- inside a function body is NOT a section."""
+        assert _one("    # --- Compute statistics ---", "python") == []
+
+    def test_python_indented_dash_comment_tab_suppressed(self):
+        """\\t# --- Internal step --- (tab-indented) is NOT a section."""
+        assert _one("\t# --- Internal step ---", "python") == []
+
+    def test_python_indented_equals_comment_suppressed(self):
+        """    # ===== Setup ===== indented is NOT a section."""
+        assert _one("    # ===== Setup =====", "python") == []
+
+    # --- Python: column-0 # --- is still a section (backward compat) ---
+
+    def test_python_column0_dash_section_retained(self):
+        """# --- Section Title --- at column 0 IS still a section header."""
+        result = _one("# --- Section Title ---", "python")
+        assert result == [Section(1, 1, "Section Title")]
+
+    def test_python_column0_equals_section_retained(self):
+        """# ===== My Section ===== at column 0 IS still a section header."""
+        result = _one("# ===== My Section =====", "python")
+        assert result == [Section(1, 1, "My Section")]
+
+    # --- Python: ### at column 0 is always retained (triple-hash pattern unaffected) ---
+
+    def test_python_triple_hash_column0_retained(self):
+        """### 1. Load data at column 0 IS a section (triple-hash pattern, not affected by fix)."""
+        result = _one("### 1. Load data", "python")
+        assert result == [Section(1, 1, "1. Load data")]
+
+    # --- Python: ## testing at module level (column 0) — documented behavior ---
+
+    def test_python_double_hash_module_level_detected(self):
+        """## testing at column 0 (module level) IS detected by the multi-hash pattern.
+
+        This is intentional: ## at column 0 is treated as a section header.
+        The `## testing` case in generate_graphs.py is borderline (commented-out code),
+        but the indentation filter does not suppress column-0 ## lines.
+        See FINDINGS.md: this is a documented, accepted behavior.
+        """
+        result = _one("## testing", "python")
+        assert result == [Section(1, 1, "testing")]
+
+    # --- Python: full-file integration (NH-12 fixture) ---
+
+    def test_python_nh12_generate_graphs_fixture(self):
+        """generate_graphs.py fixture: indented # --- sections eliminated; ## testing kept."""
+        fixture = (
+            pathlib.Path(__file__).parent
+            / "fixtures"
+            / "inline_comment_sections"
+            / "analysis"
+            / "generate_graphs.py"
+        )
+        from data_pipeline_flow.parser.section_extract import extract_sections
+        result = extract_sections(fixture, "python")
+        titles = [s.title for s in result]
+        # All indented # --- false positives must be gone
+        assert "Compute statistics" not in titles
+        assert "Draw box" not in titles
+        assert "Modern Nord-Style Colours" not in titles
+        assert "Price trajectories" not in titles
+        assert "Quantity effect curves" not in titles
+        assert "Quantity effect areas" not in titles
+        assert "Formatting" not in titles
+        # ## testing at module level is retained (column-0, intentional)
+        assert "testing" in titles
+        # Only one section total
+        assert len(result) == 1
+
+    def test_python_nh12_clean_script_fixture(self):
+        """clean_script.py fixture: ### sections still correctly detected (3 entries)."""
+        fixture = (
+            pathlib.Path(__file__).parent
+            / "fixtures"
+            / "inline_comment_sections"
+            / "analysis"
+            / "clean_script.py"
+        )
+        from data_pipeline_flow.parser.section_extract import extract_sections
+        result = extract_sections(fixture, "python")
+        assert len(result) == 3
+        assert result[0] == Section(1, 1, "1. Load data")
+        assert result[1] == Section(6, 1, "2. Clean")
+        assert result[2] == Section(11, 1, "3. Save")
+
+    # --- R: indented # --- inside function body is suppressed ---
+
+    def test_r_indented_dash_comment_suppressed(self):
+        """  # --- internal step --- inside an R function body is NOT a section."""
+        assert _one("  # --- internal step ---", "r") == []
+
+    # --- R: column-0 # --- is still a section ---
+
+    def test_r_column0_dash_section_retained(self):
+        """# --- Load data --- at column 0 IS a section in R."""
+        result = _one("# --- Load data ---", "r")
+        assert result == [Section(1, 1, "Load data")]
+
+    # --- R: RStudio trailing-marker # Title ---- is always retained (pattern #1 unaffected) ---
+
+    def test_r_rstudio_trailing_marker_retained(self):
+        """## Load data ---- (RStudio folding marker) is always a section regardless."""
+        result = _one("## Load data ----", "r")
+        assert len(result) == 1
+        assert result[0].title == "Load data"
+
+    # --- R: function body scenario ---
+
+    def test_r_function_body_indented_not_section(self):
+        """Full R snippet: indented # --- is suppressed; ## ---- section is kept."""
+        lines = [
+            "my_function <- function(df) {",
+            "  # --- internal step ---",
+            "  df <- df[complete.cases(df), ]",
+            "  df",
+            "}",
+            "",
+            "## ---- Load data ----",
+            "df <- read.csv(\"data.csv\")",
+        ]
+        result = _sections_from_lines(lines, "r")
+        titles = [s.title for s in result]
+        assert "internal step" not in titles
+        # The ## ---- Load data ---- line is detected (RStudio trailing-marker pattern)
+        assert any("Load data" in t for t in titles)

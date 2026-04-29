@@ -196,6 +196,101 @@ def test_url_path_not_tracked():
 
 
 # ---------------------------------------------------------------------------
+# Out-of-root node ID: regression tests for NH-02
+# ---------------------------------------------------------------------------
+
+def test_abspath_join_write_produces_edge(tmp_path: Path):
+    """os.path.abspath(os.path.join(__script_dir__, '..', '..', 'store')) should
+    be resolved so that .to_parquet(save_path) emits a write edge."""
+    (tmp_path / "analysis").mkdir()
+    script = tmp_path / "analysis" / "extract.py"
+    code = textwrap.dedent("""\
+        import os
+        import pandas as pd
+        _root = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'results_store'))
+        save_path = os.path.join(_root, 'all_results.parquet')
+        df = pd.DataFrame()
+        df.to_parquet(save_path, index=False)
+    """)
+    script.write_text(code, encoding="utf-8")
+    result = parse_python_file(
+        tmp_path,
+        script,
+        ExclusionConfig(),
+        NormalizationConfig(),
+        ParserConfig(),
+    )
+    write_events = [e for e in result.events if e.is_write]
+    assert len(write_events) == 1, f"Expected 1 write event, got {write_events}"
+    node_id = write_events[0].normalized_paths[0]
+    assert "results_store" in node_id
+    assert "all_results.parquet" in node_id
+
+
+def test_out_of_root_writer_reader_share_node_id(tmp_path: Path):
+    """Writer using os.path.abspath(os.path.join(__file__, '..', '..', 'store'))
+    and reader using __script_dir__ + '../../store' must produce the same node ID."""
+    (tmp_path / "analysis").mkdir()
+
+    writer = tmp_path / "analysis" / "extract.py"
+    writer.write_text(textwrap.dedent("""\
+        import os, pandas as pd
+        _root = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'store'))
+        save_path = os.path.join(_root, 'out.parquet')
+        pd.DataFrame().to_parquet(save_path)
+    """), encoding="utf-8")
+
+    reader = tmp_path / "analysis" / "generate.py"
+    reader.write_text(textwrap.dedent("""\
+        import os, pandas as pd
+        _script_dir = os.path.dirname(os.path.abspath(__file__))
+        data_path = os.path.join(_script_dir, '..', '..', 'store')
+        df = pd.read_parquet(os.path.join(data_path, 'out.parquet'))
+    """), encoding="utf-8")
+
+    writer_result = parse_python_file(tmp_path, writer, ExclusionConfig(), NormalizationConfig(), ParserConfig())
+    reader_result = parse_python_file(tmp_path, reader, ExclusionConfig(), NormalizationConfig(), ParserConfig())
+
+    write_paths = {p for e in writer_result.events if e.is_write for p in e.normalized_paths}
+    read_paths = {p for e in reader_result.events if not e.is_write for p in e.normalized_paths}
+
+    assert write_paths, "Writer produced no events"
+    assert read_paths, "Reader produced no events"
+    shared = write_paths & read_paths
+    assert shared, (
+        f"Writer and reader produced different node IDs: write={write_paths}, read={read_paths}"
+    )
+
+
+def test_fixture_out_of_root_nodeid_produces_connecting_edge():
+    """Integration: the out_of_root_nodeid fixture should have a connecting edge
+    between extract_data.py and generate_graphs.py via results_store/all_results.parquet."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
+    from data_pipeline_flow.config.schema import AppConfig
+    from data_pipeline_flow.rules.pipeline import PipelineBuilder
+
+    fixture_root = Path(__file__).parent / "fixtures" / "out_of_root_nodeid"
+    if not fixture_root.exists():
+        pytest.skip("out_of_root_nodeid fixture not found")
+
+    config = AppConfig(project_root=str(fixture_root))
+    graph = PipelineBuilder(config).build(fixture_root)
+
+    node_ids = set(graph.nodes.keys())
+    assert "results_store/all_results.parquet" in node_ids, (
+        f"Shared data node missing from graph. Nodes: {node_ids}"
+    )
+    edge_pairs = {(e.source, e.target) for e in graph.edges}
+    assert ("analysis/extract_data.py", "results_store/all_results.parquet") in edge_pairs, (
+        f"Missing write edge from extract_data.py. Edges: {edge_pairs}"
+    )
+    assert ("results_store/all_results.parquet", "analysis/generate_graphs.py") in edge_pairs, (
+        f"Missing read edge to generate_graphs.py. Edges: {edge_pairs}"
+    )
+
+
+# ---------------------------------------------------------------------------
 # Fixture-level smoke test
 # ---------------------------------------------------------------------------
 

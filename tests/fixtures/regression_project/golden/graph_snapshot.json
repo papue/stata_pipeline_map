@@ -84,13 +84,13 @@
       "source": "01_data/02_scripts/01_build.do",
       "target": "01_data/03_cleaned_data/panel_base.dta",
       "operation": "save",
-      "kind": "deliverable"
+      "kind": "intermediate"
     },
     {
       "source": "01_data/02_scripts/02_prepare.do",
       "target": "01_data/03_cleaned_data/panel_ready.dta",
       "operation": "save",
-      "kind": "deliverable"
+      "kind": "intermediate"
     },
     {
       "source": "02_analysis/02_scripts/01_model.do",

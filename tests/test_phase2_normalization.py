@@ -179,6 +179,47 @@ def test_default_exclusions_are_expressed_through_presets(tmp_path: Path) -> Non
     assert '.git/' in scan.excluded_files
 
 
+def test_to_project_relative_relpath_fallback_for_out_of_root_abs_path(tmp_path: Path) -> None:
+    """Absolute path outside project_root should produce a relpath node ID
+    (../../...) rather than falling back to a bare absolute string.
+    This ensures writer/reader paths for the same file share a single node ID."""
+    project_root = tmp_path / 'myproject'
+    project_root.mkdir()
+    # A file two levels above the project root
+    outside_file = tmp_path / 'results_store' / 'all_results.parquet'
+
+    normalized, was_absolute = to_project_relative(
+        project_root,
+        outside_file,
+    )
+    assert was_absolute is True
+    # Should produce a relative path like "../results_store/all_results.parquet"
+    assert normalized.startswith('..')
+    assert 'results_store' in normalized
+    assert 'all_results.parquet' in normalized
+    # Must NOT be a bare absolute path
+    assert not normalized.startswith('/')
+    assert ':' not in normalized  # no drive letter
+
+
+def test_to_project_relative_relpath_same_as_file_relative_resolver(tmp_path: Path) -> None:
+    """Verify that an out-of-root absolute path and a __file__-relative relative
+    path pointing to the same physical file produce the same node ID."""
+    project_root = tmp_path / 'project'
+    project_root.mkdir()
+    # Simulate file two levels above project root
+    outside_file = tmp_path / 'store' / 'data.csv'
+
+    # Absolute path version (what a writer resolving os.path.abspath gives us)
+    abs_norm, _ = to_project_relative(project_root, outside_file)
+
+    # Relative path version (what a __file__-relative reader gives us via ..)
+    rel_path = project_root / '../store/data.csv'
+    rel_norm, _ = to_project_relative(project_root, rel_path)
+
+    assert abs_norm == rel_norm
+
+
 def test_cli_warns_when_custom_exclusions_do_not_inherit_default_presets(tmp_path: Path) -> None:
     project_root = tmp_path / 'stata_realistic_project'
     (project_root / '01_data/02_scripts').mkdir(parents=True)

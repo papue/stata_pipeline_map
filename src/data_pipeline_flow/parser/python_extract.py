@@ -205,6 +205,22 @@ _STR_CONCAT_INLINE_RE = re.compile(r'"([^"]*?)"\s*\+\s*"([^"]*?)"')
 _STR_DIV_INLINE_RE = re.compile(r'"([^"]*?)"\s*(?:/\s*"[^"]*?"\s*)+')
 
 # ---------------------------------------------------------------------------
+# Pattern: os.listdir(VAR_OR_LITERAL)  — directory-scan read
+# ---------------------------------------------------------------------------
+_LISTDIR_RE = re.compile(r'\bos\.listdir\s*\(([^)]+)\)')
+
+# Pattern: os.walk(VAR_OR_LITERAL)  — recursive directory-scan read
+_OSWALK_RE = re.compile(r'\bos\.walk\s*\(([^)]+)\)')
+
+# Pattern: detect .endswith(".ext") suffix filter on nearby lines
+_ENDSWITH_RE = re.compile(r'\.endswith\s*\(\s*(?:"([^"]+)"|\'([^\']+)\')\s*\)')
+
+# Pattern: with open(VAR, "rb") — two-line binary read
+_WITH_OPEN_VAR_RB_RE = re.compile(
+    r'\bwith\s+open\s*\(\s*(\w+)\s*,\s*(?:[rRbBuU]?"r[bt]?"|[rRbBuU]?\'r[bt]?\')',
+)
+
+# ---------------------------------------------------------------------------
 # Kwarg path heuristic — names of keyword arguments that commonly carry a
 # file-path value.  When a function call passes one of these kwargs with a
 # resolved string value we emit a write edge from the call site.
@@ -281,7 +297,12 @@ def _make_gpd_read_patterns(prefixes: list[str]) -> list[tuple[str, re.Pattern[s
 
 # Fixed patterns that don't depend on aliases
 _FIXED_READ_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
-    ('open_read',     re.compile(r'\bopen\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')\s*(?:,\s*(?:[rRbBuU]?"r[bt]?"|[rRbBuU]?\'r[bt]?\'))?', re.I)),
+    # open("path") with no mode arg (defaults to "r") OR explicit read mode "r"/"rt"/"rb".
+    # Modes "w"/"wb"/"a"/"ab" must NOT match (they are handled by open_write).
+    # A negative lookahead after the path ensures that a write mode following a comma
+    # prevents this pattern from firing.  The lookahead blocks ,<opt-ws>"w..."/"a..."
+    # while still allowing no-mode (bare open("path")) and explicit read modes.
+    ('open_read',     re.compile(r'\bopen\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')\s*(?!,\s*(?:[rRbBuU]?"[wa][bt]?"|[rRbBuU]?\'[wa][bt]?\'))', re.I)),
     ('pickle_load',   re.compile(r'\bpickle\.load\s*\(\s*open\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')', re.I)),
     ('json_load',     re.compile(r'\bjson\.load\s*\(\s*open\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')', re.I)),
     ('yaml_safe_load',re.compile(r'\byaml\.(?:safe_load|load)\s*\(\s*open\s*\(\s*(?:[rRbBuU]?"([^"]+)"|[rRbBuU]?\'([^\']+)\')', re.I)),
@@ -432,6 +453,7 @@ def _resolve_ospath_join(
     text: str,
     vars_map: dict[str, str],
     abs_vars: set[str] | None = None,
+    partial_wildcard: bool = False,
 ) -> tuple[str | None, bool]:
     """Resolve os.path.join(...) if all args are literals or known vars.
 
@@ -439,6 +461,11 @@ def _resolve_ospath_join(
     is True when an absolute-path variable was encountered as one of the
     arguments.  In that case only the non-absolute literal suffix parts are
     joined so that a partial (flagged) edge can still be emitted.
+
+    When *partial_wildcard* is True, unresolvable arguments are substituted
+    with ``*`` instead of causing the whole join to fail.  This allows dynamic
+    paths like ``os.path.join(KNOWN_BASE, loop_var, "file.pkl")`` to produce
+    a useful placeholder node such as ``known_base/*/file.pkl``.
     """
     m = _OSPATH_JOIN_RE.search(text)
     if not m:
@@ -446,6 +473,7 @@ def _resolve_ospath_join(
     args_text = m.group(1)
     parts: list[str] = []
     contained_absolute = False
+    had_wildcard = False
     for piece in args_text.split(','):
         piece = piece.strip()
         # A compound expression like `name + ".pdf"` is NOT a pure quoted literal.
@@ -468,10 +496,22 @@ def _resolve_ospath_join(
             else:
                 parts.append(val)
         else:
-            if contained_absolute:
-                # We already found an absolute prefix; remaining unknowns block resolution
-                return None, True
-            return None, False  # unresolvable
+            if partial_wildcard:
+                # Substitute unresolvable arg with wildcard segment
+                parts.append('*')
+                had_wildcard = True
+            else:
+                if contained_absolute:
+                    # We already found an absolute prefix; remaining unknowns block resolution
+                    return None, True
+                return None, False  # unresolvable
+    if not parts:
+        return None, contained_absolute
+    # Remove leading wildcard-only segments (keep at least the literal suffix parts)
+    # so that os.path.join(unknown, "file.pkl") → "file.pkl" not "*/file.pkl".
+    while parts and parts[0] == '*':
+        parts = parts[1:]
+        had_wildcard = True
     if not parts:
         return None, contained_absolute
     raw_joined = '/'.join(parts)
@@ -819,8 +859,13 @@ def parse_python_file(
     # Sub-pass 1b: VAR = os.path.join(...)  where components resolve from vars_map
     # Run on joined_lines so multi-line joins are captured.
     # Also handles VAR = os.path.join(...) + "suffix" (e.g. + "/" for trailing sep).
+    # Also handles VAR = os.path.abspath(os.path.join(...)) — the abspath wrapper is
+    # transparent for path-node-ID purposes because we normalise all paths anyway.
     _VAR_OSPATH_JOIN_PLUS_RE = re.compile(
         r'^\s*(\w+)\s*=\s*os\.path\.join\s*\(([^)]+)\)\s*\+\s*(?:"([^"]*)"|\'([^\']*)\')'
+    )
+    _VAR_OSPATH_ABSPATH_JOIN_RE = re.compile(
+        r'^\s*(\w+)\s*=\s*os\.path\.abspath\s*\(\s*os\.path\.join\s*\('
     )
     for line in joined_lines:
         clean = _strip_comment(line)
@@ -834,6 +879,17 @@ def parse_python_file(
                 if _abs:
                     abs_vars.add(var_name)
             continue
+        # VAR = os.path.abspath(os.path.join(...)) — strip the abspath wrapper and
+        # resolve the inner join exactly as the plain os.path.join case.
+        m_abs = _VAR_OSPATH_ABSPATH_JOIN_RE.match(clean)
+        if m_abs:
+            var_name = m_abs.group(1)
+            jpath, _abs = _resolve_ospath_join(clean, vars_map, abs_vars)
+            if jpath is not None:
+                vars_map[var_name] = jpath
+                if _abs:
+                    abs_vars.add(var_name)
+            continue
         m = _VAR_OSPATH_JOIN_RE.match(clean)
         if m:
             var_name = m.group(1)
@@ -842,6 +898,15 @@ def parse_python_file(
                 vars_map[var_name] = jpath
                 if _abs:
                     abs_vars.add(var_name)
+            else:
+                # Full resolution failed — try partial wildcard so that
+                # path = os.path.join(known_base, loop_var) → "known_base/*"
+                # This allows downstream os.listdir(path) / open(join(path,"f")) to resolve.
+                jpath_p, _abs_p = _resolve_ospath_join(clean, vars_map, abs_vars, partial_wildcard=True)
+                if jpath_p is not None and '*' in jpath_p:
+                    vars_map[var_name] = jpath_p
+                    if _abs_p:
+                        abs_vars.add(var_name)
 
     # Sub-pass 1c: VAR = "{}/...".format(other)  and  VAR = "%s/..." % other
     for line in joined_lines:
@@ -1119,6 +1184,14 @@ def parse_python_file(
                 f'"{joined}"',
                 1,
             )
+        else:
+            # Full resolution failed — try partial-wildcard resolution so that
+            # os.path.join(known_base, loop_var, "file.pkl") → "known_base/*/file.pkl"
+            joined_partial, _ = _resolve_ospath_join(line, vars_map, abs_vars, partial_wildcard=True)
+            if joined_partial and '*' in joined_partial:
+                _m_join = _OSPATH_JOIN_RE.search(line)
+                if _m_join:
+                    line = line.replace(_m_join.group(0), f'"{joined_partial}"', 1)
         # Track whether the current line's join resolution involved an absolute var
         _join_force_abs = join_was_abs
 
@@ -1204,6 +1277,87 @@ def parse_python_file(
             _pw_val = _pwm.group(1) or _pwm.group(2)
             if _pw_val:
                 line = line.replace(_pwm.group(0), f'"{_pw_val}"', 1)
+
+        # --- os.listdir: directory-scan wildcard read ---
+        # Recognises os.listdir(FOLDER) and emits a wildcard placeholder node.
+        # If the next 10 lines contain .endswith(".ext"), use that extension.
+        _listdir_m = _LISTDIR_RE.search(line)
+        if _listdir_m:
+            _ld_arg = _listdir_m.group(1).strip()
+            # Resolve the folder argument: try vars_map, then partial join, then bare
+            _ld_folder: str | None = None
+            if _ld_arg in vars_map:
+                _ld_folder = vars_map[_ld_arg]
+            else:
+                # Try treating the arg as an os.path.join expression inline
+                _ld_joined, _ = _resolve_ospath_join(f'os.path.join({_ld_arg})', vars_map, abs_vars)
+                if _ld_joined:
+                    _ld_folder = _ld_joined
+                else:
+                    _ld_joined_p, _ = _resolve_ospath_join(
+                        f'os.path.join({_ld_arg})', vars_map, abs_vars, partial_wildcard=True
+                    )
+                    if _ld_joined_p:
+                        _ld_folder = _ld_joined_p
+            if _ld_folder and not _ld_folder.endswith('/'):
+                # Scan the current line and the next 10 raw lines for
+                # .endswith(".ext") suffix hint (the filter may be inline
+                # in the same list comprehension as the os.listdir call).
+                _suffix_hint: str | None = None
+                _lookahead = [raw_line] + raw_lines[line_no: line_no + 10]
+                for _la_line in _lookahead:
+                    _ew_m = _ENDSWITH_RE.search(_la_line)
+                    if _ew_m:
+                        _ext_val = _ew_m.group(1) or _ew_m.group(2)
+                        if _ext_val and _ext_val.startswith('.'):
+                            _suffix_hint = _ext_val
+                        break
+                _wildcard_node = _ld_folder.rstrip('/') + ('/*' + _suffix_hint if _suffix_hint else '/*')
+                _add_event(line_no, 'open_read', _wildcard_node, is_write=False)
+
+        # --- os.walk: recursive directory-scan wildcard read ---
+        # Recognises `for root, dirs, files in os.walk(FOLDER):` and emits a
+        # wildcard read edge FOLDER/**/*.{suffix} (or FOLDER/**/* if no suffix
+        # filter is detectable within the next 10 lines).
+        _oswalk_m = _OSWALK_RE.search(line)
+        if _oswalk_m:
+            _ow_arg = _oswalk_m.group(1).strip()
+            _ow_folder: str | None = None
+            if _ow_arg in vars_map:
+                _ow_folder = vars_map[_ow_arg]
+            else:
+                _ow_joined, _ = _resolve_ospath_join(f'os.path.join({_ow_arg})', vars_map, abs_vars)
+                if _ow_joined:
+                    _ow_folder = _ow_joined
+                else:
+                    _ow_joined_p, _ = _resolve_ospath_join(
+                        f'os.path.join({_ow_arg})', vars_map, abs_vars, partial_wildcard=True
+                    )
+                    if _ow_joined_p:
+                        _ow_folder = _ow_joined_p
+            if _ow_folder and not _ow_folder.endswith('/'):
+                _suffix_hint_ow: str | None = None
+                _lookahead_ow = [raw_line] + raw_lines[line_no: line_no + 10]
+                for _la_line_ow in _lookahead_ow:
+                    _ew_m_ow = _ENDSWITH_RE.search(_la_line_ow)
+                    if _ew_m_ow:
+                        _ext_val_ow = _ew_m_ow.group(1) or _ew_m_ow.group(2)
+                        if _ext_val_ow and _ext_val_ow.startswith('.'):
+                            _suffix_hint_ow = _ext_val_ow
+                        break
+                _wildcard_node_ow = _ow_folder.rstrip('/') + ('/**/*' + _suffix_hint_ow if _suffix_hint_ow else '/**/*')
+                _add_event(line_no, 'os_walk', _wildcard_node_ow, is_write=False)
+
+        # --- Two-line with open(VAR, "rb") as f: binary read via variable lookup ---
+        # When the path is stored in a variable (not a literal), the standard
+        # open_read regex cannot match.  We detect `with open(VAR, mode)` and
+        # look VAR up in vars_map to emit a read edge.
+        _wopen_m = _WITH_OPEN_VAR_RB_RE.search(line)
+        if _wopen_m:
+            _wopen_var = _wopen_m.group(1)
+            _wopen_path = vars_map.get(_wopen_var)
+            if _wopen_path:
+                _add_event(line_no, 'open_read', _wopen_path, is_write=False)
 
         # --- Read patterns ---
         read_matched = False
